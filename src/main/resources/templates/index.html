@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/headFragment :: head('Test')"></head>
+<head th:replace="fragments/headFragment :: head(#{index.page.title})"></head>
 <body>
     <header th:replace="fragments/headerFragment :: header"></header>
 
