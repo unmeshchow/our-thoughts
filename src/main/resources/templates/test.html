@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/headFragment :: head('Test')"></head>
+<body>
+    <header th:replace="fragments/headerFragment :: header"></header>
+
+    <div class="container">
+        <main class="mb-3 main-top-margin">
+            Test Page
+        </main>
+    </div>
+
+    <footer th:replace="fragments/footerFragment :: footer"></footer>
+    <div th:replace="fragments/scriptsFragment :: scripts"></div>
+</body>
+</html>
