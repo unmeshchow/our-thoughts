@@ -6,9 +6,13 @@
 
     <div class="container">
         <main class="mb-3 main-top-margin">
-            <section id="#welcome" class="mb-3">
-                Welcome
+
+            <section id="#welcome" class="mb-5">
+                <h4 th:text="#{index.page.welcome.heading}" class="display-4">welcome</h4>
+                <span th:text="#{index.page.welcome.message}">share your thoughts</span>
+                <a th:href="@{/login}" th:text="#{login.link.label}">login</a>
             </section>
+
             <section id="search" class="mb-3">
                 Search
             </section>
