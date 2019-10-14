@@ -7,5 +7,6 @@
 }
 
 .page-heading-bottom-border {
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid indigo;
+    color: indigo;
 }

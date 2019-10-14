@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/headFragment :: head(#{registration.page.title})"></head>
+<body>
+<header th:replace="fragments/headerFragment :: header"></header>
+
+<div class="container">
+    <main class="mb-3 main-top-margin">
+
+        <section id="#welcome" class="mb-3">
+            <h1 th:replace="fragments/headingFragment :: heading(#{registration.page.heading})">
+                heading</h1>
+            <span th:text="#{registration.page.welcome.message}">register</span>
+        </section>
+
+        <hr>
+
+        <section id="#retister">
+            <div class="row d-flex justify-content-center">
+                <div class="col-lg-5 col-md-8 col-10">
+                    <!-- Material form register -->
+                    <div class="card">
+
+                        <h5 class="card-header indigo white-text text-center py-4">
+                            <strong th:text="#{registration.page.form.heading}">register</strong>
+                        </h5>
+
+                        <!--Card content-->
+                        <div class="card-body px-lg-5 pt-0">
+
+                            <!-- Form -->
+                            <form class="text-center" style="color: #757575;"
+                                  th:action="@{/registration/save}"
+                                  th:object="${userCommand}"
+                                  method="post">
+
+                                <!-- First name -->
+                                <div class="md-form">
+                                    <input type="text"
+                                           id="firstName"
+                                           class="form-control"
+                                           th:field="*{firstName}">
+                                    <label for="firstName"
+                                           th:text="#{registration.page.form.label.firstName}">
+                                        first name</label>
+                                    <p th:each="error : ${#fields.errors('firstName')}"
+                                       th:text="${error}" class="text-danger">error</p>
+                                </div>
+
+                                <!-- Last name -->
+                                <div class="md-form">
+                                    <input type="text"
+                                           id="lastName"
+                                           class="form-control"
+                                           th:field="*{lastName}">
+                                    <label for="lastName"
+                                           th:text="#{registration.page.form.label.lastName}">
+                                        last name</label>
+                                    <p th:each="error : ${#fields.errors('lastName')}"
+                                       th:text="${error}" class="text-danger">error</p>
+                                </div>
+
+                                <!-- E-mail -->
+                                <div class="md-form">
+                                    <input type="email"
+                                           id="email"
+                                           class="form-control"
+                                           th:field="*{email}">
+                                    <label for="email"
+                                           th:text="#{registration.page.form.label.email}">
+                                        email</label>
+                                    <p th:each="error : ${#fields.errors('email')}"
+                                       th:text="${error}" class="text-danger">error</p>
+                                </div>
+
+                                <!-- Password -->
+                                <div class="md-form">
+                                    <input type="password"
+                                           id="password"
+                                           class="form-control"
+                                           th:field="*{password}">
+                                    <label for="password"
+                                           th:text="#{registration.page.form.label.password}">
+                                        password</label>
+                                    <small id="passwordHelpBlock"
+                                           class="form-text text-muted mb-4"
+                                           th:text="#{password.strength.message}">
+                                        at least 8 characters and 1 digit
+                                    </small>
+                                    <p th:each="error : ${#fields.errors('password')}"
+                                       th:text="${error}" class="text-danger">error</p>
+                                </div>
+
+                                <!-- Confirm Password -->
+                                <div class="md-form">
+                                    <input type="password"
+                                           id="confirmPassword"
+                                           class="form-control"
+                                           th:field="*{matchingPassword}">
+                                    <label for="confirmPassword"
+                                           th:text="#{registration.page.form.label.confirmPassword}">
+                                        password</label>
+                                    <p th:each="error : ${#fields.errors('matchingPassword')}"
+                                       th:text="${error}" class="text-danger">error</p>
+                                    <p th:if="${#fields.hasGlobalErrors()}"
+                                       th:text="#{passwords.are.not.matched}"
+                                       class="text-danger">error</p>
+                                </div>
+
+                                <!-- Sign up button -->
+                                <button class="btn btn-outline-indigo btn-rounded btn-block my-4 waves-effect z-depth-0"
+                                        type="submit"
+                                        th:text="#{submit.link.label}">sign in
+                                </button>
+
+                            </form>
+                            <!-- Form -->
+
+                        </div>
+
+                    </div>
+                    <!-- Material form register -->
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<footer th:replace="fragments/footerFragment :: footer"></footer>
+<div th:replace="fragments/scriptsFragment :: scripts"></div>
+</body>
+</html>
