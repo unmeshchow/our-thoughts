@@ -8,7 +8,7 @@
         <main class="mb-3 main-top-margin">
 
             <section id="#welcome" class="mb-5">
-                <h4 th:text="#{index.page.welcome.heading}" class="display-4">welcome</h4>
+                <h1 th:replace="fragments/headingFragment :: heading(#{index.page.heading})"></h1>
                 <span th:text="#{index.page.welcome.message}">share your thoughts</span>
                 <a th:href="@{/login}" th:text="#{login.link.label}">login</a>
             </section>

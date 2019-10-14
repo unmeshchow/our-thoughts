@@ -5,3 +5,7 @@
 .main-top-margin {
     margin-top: 70px;
 }
+
+.page-heading-bottom-border {
+    border-bottom: 1px solid black;
+}
