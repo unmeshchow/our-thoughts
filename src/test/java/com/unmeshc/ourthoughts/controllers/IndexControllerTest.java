@@ -22,7 +22,7 @@ public class IndexControllerTest {
 
     @Test
     public void index() throws Exception {
-        mockMvc.perform(get("/"))
+        mockMvc.perform(get("/index.html"))
                .andExpect(status().isOk())
                .andExpect(view().name("index"));
     }

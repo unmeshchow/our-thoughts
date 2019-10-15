@@ -22,6 +22,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring()
-           .antMatchers( "/h2-console/**", "/index", "/registration/form");
+           .antMatchers(
+                   "/h2-console/**",
+                   "/webjars/**",
+                   "/css/**",
+                   "/js/**",
+                   "/img/**",
+                   "/index.html",
+                   "/registration/form",
+                   "/registration/save");
     }
 }
