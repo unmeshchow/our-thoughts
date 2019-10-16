@@ -82,4 +82,9 @@ public class RegistrationController {
     public String badToken() {
         return "register/badToken";
     }
+
+    @GetMapping("/password/reset/form")
+    public String showPasswordResetForm() {
+        return "register/passwordResetForm";
+    }
 }

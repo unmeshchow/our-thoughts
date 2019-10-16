@@ -71,7 +71,8 @@
                                         </div>
                                         <div>
                                             <!-- Forgot password -->
-                                            <a href="" th:text="#{login.page.forgot.password}">
+                                            <a th:href="@{/password/reset/form}"
+                                               th:text="#{login.page.forgot.password}">
                                                 forgot password?</a>
                                         </div>
                                     </div>
@@ -83,7 +84,7 @@
                                             th:text="#{login.link.label}">sign in</button>
 
                                     <!-- Register -->
-                                    <p><span th:text="#{login.page.not.a.memeber}">
+                                    <p><span th:text="#{login.page.not.a.member}">
                                         not a member?</span>
                                         <a th:href="@{/registration/form}"
                                            th:text="#{registration.link.label}">register</a>
