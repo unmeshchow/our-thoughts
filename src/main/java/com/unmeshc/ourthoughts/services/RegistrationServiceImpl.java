@@ -44,4 +44,14 @@ public class RegistrationServiceImpl implements RegistrationService {
         user.setActive(true);
         userService.updateUser(user);
     }
+
+    @Override
+    public User getUser(String email) {
+        return userService.getByEmail(email);
+    }
+
+    @Override
+    public void resetPassword(User user, HttpServletRequest request) {
+        emailService.sendPasswordResetLink(user, request);
+    }
 }

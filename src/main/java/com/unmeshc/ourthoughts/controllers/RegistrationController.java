@@ -2,8 +2,11 @@ package com.unmeshc.ourthoughts.controllers;
 
 import com.unmeshc.ourthoughts.commands.UserCommand;
 import com.unmeshc.ourthoughts.domain.Token;
+import com.unmeshc.ourthoughts.domain.User;
+import com.unmeshc.ourthoughts.exceptions.NotFoundException;
 import com.unmeshc.ourthoughts.services.RegistrationService;
 import com.unmeshc.ourthoughts.services.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,6 +22,7 @@ import javax.validation.Valid;
 /**
  * Created by uc on 10/14/2019
  */
+@Slf4j
 @Controller
 public class RegistrationController {
 
@@ -86,5 +90,24 @@ public class RegistrationController {
     @GetMapping("/password/reset/form")
     public String showPasswordResetForm() {
         return "register/passwordResetForm";
+    }
+
+    @GetMapping("/password/reset/send")
+    public String processPasswordReset(@RequestParam("email") String email,
+                                       HttpServletRequest request) {
+log.debug("process");
+        User user = registrationService.getUser(email);
+        if (user == null || !user.getActive()) {
+            throw new NotFoundException("User not found with email: " + email);
+        }
+
+        registrationService.resetPassword(user, request);
+
+        return "redirect:/password/reset/success";
+    }
+
+    @GetMapping("/password/reset/success")
+    public String passwordResetSuccess() {
+        return "register/passwordResetSuccess";
     }
 }

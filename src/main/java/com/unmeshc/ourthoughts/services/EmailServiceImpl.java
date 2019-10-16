@@ -39,30 +39,48 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendAccountActivateLink(User user, HttpServletRequest request) {
-        String token = UUID.randomUUID().toString();
-        userService.createToken(user, token);
+        String token = getRandomToken();
+        createUserToken(user, token);
 
-        String fullName = user.getFirstName() + " " + user.getLastName();
-        String serverName = request.getServerName();
-        int port = request.getServerPort();
-        String contextPath = request.getContextPath();
-        String url = "http://" + serverName + ":" + port + contextPath +
+        String fullName = getFullName(user);
+        String url = getServerNamePortContextPath(request) +
                 "/registration/confirm?token=" + token;
 
-        Context context = new Context(LocaleContextHolder.getLocale());
-        context.setVariable("name", fullName);
-        context.setVariable("url", url);
+        Context context = getContext(fullName, url);
 
         String subject = messageSource.getMessage("activate.account.link.subject",
                 null, request.getLocale());
         String body = templateEngine.process(
                 "email/activateAccountLink", context);
 
+        sendLink(user.getEmail(), subject, body);
+    }
+
+    @Override
+    public void sendPasswordResetLink(User user, HttpServletRequest request) {
+        String token = getRandomToken();
+        createUserToken(user, token);
+
+        String fullName = getFullName(user);
+        String url = getServerNamePortContextPath(request) +
+                "/password/reset/confirm?token=" + token;
+
+        Context context = getContext(fullName, url);
+
+        String subject = messageSource.getMessage("password.reset.link.subject",
+                null, request.getLocale());
+        String body = templateEngine.process(
+                "email/passwordResetLink", context);
+
+        sendLink(user.getEmail(), subject, body);
+    }
+
+    private void sendLink(String to, String subject, String body) {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
 
         try {
-            helper.setTo(user.getEmail());
+            helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(body, true);
 
@@ -71,5 +89,33 @@ public class EmailServiceImpl implements EmailService {
             log.error("Error in sending activation email", exc);
             throw new EmailNotSentException();
         }
+    }
+
+    private String getRandomToken() {
+        return UUID.randomUUID().toString();
+    }
+
+    private void createUserToken(User user, String token) {
+        userService.createToken(user, token);
+    }
+
+    private String getFullName(User user) {
+        return user.getFirstName() + " " + user.getLastName();
+    }
+
+    private String getServerNamePortContextPath(HttpServletRequest request) {
+        String serverName = request.getServerName();
+        int port = request.getServerPort();
+        String contextPath = request.getContextPath();
+
+        return "http://" + serverName + ":" + port + contextPath;
+    }
+
+    private Context getContext(String fullName, String url) {
+        Context context = new Context(LocaleContextHolder.getLocale());
+        context.setVariable("name", fullName);
+        context.setVariable("url", url);
+
+        return context;
     }
 }

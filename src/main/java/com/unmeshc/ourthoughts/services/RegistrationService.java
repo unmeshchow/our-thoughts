@@ -16,4 +16,8 @@ public interface RegistrationService {
     Token getToken(String token);
 
     void activateUser(User user);
+
+    User getUser(String email);
+
+    void resetPassword(User user, HttpServletRequest request);
 }

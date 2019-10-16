@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -46,6 +45,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
+            .antMatchers(PUBLIC).permitAll()
             .antMatchers("/login").permitAll()
             .anyRequest().authenticated()
             .and()
@@ -61,24 +61,27 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .and()
             .exceptionHandling()
                 .accessDeniedPage("/access/denied");
+
+        // for accessing H2 database console
+        http.csrf().disable();
+        http.headers().frameOptions().disable();
     }
 
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring()
-           .antMatchers(
-                   "/h2-console/**",
-                   "/webjars/**",
-                   "/css/**",
-                   "/js/**",
-                   "/img/**",
-                   "/index.html",
-                   "/registration/form",
-                   "/registration/save",
-                   "/registration/confirm",
-                   "/registration/success",
-                   "/registration/confirm/bad",
-                   "/password/reset/form",
-                   "/password/reset/send");
-    }
+    private String[] PUBLIC = {
+            "/h2-console/**",
+            "/webjars/**",
+            "/css/**",
+            "/js/**",
+            "/img/**",
+            "/index.html",
+            "/registration/form",
+            "/registration/save",
+            "/registration/confirm",
+            "/registration/success",
+            "/registration/confirm/bad",
+            "/password/reset/form",
+            "/password/reset/send",
+            "/password/reset/confirm",
+            "/password/reset/success"
+    };
 }

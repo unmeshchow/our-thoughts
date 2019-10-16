@@ -15,4 +15,6 @@ public interface UserService {
     void createToken(User user, String token);
 
     void updateUser(User user);
+
+    User getByEmail(String email);
 }
