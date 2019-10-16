@@ -74,6 +74,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                    "/img/**",
                    "/index.html",
                    "/registration/form",
-                   "/registration/save");
+                   "/registration/save",
+                   "/registration/confirm",
+                   "/registration/success");
     }
 }

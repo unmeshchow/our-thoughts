@@ -11,4 +11,6 @@ public interface UserService {
     boolean isEmailExists(String email);
 
     User saveUser(UserCommand userCommand);
+
+    void createToken(User user, String token);
 }

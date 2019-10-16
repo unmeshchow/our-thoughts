@@ -3,8 +3,10 @@ package com.unmeshc.ourthoughts.services;
 import com.unmeshc.ourthoughts.commands.UserCommand;
 import com.unmeshc.ourthoughts.converters.UserCommandToUser;
 import com.unmeshc.ourthoughts.domain.Role;
+import com.unmeshc.ourthoughts.domain.Token;
 import com.unmeshc.ourthoughts.domain.User;
 import com.unmeshc.ourthoughts.repositories.RoleRepository;
+import com.unmeshc.ourthoughts.repositories.TokenRepository;
 import com.unmeshc.ourthoughts.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,15 +26,18 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final UserCommandToUser userCommandToUser;
     private final PasswordEncoder passwordEncoder;
+    private final TokenRepository tokenRepository;
 
     public UserServiceImpl(UserRepository userRepository,
                            RoleRepository roleRepository,
                            UserCommandToUser userCommandToUser,
-                           PasswordEncoder passwordEncoder) {
+                           PasswordEncoder passwordEncoder,
+                           TokenRepository tokenRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.userCommandToUser = userCommandToUser;
         this.passwordEncoder = passwordEncoder;
+        this.tokenRepository = tokenRepository;
     }
 
     @Override
@@ -52,9 +57,15 @@ public class UserServiceImpl implements UserService {
 
         User user = userCommandToUser.convert(userCommand);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setActive(true);
+        user.setActive(false);
         user.setRoles(roles);
 
         return userRepository.save(user);
+    }
+
+    @Override
+    public void createToken(User user, String token) {
+        Token activationToken = Token.builder().user(user).token(token).build();
+        tokenRepository.save(activationToken);
     }
 }

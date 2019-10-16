@@ -1,6 +1,7 @@
 package com.unmeshc.ourthoughts.controllers;
 
 import com.unmeshc.ourthoughts.commands.UserCommand;
+import com.unmeshc.ourthoughts.services.RegistrationService;
 import com.unmeshc.ourthoughts.services.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 /**
@@ -19,9 +21,12 @@ import javax.validation.Valid;
 public class RegistrationController {
 
     private final UserService userService;
+    private final RegistrationService registrationService;
 
-    public RegistrationController(UserService userService) {
+    public RegistrationController(UserService userService,
+                                  RegistrationService registrationService) {
         this.userService = userService;
+        this.registrationService = registrationService;
     }
 
     @InitBinder
@@ -37,7 +42,8 @@ public class RegistrationController {
 
     @PostMapping("/registration/save")
     public String saveRegistrationData(@Valid UserCommand userCommand,
-                                       BindingResult result) {
+                                       BindingResult result,
+                                       HttpServletRequest request) {
         if (result.hasErrors()) {
             return "register/registrationForm";
         }
@@ -47,8 +53,13 @@ public class RegistrationController {
             return "register/registrationForm";
         }
 
-        userService.saveUser(userCommand);
+        registrationService.saveUser(userCommand, request);
 
-        return "success";
+        return "redirect:/registration/success";
+    }
+
+    @GetMapping("/registration/success")
+    public String successRegistration() {
+        return "register/registrationSuccess";
     }
 }
