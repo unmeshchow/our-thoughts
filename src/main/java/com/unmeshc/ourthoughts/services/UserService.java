@@ -13,4 +13,6 @@ public interface UserService {
     User saveUser(UserCommand userCommand);
 
     void createToken(User user, String token);
+
+    void updateUser(User user);
 }

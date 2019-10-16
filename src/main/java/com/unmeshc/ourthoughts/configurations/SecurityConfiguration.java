@@ -76,6 +76,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                    "/registration/form",
                    "/registration/save",
                    "/registration/confirm",
-                   "/registration/success");
+                   "/registration/success",
+                   "/registration/confirm/bad");
     }
 }

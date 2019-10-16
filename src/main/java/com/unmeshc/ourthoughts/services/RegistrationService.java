@@ -1,6 +1,7 @@
 package com.unmeshc.ourthoughts.services;
 
 import com.unmeshc.ourthoughts.commands.UserCommand;
+import com.unmeshc.ourthoughts.domain.Token;
 import com.unmeshc.ourthoughts.domain.User;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,4 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 public interface RegistrationService {
 
     User saveUser(UserCommand userCommand, HttpServletRequest request);
+
+    Token getToken(String token);
+
+    void activateUser(User user);
 }

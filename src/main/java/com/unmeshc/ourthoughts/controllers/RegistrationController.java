@@ -1,6 +1,7 @@
 package com.unmeshc.ourthoughts.controllers;
 
 import com.unmeshc.ourthoughts.commands.UserCommand;
+import com.unmeshc.ourthoughts.domain.Token;
 import com.unmeshc.ourthoughts.services.RegistrationService;
 import com.unmeshc.ourthoughts.services.UserService;
 import org.springframework.stereotype.Controller;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -37,6 +39,7 @@ public class RegistrationController {
     @GetMapping("/registration/form")
     public String showRegistrationForm(Model model) {
         model.addAttribute("userCommand", UserCommand.builder().build());
+
         return "register/registrationForm";
     }
 
@@ -61,5 +64,22 @@ public class RegistrationController {
     @GetMapping("/registration/success")
     public String successRegistration() {
         return "register/registrationSuccess";
+    }
+
+    @GetMapping("/registration/confirm")
+    public String activeRegistration(@RequestParam("token") String token) {
+        Token foundToken = registrationService.getToken(token);
+        if (foundToken == null || foundToken.isExpired()) {
+            return "redirect:/registration/confirm/bad";
+        }
+
+        registrationService.activateUser(foundToken.getUser());
+
+        return "redirect:/login";
+    }
+
+    @GetMapping("/registration/confirm/bad")
+    public String badToken() {
+        return "register/badToken";
     }
 }

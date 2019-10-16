@@ -68,4 +68,9 @@ public class UserServiceImpl implements UserService {
         Token activationToken = Token.builder().user(user).token(token).build();
         tokenRepository.save(activationToken);
     }
+
+    @Override
+    public void updateUser(User user) {
+        userRepository.save(user);
+    }
 }
