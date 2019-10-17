@@ -20,4 +20,6 @@ public interface RegistrationService {
     User getUser(String email);
 
     void resetPassword(User user, HttpServletRequest request);
+
+    void updatePassword(User user, String password);
 }

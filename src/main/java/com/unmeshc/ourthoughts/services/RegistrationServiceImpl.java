@@ -4,6 +4,7 @@ import com.unmeshc.ourthoughts.commands.UserCommand;
 import com.unmeshc.ourthoughts.domain.Token;
 import com.unmeshc.ourthoughts.domain.User;
 import com.unmeshc.ourthoughts.repositories.TokenRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,13 +18,16 @@ public class RegistrationServiceImpl implements RegistrationService {
     private final UserService userService;
     private final EmailService emailService;
     private final TokenRepository tokenRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public RegistrationServiceImpl(UserService userService,
                                    EmailService emailService,
-                                   TokenRepository tokenRepository) {
+                                   TokenRepository tokenRepository,
+                                   PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.emailService = emailService;
         this.tokenRepository = tokenRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -53,5 +57,11 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Override
     public void resetPassword(User user, HttpServletRequest request) {
         emailService.sendPasswordResetLink(user, request);
+    }
+
+    @Override
+    public void updatePassword(User user, String password) {
+        user.setPassword(passwordEncoder.encode(password));
+        userService.updateUser(user);
     }
 }

@@ -136,4 +136,18 @@ public class RegistrationController {
         model.addAttribute("passwordCommand", PasswordCommand.builder().build());
         return "register/passwordUpdateForm";
     }
+
+    @PostMapping("/password/reset/update")
+    public String resetPassword(@Valid PasswordCommand passwordCommand,
+                                BindingResult result) {
+
+        if (result.hasErrors()) {
+            return "register/passwordUpdateForm";
+        }
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        registrationService.updatePassword(user, passwordCommand.getPassword());
+
+        return "redirect:/login";
+    }
 }
