@@ -46,6 +46,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
             .antMatchers(PUBLIC).permitAll()
+            .antMatchers("/password/reset/update/form", "/password/reset/update")
+                .hasAuthority("CHANGE_PASSWORD_PRIVILEGE")
             .antMatchers("/login").permitAll()
             .anyRequest().authenticated()
             .and()
@@ -81,7 +83,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             "/registration/confirm/bad",
             "/password/reset/form",
             "/password/reset/send",
+            "/password/reset/success",
             "/password/reset/confirm",
-            "/password/reset/success"
+            "/password/reset/confirm/bad"
     };
 }

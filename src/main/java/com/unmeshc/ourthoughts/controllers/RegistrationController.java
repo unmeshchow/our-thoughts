@@ -1,5 +1,6 @@
 package com.unmeshc.ourthoughts.controllers;
 
+import com.unmeshc.ourthoughts.commands.PasswordCommand;
 import com.unmeshc.ourthoughts.commands.UserCommand;
 import com.unmeshc.ourthoughts.domain.Token;
 import com.unmeshc.ourthoughts.domain.User;
@@ -7,6 +8,10 @@ import com.unmeshc.ourthoughts.exceptions.NotFoundException;
 import com.unmeshc.ourthoughts.services.RegistrationService;
 import com.unmeshc.ourthoughts.services.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.Arrays;
 
 /**
  * Created by uc on 10/14/2019
@@ -82,7 +88,7 @@ public class RegistrationController {
         return "redirect:/login";
     }
 
-    @GetMapping("/registration/confirm/bad")
+    @GetMapping({"/registration/confirm/bad", "/password/reset/confirm/bad"})
     public String badToken() {
         return "register/badToken";
     }
@@ -95,7 +101,7 @@ public class RegistrationController {
     @GetMapping("/password/reset/send")
     public String processPasswordReset(@RequestParam("email") String email,
                                        HttpServletRequest request) {
-log.debug("process");
+
         User user = registrationService.getUser(email);
         if (user == null || !user.getActive()) {
             throw new NotFoundException("User not found with email: " + email);
@@ -109,5 +115,25 @@ log.debug("process");
     @GetMapping("/password/reset/success")
     public String passwordResetSuccess() {
         return "register/passwordResetSuccess";
+    }
+
+    @GetMapping("/password/reset/confirm")
+    public String acceptPasswordReset(@RequestParam("token") String token) {
+        Token foundToken = registrationService.getToken(token);
+        if (foundToken == null || foundToken.isExpired()) {
+            return "redirect:/password/reset/confirm/bad";
+        }
+
+        Authentication auth = new UsernamePasswordAuthenticationToken(foundToken.getUser(), null,
+                Arrays.asList(new SimpleGrantedAuthority("CHANGE_PASSWORD_PRIVILEGE")));
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        return "redirect:/password/reset/update/form";
+    }
+
+    @GetMapping("/password/reset/update/form")
+    public String showPasswordUpdateForm(Model model) {
+        model.addAttribute("passwordCommand", PasswordCommand.builder().build());
+        return "register/passwordUpdateForm";
     }
 }
