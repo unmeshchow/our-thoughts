@@ -18,13 +18,15 @@
             <section id="welcome" class="mb-3">
                 <span sec:authorize="!isAuthenticated()">
                     <span th:text="#{index.page.welcome.message}">share your thoughts</span>
-                    <a th:href="@{/login}" th:text="#{login.link.label}">login</a>
+                    <a th:href="@{/login}"
+                       th:text="#{login.link.label}"
+                       style="font-weight: bold;">login</a>
                 </span>
                 <span sec:authorize="isAuthenticated()">
                     <span th:text="#{index.page.new.post.message}">add your thoughts</span>
                     <a th:href="@{/create/post}"
                        th:text="#{create.post.link.label}"
-                       style="font-size: large; font-weight: bold">post</a>
+                       style="font-size: large; font-weight: bold;">post</a>
                 </span>
             </section>
 
