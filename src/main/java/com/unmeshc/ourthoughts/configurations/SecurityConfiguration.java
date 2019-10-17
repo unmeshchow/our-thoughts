@@ -27,6 +27,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Value("${spring.queries.roles-query}")
     private String rolesQuery;
 
+    @Value("${secret.and.unique}")
+    private String secretAndUnique;
+
     public SecurityConfiguration(DataSource dataSource,
                                  PasswordEncoder passwordEncoder) {
         this.dataSource = dataSource;
@@ -62,7 +65,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .logoutSuccessUrl("/index.html")
             .and()
             .exceptionHandling()
-                .accessDeniedPage("/access/denied");
+                .accessDeniedPage("/access/denied")
+            .and()
+            .rememberMe()
+                .key(secretAndUnique);
 
         // for accessing H2 database console
         http.csrf().disable();
