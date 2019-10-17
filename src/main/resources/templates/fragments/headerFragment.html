@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <body>
 <header th:fragment="header">
 
@@ -21,11 +23,24 @@
             <div class="collapse navbar-collapse" id="basicExampleNav">
 
                 <!-- Links -->
-                <ul class="navbar-nav ml-auto">
+                <ul class="navbar-nav ml-auto" sec:authorize="!isAuthenticated()">
                     <li class="nav-item">
                         <a class="nav-link" href="#"
                            th:text="#{login.link.label}"
                            th:href="@{/login}">login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"
+                           th:text="#{registration.link.label}"
+                           th:href="@{/registration/form}">register</a>
+                    </li>
+                </ul>
+
+                <!-- Links -->
+                <ul class="navbar-nav ml-auto" sec:authorize="isAuthenticated()">
+                    <li class="nav-item">
+                        <span th:text="#{welcome.message(${session.fullName})}"
+                              class="nav-link">welcome</span>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#"

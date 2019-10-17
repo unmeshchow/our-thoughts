@@ -20,6 +20,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final DataSource dataSource;
     private final PasswordEncoder passwordEncoder;
+    private final OurThoughtsAuthenticationSuccessHandler authenticationSuccessHandler;
 
     @Value("${spring.queries.users-query}")
     private String usersQuery;
@@ -31,9 +32,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private String secretAndUnique;
 
     public SecurityConfiguration(DataSource dataSource,
-                                 PasswordEncoder passwordEncoder) {
+                                 PasswordEncoder passwordEncoder,
+                                 OurThoughtsAuthenticationSuccessHandler authenticationSuccessHandler) {
         this.dataSource = dataSource;
         this.passwordEncoder = passwordEncoder;
+        this.authenticationSuccessHandler = authenticationSuccessHandler;
     }
 
     @Override
@@ -56,9 +59,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .and()
             .formLogin()
                 .loginPage("/login").failureUrl("/login?error=true")
-                .defaultSuccessUrl("/index.html")
                 .usernameParameter("email")
                 .passwordParameter("password")
+                .successHandler(authenticationSuccessHandler)
             .and()
             .logout()
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
