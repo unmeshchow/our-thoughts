@@ -20,7 +20,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final DataSource dataSource;
     private final PasswordEncoder passwordEncoder;
-    private final OurThoughtsAuthenticationSuccessHandler authenticationSuccessHandler;
+    private final LoginAuthenticationSuccessHandler loginAuthenticationSuccessHandler;
+    private final RememberMeAuthenticationSuccessHandler rememberMeAuthenticationSuccessHandler;
 
     @Value("${spring.queries.users-query}")
     private String usersQuery;
@@ -33,10 +34,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     public SecurityConfiguration(DataSource dataSource,
                                  PasswordEncoder passwordEncoder,
-                                 OurThoughtsAuthenticationSuccessHandler authenticationSuccessHandler) {
+                                 LoginAuthenticationSuccessHandler loginAuthenticationSuccessHandler,
+                                 RememberMeAuthenticationSuccessHandler rememberMeAuthenticationSuccessHandler) {
         this.dataSource = dataSource;
         this.passwordEncoder = passwordEncoder;
-        this.authenticationSuccessHandler = authenticationSuccessHandler;
+        this.loginAuthenticationSuccessHandler = loginAuthenticationSuccessHandler;
+        this.rememberMeAuthenticationSuccessHandler = rememberMeAuthenticationSuccessHandler;
     }
 
     @Override
@@ -51,9 +54,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-            .antMatchers(PUBLIC).permitAll()
             .antMatchers("/password/reset/update/form", "/password/reset/update")
                 .hasAuthority("CHANGE_PASSWORD_PRIVILEGE")
+            .antMatchers(PUBLIC).permitAll()
             .antMatchers("/login").permitAll()
             .anyRequest().authenticated()
             .and()
@@ -61,7 +64,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .loginPage("/login").failureUrl("/login?error=true")
                 .usernameParameter("email")
                 .passwordParameter("password")
-                .successHandler(authenticationSuccessHandler)
+                .successHandler(loginAuthenticationSuccessHandler)
             .and()
             .logout()
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
@@ -71,7 +74,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .accessDeniedPage("/access/denied")
             .and()
             .rememberMe()
-                .key(secretAndUnique);
+                .key(secretAndUnique)
+                .authenticationSuccessHandler(rememberMeAuthenticationSuccessHandler);
 
         // for accessing H2 database console
         http.csrf().disable();
@@ -85,15 +89,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             "/js/**",
             "/img/**",
             "/index.html",
-            "/registration/form",
-            "/registration/save",
-            "/registration/confirm",
-            "/registration/success",
-            "/registration/confirm/bad",
-            "/password/reset/form",
-            "/password/reset/send",
-            "/password/reset/success",
-            "/password/reset/confirm",
-            "/password/reset/confirm/bad"
+            "/registration/**",
+            "/password/**"
     };
 }

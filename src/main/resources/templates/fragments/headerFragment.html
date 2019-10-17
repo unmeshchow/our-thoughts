@@ -23,7 +23,8 @@
             <div class="collapse navbar-collapse" id="basicExampleNav">
 
                 <!-- Links -->
-                <ul class="navbar-nav ml-auto" sec:authorize="!isAuthenticated()">
+                <ul class="navbar-nav ml-auto"
+                    sec:authorize="!isAuthenticated() or hasAuthority('CHANGE_PASSWORD_PRIVILEGE')">
                     <li class="nav-item">
                         <a class="nav-link" href="#"
                            th:text="#{login.link.label}"
@@ -37,7 +38,8 @@
                 </ul>
 
                 <!-- Links -->
-                <ul class="navbar-nav ml-auto" sec:authorize="isAuthenticated()">
+                <ul class="navbar-nav ml-auto"
+                    sec:authorize="isAuthenticated() and !hasAuthority('CHANGE_PASSWORD_PRIVILEGE')">
                     <li class="nav-item">
                         <span th:text="#{welcome.message(${session.fullName})}"
                               class="nav-link">welcome</span>

@@ -16,13 +16,13 @@
             <hr>
 
             <section id="welcome" class="mb-3">
-                <span sec:authorize="!isAuthenticated()">
+                <span sec:authorize="!isAuthenticated() or hasAuthority('CHANGE_PASSWORD_PRIVILEGE')">
                     <span th:text="#{index.page.welcome.message}">share your thoughts</span>
                     <a th:href="@{/login}"
                        th:text="#{login.link.label}"
                        style="font-weight: bold;">login</a>
                 </span>
-                <span sec:authorize="isAuthenticated()">
+                <span sec:authorize="isAuthenticated() and !hasAuthority('CHANGE_PASSWORD_PRIVILEGE')">
                     <span th:text="#{index.page.new.post.message}">add your thoughts</span>
                     <a th:href="@{/create/post}"
                        th:text="#{create.post.link.label}"

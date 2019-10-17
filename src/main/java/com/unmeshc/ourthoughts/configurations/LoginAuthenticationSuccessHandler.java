@@ -1,7 +1,5 @@
 package com.unmeshc.ourthoughts.configurations;
 
-import com.unmeshc.ourthoughts.domain.User;
-import com.unmeshc.ourthoughts.services.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
@@ -18,12 +15,12 @@ import java.io.IOException;
  */
 @Slf4j
 @Component
-public class OurThoughtsAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+public class LoginAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-    private final UserService userService;
+    private final AuthenticationSuccessHandlerUtils authenticationSuccessHandlerUtils;
 
-    public OurThoughtsAuthenticationSuccessHandler(UserService userService) {
-        this.userService = userService;
+    public LoginAuthenticationSuccessHandler(AuthenticationSuccessHandlerUtils authenticationSuccessHandlerUtils) {
+        this.authenticationSuccessHandlerUtils = authenticationSuccessHandlerUtils;
     }
 
     @Override
@@ -32,12 +29,7 @@ public class OurThoughtsAuthenticationSuccessHandler implements AuthenticationSu
                                         Authentication authentication)
                                         throws IOException {
 
-        User user = userService.getByEmail(authentication.getName());
-        HttpSession httpSession = httpServletRequest.getSession();
-        httpSession.setAttribute("fullName", user.getFirstName() + " "
-                + user.getLastName());
-
-        log.debug("Name: " + httpSession.getAttribute("fullName"));
+        authenticationSuccessHandlerUtils.saveFullNameInHttpSession(httpServletRequest, authentication);
 
         boolean admin = false;
         for (GrantedAuthority authority : authentication.getAuthorities()) {
