@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/headFragment :: head(#{profile.page.title})"></head>
+<head th:replace="fragments/headFragment :: head(#{my.profile.page.title})"></head>
 <body>
     <header th:replace="fragments/headerFragment :: header"></header>
 
     <div class="container">
         <main class="mb-3 main-top-margin">
             <section id="heading" class="mb-3">
-                <h1 th:replace="fragments/headingFragment :: heading(#{profile.page.heading})"></h1>
+                <h1 th:replace="fragments/headingFragment :: heading(#{my.profile.page.heading})"></h1>
             </section>
 
             <hr>
@@ -21,18 +21,24 @@
 
                             <!-- Avatar -->
                             <div class="mx-auto">
-                                <img th:src="@{/img/avatar.jpg}"
+                                <img th:if="${userCommand.image == null}"
+                                     th:src="@{/img/avatar.jpg}"
+                                     src="../../static/img/avatar.jpg"
+                                     class="rounded-circle" alt="woman avatar"
+                                     width="300" height="300">
+
+                                <img th:if="${userCommand.image != null}"
+                                     th:src="@{/user/get/image}"
                                      src="../../static/img/avatar.jpg"
                                      class="rounded-circle" alt="woman avatar"
                                      width="200" height="200">
-
                             </div>
 
                             <!-- Content -->
                             <div class="card-body">
                                 <div class="card-title text-center">
                                     <a class="btn btn-indigo btn-sm"
-                                            th:href="@{/user/change/image}">
+                                            th:href="@{/user/change/image/form}">
                                         Change Image</a></div>
                                 <hr>
 

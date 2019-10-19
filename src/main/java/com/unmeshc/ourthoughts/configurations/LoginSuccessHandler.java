@@ -15,11 +15,11 @@ import java.io.IOException;
  */
 @Slf4j
 @Component
-public class LoginAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
-    private final AuthenticationSuccessHandlerUtils authenticationSuccessHandlerUtils;
+    private final SecurityUtils authenticationSuccessHandlerUtils;
 
-    public LoginAuthenticationSuccessHandler(AuthenticationSuccessHandlerUtils authenticationSuccessHandlerUtils) {
+    public LoginSuccessHandler(SecurityUtils authenticationSuccessHandlerUtils) {
         this.authenticationSuccessHandlerUtils = authenticationSuccessHandlerUtils;
     }
 
@@ -29,7 +29,7 @@ public class LoginAuthenticationSuccessHandler implements AuthenticationSuccessH
                                         Authentication authentication)
                                         throws IOException {
 
-        authenticationSuccessHandlerUtils.saveFullNameInHttpSession(httpServletRequest, authentication);
+        authenticationSuccessHandlerUtils.saveFullNameIntoHttpSession(httpServletRequest, authentication);
 
         boolean admin = false;
         for (GrantedAuthority authority : authentication.getAuthorities()) {

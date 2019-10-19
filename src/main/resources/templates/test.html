@@ -6,7 +6,11 @@
 
     <div class="container">
         <main class="mb-3 main-top-margin">
-            <h1 th:replace="fragments/headingFragment :: heading('Test Page')"></h1>
+            <section id="heading" class="mb-3">
+                <h1 th:replace="fragments/headingFragment :: heading('Test Page')"></h1>
+            </section>
+
+            <hr>
         </main>
     </div>
 

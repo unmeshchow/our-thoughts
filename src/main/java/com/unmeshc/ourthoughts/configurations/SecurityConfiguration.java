@@ -20,8 +20,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final DataSource dataSource;
     private final PasswordEncoder passwordEncoder;
-    private final LoginAuthenticationSuccessHandler loginAuthenticationSuccessHandler;
-    private final RememberMeAuthenticationSuccessHandler rememberMeAuthenticationSuccessHandler;
+    private final LoginSuccessHandler loginAuthenticationSuccessHandler;
+    private final RememberMeSuccessHandler rememberMeAuthenticationSuccessHandler;
 
     @Value("${spring.queries.users-query}")
     private String usersQuery;
@@ -34,8 +34,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     public SecurityConfiguration(DataSource dataSource,
                                  PasswordEncoder passwordEncoder,
-                                 LoginAuthenticationSuccessHandler loginAuthenticationSuccessHandler,
-                                 RememberMeAuthenticationSuccessHandler rememberMeAuthenticationSuccessHandler) {
+                                 LoginSuccessHandler loginAuthenticationSuccessHandler,
+                                 RememberMeSuccessHandler rememberMeAuthenticationSuccessHandler) {
         this.dataSource = dataSource;
         this.passwordEncoder = passwordEncoder;
         this.loginAuthenticationSuccessHandler = loginAuthenticationSuccessHandler;

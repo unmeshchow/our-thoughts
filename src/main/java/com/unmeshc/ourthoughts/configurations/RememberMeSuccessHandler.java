@@ -13,11 +13,11 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Slf4j
 @Component
-public class RememberMeAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+public class RememberMeSuccessHandler implements AuthenticationSuccessHandler {
 
-    private final AuthenticationSuccessHandlerUtils authenticationSuccessHandlerUtils;
+    private final SecurityUtils authenticationSuccessHandlerUtils;
 
-    public RememberMeAuthenticationSuccessHandler(AuthenticationSuccessHandlerUtils authenticationSuccessHandlerUtils) {
+    public RememberMeSuccessHandler(SecurityUtils authenticationSuccessHandlerUtils) {
         this.authenticationSuccessHandlerUtils = authenticationSuccessHandlerUtils;
     }
 
@@ -26,6 +26,6 @@ public class RememberMeAuthenticationSuccessHandler implements AuthenticationSuc
                                         HttpServletResponse httpServletResponse,
                                         Authentication authentication) {
 
-        authenticationSuccessHandlerUtils.saveFullNameInHttpSession(httpServletRequest, authentication);
+        authenticationSuccessHandlerUtils.saveFullNameIntoHttpSession(httpServletRequest, authentication);
     }
 }

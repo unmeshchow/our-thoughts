@@ -10,3 +10,8 @@
     border-bottom: 1px solid indigo;
     color: indigo;
 }
+
+.upload {
+    color: #444;
+    cursor: pointer;
+}

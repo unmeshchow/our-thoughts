@@ -34,4 +34,6 @@ public class UserCommand {
 
     @NotBlank
     private String matchingPassword;
+
+    private Byte[] image;
 }
