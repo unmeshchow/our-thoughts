@@ -44,7 +44,7 @@
                                            class="form-control"
                                            th:field="*{firstName}">
                                     <label for="firstName"
-                                           th:text="#{registration.page.form.label.firstName}">
+                                           th:text="#{form.label.firstName}">
                                         first name</label>
                                     <p th:each="error : ${#fields.errors('firstName')}"
                                        th:text="${error}" class="text-danger">error</p>
@@ -57,7 +57,7 @@
                                            class="form-control"
                                            th:field="*{lastName}">
                                     <label for="lastName"
-                                           th:text="#{registration.page.form.label.lastName}">
+                                           th:text="#{form.label.lastName}">
                                         last name</label>
                                     <p th:each="error : ${#fields.errors('lastName')}"
                                        th:text="${error}" class="text-danger">error</p>

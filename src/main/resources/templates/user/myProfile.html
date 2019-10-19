@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/headFragment :: head(#{profile.page.title})"></head>
+<body>
+    <header th:replace="fragments/headerFragment :: header"></header>
+
+    <div class="container">
+        <main class="mb-3 main-top-margin">
+            <section id="heading" class="mb-3">
+                <h1 th:replace="fragments/headingFragment :: heading(#{profile.page.heading})"></h1>
+            </section>
+
+            <hr>
+
+            <section id="profile" class="mb-3">
+
+                <div class="row d-flex justify-content-center">
+                    <div class="col-lg-8 col-md-10 col-12">
+                        <!-- Card -->
+                        <div class="card">
+
+                            <!-- Avatar -->
+                            <div class="mx-auto">
+                                <img th:src="@{/img/avatar.jpg}"
+                                     src="../../static/img/avatar.jpg"
+                                     class="rounded-circle" alt="woman avatar"
+                                     width="200" height="200">
+
+                            </div>
+
+                            <!-- Content -->
+                            <div class="card-body">
+                                <div class="card-title text-center">
+                                    <a class="btn btn-indigo btn-sm"
+                                            th:href="@{/user/change/image}">
+                                        Change Image</a></div>
+                                <hr>
+
+                                <table style="width: 400px" class="table table-borderless mx-auto">
+                                    <tr>
+                                        <td th:text="#{form.label.firstName} + ':'" class="text-right"
+                                            style="font-weight: bold;">first name</td>
+                                        <td th:text="${userCommand.firstName}">first</td>
+                                    </tr>
+                                    <tr>
+                                        <td th:text="#{form.label.lastName} + ':'" class="text-right"
+                                            style="font-weight: bold;">last name</td>
+                                        <td th:text="${userCommand.lastName}">last</td>
+                                    </tr>
+                                    <tr>
+                                        <td th:text="#{form.label.email} + ':'" class="text-right"
+                                            style="font-weight: bold;">email</td>
+                                        <td th:text="${userCommand.email}">last</td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                        </div>
+                        <!-- Card -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+
+
+    <footer th:replace="fragments/footerFragment :: footer"></footer>
+    <div th:replace="fragments/scriptsFragment :: scripts"></div>
+</body>
+</html>

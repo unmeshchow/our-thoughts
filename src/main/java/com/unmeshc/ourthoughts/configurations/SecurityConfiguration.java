@@ -56,6 +56,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
             .antMatchers("/password/reset/update/form", "/password/reset/update")
                 .hasAuthority("CHANGE_PASSWORD_PRIVILEGE")
+            .antMatchers("/user/**")
+                .hasAuthority("USER")
             .antMatchers(PUBLIC).permitAll()
             .antMatchers("/login").permitAll()
             .anyRequest().authenticated()
