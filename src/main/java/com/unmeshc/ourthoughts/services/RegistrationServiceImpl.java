@@ -1,67 +1,67 @@
 package com.unmeshc.ourthoughts.services;
 
 import com.unmeshc.ourthoughts.commands.UserCommand;
-import com.unmeshc.ourthoughts.domain.Token;
+import com.unmeshc.ourthoughts.converters.UserCommandToUser;
+import com.unmeshc.ourthoughts.domain.Role;
 import com.unmeshc.ourthoughts.domain.User;
-import com.unmeshc.ourthoughts.repositories.TokenRepository;
+import com.unmeshc.ourthoughts.repositories.RoleRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by uc on 10/16/2019
  */
+@Slf4j
 @Service
 public class RegistrationServiceImpl implements RegistrationService {
 
     private final UserService userService;
     private final EmailService emailService;
-    private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
+    private final UserCommandToUser userCommandToUser;
 
     public RegistrationServiceImpl(UserService userService,
                                    EmailService emailService,
-                                   TokenRepository tokenRepository,
-                                   PasswordEncoder passwordEncoder) {
+                                   PasswordEncoder passwordEncoder,
+                                   RoleRepository roleRepository,
+                                   UserCommandToUser userCommandToUser) {
         this.userService = userService;
         this.emailService = emailService;
-        this.tokenRepository = tokenRepository;
         this.passwordEncoder = passwordEncoder;
+        this.roleRepository = roleRepository;
+        this.userCommandToUser = userCommandToUser;
     }
 
     @Override
-    public User saveUser(UserCommand userCommand, HttpServletRequest request) {
-        User user = userService.saveUser(userCommand);
-        emailService.sendAccountActivateLink(user, request);
-
-        return user;
-    }
-
-    @Override
-    public Token getToken(String token) {
-        return tokenRepository.findByToken(token).orElse(null);
-    }
-
-    @Override
-    public void activateUser(User user) {
+    public User activateUser(User user) {
         user.setActive(true);
-        userService.updateUser(user);
+        return userService.saveOrUpdateUser(user);
     }
 
     @Override
-    public User getUser(String email) {
-        return userService.getByEmail(email);
-    }
+    public User saveAndVerifyUser(UserCommand userCommand, HttpServletRequest request) {
+        Role role = roleRepository.findByName("USER").orElse(null);
+        if (role == null) {
+            log.error("User role not found");
+            throw new RuntimeException();
+        }
+        Set<Role> roles = new HashSet<>();
+        roles.add(role);
 
-    @Override
-    public void resetPassword(User user, HttpServletRequest request) {
-        emailService.sendPasswordResetLink(user, request);
-    }
+        User user = userCommandToUser.convert(userCommand);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setActive(false);
+        user.setRoles(roles);
 
-    @Override
-    public void updatePassword(User user, String password) {
-        user.setPassword(passwordEncoder.encode(password));
-        userService.updateUser(user);
+        User savedUser = userService.saveOrUpdateUser(user);
+        emailService.sendAccountActivationLink(savedUser, request);
+
+        return savedUser;
     }
 }

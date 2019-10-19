@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface EmailService {
 
-    void sendAccountActivateLink(User user, HttpServletRequest request);
+    void sendAccountActivationLink(User user, HttpServletRequest request);
 
     void sendPasswordResetLink(User user, HttpServletRequest request);
 }

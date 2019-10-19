@@ -1,30 +1,7 @@
 package com.unmeshc.ourthoughts.services;
 
-import com.unmeshc.ourthoughts.commands.UserCommand;
-import com.unmeshc.ourthoughts.converters.UserCommandToUser;
-import com.unmeshc.ourthoughts.domain.Role;
-import com.unmeshc.ourthoughts.domain.User;
-import com.unmeshc.ourthoughts.repositories.RoleRepository;
-import com.unmeshc.ourthoughts.repositories.UserRepository;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 public class UserServiceImplTest {
-
+/*
     @Mock
     private UserRepository userRepository;
 
@@ -83,5 +60,5 @@ public class UserServiceImplTest {
         when(roleRepository.findByName(anyString())).thenReturn(Optional.empty());
 
         service.saveUser(UserCommand.builder().build());
-    }
+    }*/
 }

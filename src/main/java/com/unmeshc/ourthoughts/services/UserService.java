@@ -1,6 +1,5 @@
 package com.unmeshc.ourthoughts.services;
 
-import com.unmeshc.ourthoughts.commands.UserCommand;
 import com.unmeshc.ourthoughts.domain.User;
 
 /**
@@ -10,11 +9,9 @@ public interface UserService {
 
     boolean isEmailExists(String email);
 
-    User saveUser(UserCommand userCommand);
-
     void createToken(User user, String token);
 
-    void updateUser(User user);
+    User saveOrUpdateUser(User user);
 
     User getByEmail(String email);
 }

@@ -23,22 +23,22 @@ import java.util.UUID;
 public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender mailSender;
-    private final UserService userService;
     private final TemplateEngine templateEngine;
     private final MessageSource messageSource;
+    private final TokenService tokenService;
 
     public EmailServiceImpl(JavaMailSender mailSender,
-                            UserService userService,
                             TemplateEngine templateEngine,
-                            MessageSource messageSource) {
+                            MessageSource messageSource,
+                            TokenService tokenService) {
         this.mailSender = mailSender;
-        this.userService = userService;
         this.templateEngine = templateEngine;
         this.messageSource = messageSource;
+        this.tokenService = tokenService;
     }
 
     @Override
-    public void sendAccountActivateLink(User user, HttpServletRequest request) {
+    public void sendAccountActivationLink(User user, HttpServletRequest request) {
         String token = getRandomToken();
         createUserToken(user, token);
 
@@ -96,7 +96,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private void createUserToken(User user, String token) {
-        userService.createToken(user, token);
+        tokenService.createTokenForUser(user, token);
     }
 
     private String getFullName(User user) {

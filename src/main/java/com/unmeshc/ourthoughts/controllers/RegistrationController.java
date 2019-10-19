@@ -1,44 +1,38 @@
 package com.unmeshc.ourthoughts.controllers;
 
-import com.unmeshc.ourthoughts.commands.PasswordCommand;
 import com.unmeshc.ourthoughts.commands.UserCommand;
 import com.unmeshc.ourthoughts.domain.Token;
-import com.unmeshc.ourthoughts.domain.User;
-import com.unmeshc.ourthoughts.exceptions.NotFoundException;
 import com.unmeshc.ourthoughts.services.RegistrationService;
+import com.unmeshc.ourthoughts.services.TokenService;
 import com.unmeshc.ourthoughts.services.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.Arrays;
 
 /**
  * Created by uc on 10/14/2019
  */
 @Slf4j
 @Controller
+@RequestMapping("/registration")
 public class RegistrationController {
 
     private final UserService userService;
     private final RegistrationService registrationService;
+    private final TokenService tokenService;
 
     public RegistrationController(UserService userService,
-                                  RegistrationService registrationService) {
+                                  RegistrationService registrationService,
+                                  TokenService tokenService) {
         this.userService = userService;
         this.registrationService = registrationService;
+        this.tokenService = tokenService;
     }
 
     @InitBinder
@@ -46,14 +40,14 @@ public class RegistrationController {
         webDataBinder.setDisallowedFields("id");
     }
 
-    @GetMapping("/registration/form")
+    @GetMapping("/form")
     public String showRegistrationForm(Model model) {
         model.addAttribute("userCommand", UserCommand.builder().build());
 
         return "register/registrationForm";
     }
 
-    @PostMapping("/registration/save")
+    @PostMapping("/save")
     public String saveRegistrationData(@Valid UserCommand userCommand,
                                        BindingResult result,
                                        HttpServletRequest request) {
@@ -66,19 +60,19 @@ public class RegistrationController {
             return "register/registrationForm";
         }
 
-        registrationService.saveUser(userCommand, request);
+        registrationService.saveAndVerifyUser(userCommand, request);
 
         return "redirect:/registration/success";
     }
 
-    @GetMapping("/registration/success")
+    @GetMapping("/success")
     public String successRegistration() {
         return "register/registrationSuccess";
     }
 
-    @GetMapping("/registration/confirm")
+    @GetMapping("/confirm")
     public String activeRegistration(@RequestParam("token") String token) {
-        Token foundToken = registrationService.getToken(token);
+        Token foundToken = tokenService.getByToken(token);
         if (foundToken == null || foundToken.isExpired()) {
             return "redirect:/registration/confirm/bad";
         }
@@ -88,66 +82,8 @@ public class RegistrationController {
         return "redirect:/login";
     }
 
-    @GetMapping({"/registration/confirm/bad", "/password/reset/confirm/bad"})
+    @GetMapping("/confirm/bad")
     public String badToken() {
         return "register/badToken";
-    }
-
-    @GetMapping("/password/reset/form")
-    public String showPasswordResetForm() {
-        return "register/passwordResetForm";
-    }
-
-    @GetMapping("/password/reset/send")
-    public String processPasswordReset(@RequestParam("email") String email,
-                                       HttpServletRequest request) {
-
-        User user = registrationService.getUser(email);
-        if (user == null || !user.getActive()) {
-            throw new NotFoundException("User not found with email: " + email);
-        }
-
-        registrationService.resetPassword(user, request);
-
-        return "redirect:/password/reset/success";
-    }
-
-    @GetMapping("/password/reset/success")
-    public String passwordResetSuccess() {
-        return "register/passwordResetSuccess";
-    }
-
-    @GetMapping("/password/reset/confirm")
-    public String acceptPasswordReset(@RequestParam("token") String token) {
-        Token foundToken = registrationService.getToken(token);
-        if (foundToken == null || foundToken.isExpired()) {
-            return "redirect:/password/reset/confirm/bad";
-        }
-
-        Authentication auth = new UsernamePasswordAuthenticationToken(foundToken.getUser(), null,
-                Arrays.asList(new SimpleGrantedAuthority("CHANGE_PASSWORD_PRIVILEGE")));
-        SecurityContextHolder.getContext().setAuthentication(auth);
-
-        return "redirect:/password/reset/update/form";
-    }
-
-    @GetMapping("/password/reset/update/form")
-    public String showPasswordUpdateForm(Model model) {
-        model.addAttribute("passwordCommand", PasswordCommand.builder().build());
-        return "register/passwordUpdateForm";
-    }
-
-    @PostMapping("/password/reset/update")
-    public String resetPassword(@Valid PasswordCommand passwordCommand,
-                                BindingResult result) {
-
-        if (result.hasErrors()) {
-            return "register/passwordUpdateForm";
-        }
-
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        registrationService.updatePassword(user, passwordCommand.getPassword());
-
-        return "redirect:/login";
     }
 }
