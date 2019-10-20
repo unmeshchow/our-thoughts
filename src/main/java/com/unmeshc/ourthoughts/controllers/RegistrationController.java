@@ -23,6 +23,13 @@ import javax.validation.Valid;
 @RequestMapping("/registration")
 public class RegistrationController {
 
+    public static final String REGISTRATION_FORM = "register/registrationForm";
+    public static final String REDIRECT_REGISTRATION_SUCCESS = "redirect:/registration/success";
+    public static final String REGISTRATION_SUCCESS = "register/registrationSuccess";
+    public static final String REDIRECT_LOGIN = "redirect:/login";
+    public static final String REDIRECT_REGISTRATION_CONFIRM_BAD = "redirect:/registration/confirm/bad";
+    public static final String CONFIRM_BAD = "register/badToken";
+
     private final UserService userService;
     private final RegistrationService registrationService;
     private final TokenService tokenService;
@@ -44,7 +51,7 @@ public class RegistrationController {
     public String showRegistrationForm(Model model) {
         model.addAttribute("userCommand", UserCommand.builder().build());
 
-        return "register/registrationForm";
+        return REGISTRATION_FORM;
     }
 
     @PostMapping("/save")
@@ -52,38 +59,39 @@ public class RegistrationController {
                                        BindingResult result,
                                        HttpServletRequest request) {
         if (result.hasErrors()) {
-            return "register/registrationForm";
+            return REGISTRATION_FORM;
         }
 
         if (userService.isEmailExists(userCommand.getEmail())) {
             result.rejectValue("email","EmailExists");
-            return "register/registrationForm";
+            return REGISTRATION_FORM;
         }
 
         registrationService.saveAndVerifyUser(userCommand, request);
 
-        return "redirect:/registration/success";
+        return REDIRECT_REGISTRATION_SUCCESS;
     }
 
     @GetMapping("/success")
     public String successRegistration() {
-        return "register/registrationSuccess";
+        return REGISTRATION_SUCCESS;
     }
 
     @GetMapping("/confirm")
     public String activeRegistration(@RequestParam("token") String token) {
         Token foundToken = tokenService.getByToken(token);
+
         if (foundToken == null || foundToken.isExpired()) {
-            return "redirect:/registration/confirm/bad";
+            return REDIRECT_REGISTRATION_CONFIRM_BAD;
         }
 
         registrationService.activateUser(foundToken.getUser());
 
-        return "redirect:/login";
+        return REDIRECT_LOGIN;
     }
 
     @GetMapping("/confirm/bad")
     public String badToken() {
-        return "register/badToken";
+        return CONFIRM_BAD;
     }
 }

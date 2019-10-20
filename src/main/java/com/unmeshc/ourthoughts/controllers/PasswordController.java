@@ -32,6 +32,15 @@ import java.util.Arrays;
 @RequestMapping("/password")
 public class PasswordController {
 
+    public static final String PASSWORD_RESET_FORM = "register/passwordResetForm";
+    public static final String REDIRECT_PASSWORD_RESET_SUCCESS = "redirect:/password/reset/success";
+    public static final String PASSWORD_RESET_SUCCESS = "register/passwordResetSuccess";
+    public static final String REDIRECT_PASSWORD_RESET_CONFIRM_BAD = "redirect:/password/reset/confirm/bad";
+    public static final String REDIRECT_PASSWORD_RESET_UPDATE_FORM = "redirect:/password/reset/update/form";
+    public static final String REGISTER_BAD_TOKEN = "register/badToken";
+    public static final String PASSWORD_UPDATE_FORM = "register/passwordUpdateForm";
+    public static final String REDIRECT_LOGIN = "redirect:/login";
+
     private final PasswordService passwordService;
     private final UserService userService;
     private final TokenService tokenService;
@@ -46,7 +55,7 @@ public class PasswordController {
 
     @GetMapping("/reset/form")
     public String showPasswordResetForm() {
-        return "register/passwordResetForm";
+        return PASSWORD_RESET_FORM;
     }
 
     @GetMapping("/reset/send")
@@ -60,37 +69,37 @@ public class PasswordController {
 
         passwordService.verifyResetPassword(user, request);
 
-        return "redirect:/password/reset/success";
+        return REDIRECT_PASSWORD_RESET_SUCCESS;
     }
 
     @GetMapping("/reset/success")
     public String passwordResetSuccess() {
-        return "register/passwordResetSuccess";
+        return PASSWORD_RESET_SUCCESS;
     }
 
     @GetMapping("/reset/confirm")
     public String acceptPasswordReset(@RequestParam("token") String token) {
         Token foundToken = tokenService.getByToken(token);
         if (foundToken == null || foundToken.isExpired()) {
-            return "redirect:/password/reset/confirm/bad";
+            return REDIRECT_PASSWORD_RESET_CONFIRM_BAD;
         }
 
         Authentication auth = new UsernamePasswordAuthenticationToken(foundToken.getUser(), null,
                 Arrays.asList(new SimpleGrantedAuthority("CHANGE_PASSWORD_PRIVILEGE")));
         SecurityContextHolder.getContext().setAuthentication(auth);
 
-        return "redirect:/password/reset/update/form";
+        return REDIRECT_PASSWORD_RESET_UPDATE_FORM;
     }
 
     @GetMapping("/reset/confirm/bad")
     public String badToken() {
-        return "register/badToken";
+        return REGISTER_BAD_TOKEN;
     }
 
     @GetMapping("/reset/update/form")
     public String showPasswordUpdateForm(Model model) {
         model.addAttribute("passwordCommand", PasswordCommand.builder().build());
-        return "register/passwordUpdateForm";
+        return PASSWORD_UPDATE_FORM;
     }
 
     @PostMapping("/reset/update")
@@ -98,12 +107,12 @@ public class PasswordController {
                                 BindingResult result) {
 
         if (result.hasErrors()) {
-            return "register/passwordUpdateForm";
+            return PASSWORD_UPDATE_FORM;
         }
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         passwordService.updatePassword(user, passwordCommand);
 
-        return "redirect:/login";
+        return REDIRECT_LOGIN;
     }
 }
