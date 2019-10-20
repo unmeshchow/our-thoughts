@@ -1,9 +1,12 @@
 package com.unmeshc.ourthoughts.controllers;
 
 import com.unmeshc.ourthoughts.exceptions.EmailNotSentException;
+import com.unmeshc.ourthoughts.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -20,6 +23,19 @@ public class ControllerExceptionHandler {
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("error/emailException");
+        modelAndView.addObject("exception", exc);
+
+        return modelAndView;
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NotFoundException.class)
+    public ModelAndView handleNotFoundException(Exception exc) {
+        log.error("Handling not found sent exception");
+        log.error(exc.getMessage());
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("error/notFoundException");
         modelAndView.addObject("exception", exc);
 
         return modelAndView;
