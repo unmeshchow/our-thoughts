@@ -82,7 +82,7 @@ public class UserController {
             IOUtils.copy(inputStream, response.getOutputStream());
         } catch (Exception exc) {
             log.error("Error occurred during copying input stream into output stream");
-            throw new RuntimeException();
+            throw new RuntimeException("Error occurred in retrieving image, try again.");
         }
     }
 }

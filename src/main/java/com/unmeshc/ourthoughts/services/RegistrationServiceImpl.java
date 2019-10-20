@@ -49,9 +49,10 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Transactional
     public User saveAndVerifyUser(UserCommand userCommand, HttpServletRequest request) {
         Role role = roleRepository.findByName("USER").orElse(null);
+        role = null;
         if (role == null) {
             log.error("User role not found");
-            throw new RuntimeException();
+            throw new RuntimeException("User role not found, try again.");
         }
         Set<Role> roles = new HashSet<>();
         roles.add(role);

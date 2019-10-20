@@ -23,7 +23,7 @@ public class ImageServiceImpl implements ImageService {
             return bytes;
         } catch (Exception exc) {
             log.error("Error occurred during converting image into Byte[]", exc);
-            throw new RuntimeException();
+            throw new RuntimeException("Error occurred in converting image, try again.");
         }
     }
 
@@ -40,7 +40,7 @@ public class ImageServiceImpl implements ImageService {
             return theBytes;
         } catch (Exception exc) {
             log.error("Error occurred during converting into byte[]", exc);
-            throw new RuntimeException();
+            throw new RuntimeException("Error occurred in converting to byte, try again.");
         }
     }
 }

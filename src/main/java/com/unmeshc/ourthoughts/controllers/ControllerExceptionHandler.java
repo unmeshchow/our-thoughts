@@ -40,4 +40,17 @@ public class ControllerExceptionHandler {
 
         return modelAndView;
     }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Exception.class)
+    public ModelAndView handleInternalServerError(Exception exc) {
+        log.error("Error occurred");
+        log.error(exc.getMessage());
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("error/internalServerError");
+        modelAndView.addObject("exception", exc);
+
+        return modelAndView;
+    }
 }
