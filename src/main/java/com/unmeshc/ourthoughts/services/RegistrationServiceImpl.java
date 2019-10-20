@@ -8,6 +8,7 @@ import com.unmeshc.ourthoughts.repositories.RoleRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashSet;
@@ -45,6 +46,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     @Override
+    @Transactional
     public User saveAndVerifyUser(UserCommand userCommand, HttpServletRequest request) {
         Role role = roleRepository.findByName("USER").orElse(null);
         if (role == null) {

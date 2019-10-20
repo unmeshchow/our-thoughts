@@ -85,9 +85,10 @@ public class EmailServiceImpl implements EmailService {
             helper.setText(body, true);
 
             mailSender.send(message);
+
         } catch (Exception exc) {
             log.error("Error in sending activation email", exc);
-            throw new EmailNotSentException();
+            throw new EmailNotSentException("Email is not sent, try again.");
         }
     }
 
