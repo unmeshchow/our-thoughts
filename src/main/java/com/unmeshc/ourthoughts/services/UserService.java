@@ -9,8 +9,6 @@ public interface UserService {
 
     boolean isEmailExists(String email);
 
-    void createToken(User user, String token);
-
     User saveOrUpdateUser(User user);
 
     User getByEmail(String email);

@@ -32,14 +32,14 @@ import java.util.Arrays;
 @RequestMapping("/password")
 public class PasswordController {
 
-    public static final String PASSWORD_RESET_FORM = "register/passwordResetForm";
-    public static final String REDIRECT_PASSWORD_RESET_SUCCESS = "redirect:/password/reset/success";
-    public static final String PASSWORD_RESET_SUCCESS = "register/passwordResetSuccess";
-    public static final String REDIRECT_PASSWORD_RESET_CONFIRM_BAD = "redirect:/password/reset/confirm/bad";
-    public static final String REDIRECT_PASSWORD_RESET_UPDATE_FORM = "redirect:/password/reset/update/form";
-    public static final String REGISTER_BAD_TOKEN = "register/badToken";
-    public static final String PASSWORD_UPDATE_FORM = "register/passwordUpdateForm";
-    public static final String REDIRECT_LOGIN = "redirect:/login";
+    static final String PASSWORD_RESET_FORM = "register/passwordResetForm";
+    static final String REDIRECT_PASSWORD_RESET_SUCCESS = "redirect:/password/reset/success";
+    static final String PASSWORD_RESET_SUCCESS = "register/passwordResetSuccess";
+    static final String REDIRECT_PASSWORD_RESET_CONFIRM_BAD = "redirect:/password/reset/confirm/bad";
+    static final String REDIRECT_PASSWORD_RESET_UPDATE_FORM = "redirect:/password/reset/update/form";
+    static final String BAD_TOKEN = "register/badToken";
+    static final String PASSWORD_UPDATE_FORM = "register/passwordUpdateForm";
+    static final String REDIRECT_LOGIN = "redirect:/login";
 
     private final PasswordService passwordService;
     private final UserService userService;
@@ -93,7 +93,7 @@ public class PasswordController {
 
     @GetMapping("/reset/confirm/bad")
     public String badToken() {
-        return REGISTER_BAD_TOKEN;
+        return BAD_TOKEN;
     }
 
     @GetMapping("/reset/update/form")

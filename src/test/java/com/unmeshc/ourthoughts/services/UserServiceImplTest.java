@@ -1,18 +1,24 @@
 package com.unmeshc.ourthoughts.services;
 
+import com.unmeshc.ourthoughts.domain.User;
+import com.unmeshc.ourthoughts.repositories.UserRepository;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 public class UserServiceImplTest {
-/*
+
     @Mock
     private UserRepository userRepository;
-
-    @Mock
-    private RoleRepository roleRepository;
-
-    @Mock
-    private UserCommandToUser userCommandToUser;
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private UserServiceImpl service;
@@ -35,30 +41,32 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void saveUser() {
-        Role role = Role.builder().name("USER").build();
-        Set<Role> roles = new HashSet<>();
-        roles.add(role);
-        User user = User.builder().password("unmesh").roles(roles).active(true).build();
-        when(userCommandToUser.convert(any(UserCommand.class))).thenReturn(
-                User.builder().password("unmesh").build());
-        when(passwordEncoder.encode(anyString())).thenReturn("unmesh");
-        when(roleRepository.findByName(anyString())).thenReturn(Optional.of(role));
-        when(userRepository.save(user)).thenReturn(user);
+    public void saveOrUpdateUser() {
+        User user = User.builder().email("unmesh@gmail.com").build();
+        when(userRepository.save(user)).thenReturn(User.builder().id(1L).build());
 
-        User savedUser = service.saveUser(UserCommand.builder().build());
-
-        assertThat(savedUser).isNotNull();
-        verify(userCommandToUser).convert(any(UserCommand.class));
-        verify(passwordEncoder).encode(anyString());
-        verify(roleRepository).findByName(anyString());
+        service.saveOrUpdateUser(user);
         verify(userRepository).save(user);
     }
 
-    @Test(expected = RuntimeException.class)
-    public void saveUserRoleNotFound() {
-        when(roleRepository.findByName(anyString())).thenReturn(Optional.empty());
+    @Test
+    public void getByEmailNull() {
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
 
-        service.saveUser(UserCommand.builder().build());
-    }*/
+        User user = service.getByEmail("unmesh@gamil.com");
+
+        assertThat(user).isNull();
+        verify(userRepository).findByEmail("unmesh@gamil.com");
+    }
+
+    @Test
+    public void getByEmail() {
+        when(userRepository.findByEmail(anyString())).thenReturn(
+                Optional.of(User.builder().id(1L).email("unmesh@gamil.com").build()));
+
+        User user = service.getByEmail("unmesh@gamil.com");
+
+        assertThat(user).isNotNull();
+        verify(userRepository).findByEmail("unmesh@gamil.com");
+    }
 }

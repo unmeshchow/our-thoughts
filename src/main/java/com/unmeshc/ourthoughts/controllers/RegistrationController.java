@@ -23,12 +23,12 @@ import javax.validation.Valid;
 @RequestMapping("/registration")
 public class RegistrationController {
 
-    public static final String REGISTRATION_FORM = "register/registrationForm";
-    public static final String REDIRECT_REGISTRATION_SUCCESS = "redirect:/registration/success";
-    public static final String REGISTRATION_SUCCESS = "register/registrationSuccess";
-    public static final String REDIRECT_LOGIN = "redirect:/login";
-    public static final String REDIRECT_REGISTRATION_CONFIRM_BAD = "redirect:/registration/confirm/bad";
-    public static final String CONFIRM_BAD = "register/badToken";
+    static final String REGISTRATION_FORM = "register/registrationForm";
+    static final String REDIRECT_REGISTRATION_SUCCESS = "redirect:/registration/success";
+    static final String REGISTRATION_SUCCESS = "register/registrationSuccess";
+    static final String REDIRECT_LOGIN = "redirect:/login";
+    static final String REDIRECT_REGISTRATION_CONFIRM_BAD = "redirect:/registration/confirm/bad";
+    static final String CONFIRM_BAD = "register/badToken";
 
     private final UserService userService;
     private final RegistrationService registrationService;

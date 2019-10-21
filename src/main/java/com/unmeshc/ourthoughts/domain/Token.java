@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Created by uc on 10/3/2019
@@ -35,5 +36,18 @@ public class Token {
 
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(expiryDate);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Token token1 = (Token) o;
+        return Objects.equals(token, token1.token);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(token);
     }
 }

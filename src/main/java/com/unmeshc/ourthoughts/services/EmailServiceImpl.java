@@ -8,7 +8,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.Context;
 
 import javax.mail.internet.MimeMessage;
@@ -23,12 +23,12 @@ import java.util.UUID;
 public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender mailSender;
-    private final TemplateEngine templateEngine;
+    private final ITemplateEngine templateEngine;
     private final MessageSource messageSource;
     private final TokenService tokenService;
 
     public EmailServiceImpl(JavaMailSender mailSender,
-                            TemplateEngine templateEngine,
+                            ITemplateEngine templateEngine,
                             MessageSource messageSource,
                             TokenService tokenService) {
         this.mailSender = mailSender;
@@ -75,7 +75,7 @@ public class EmailServiceImpl implements EmailService {
         sendLink(user.getEmail(), subject, body);
     }
 
-    private void sendLink(String to, String subject, String body) {
+    void sendLink(String to, String subject, String body) {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
 
@@ -92,19 +92,19 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
-    private String getRandomToken() {
+    String getRandomToken() {
         return UUID.randomUUID().toString();
     }
 
-    private void createUserToken(User user, String token) {
+    void createUserToken(User user, String token) {
         tokenService.createTokenForUser(user, token);
     }
 
-    private String getFullName(User user) {
+    String getFullName(User user) {
         return user.getFirstName() + " " + user.getLastName();
     }
 
-    private String getServerNamePortContextPath(HttpServletRequest request) {
+    String getServerNamePortContextPath(HttpServletRequest request) {
         String serverName = request.getServerName();
         int port = request.getServerPort();
         String contextPath = request.getContextPath();
@@ -112,7 +112,7 @@ public class EmailServiceImpl implements EmailService {
         return "http://" + serverName + ":" + port + contextPath;
     }
 
-    private Context getContext(String fullName, String url) {
+    Context getContext(String fullName, String url) {
         Context context = new Context(LocaleContextHolder.getLocale());
         context.setVariable("name", fullName);
         context.setVariable("url", url);

@@ -25,6 +25,10 @@ import java.io.InputStream;
 @RequestMapping("/user")
 public class UserController {
 
+    static final String MY_PROFILE = "user/myProfile";
+    static final String UPLOAD_IMAGE = "user/uploadImage";
+    static final String REDIRECT_USER_PROFILE = "redirect:/user/profile";
+
     private final UserService userService;
     private final UserToUserCommand userToUserCommand;
     private final ImageService imageService;
@@ -52,12 +56,12 @@ public class UserController {
         UserCommand userCommand = userToUserCommand.convert(user);
         model.addAttribute("userCommand", userCommand);
 
-        return "user/myProfile";
+        return MY_PROFILE;
     }
 
     @GetMapping("/change/image/form")
     public String showChangeImageForm() {
-        return "user/uploadImage";
+        return UPLOAD_IMAGE;
     }
 
     @PostMapping("/change/image")
@@ -68,7 +72,7 @@ public class UserController {
         user.setImage(bytes);
         userService.saveOrUpdateUser(user);
 
-        return "redirect:/user/profile";
+        return REDIRECT_USER_PROFILE;
     }
 
     @GetMapping("/get/image")
