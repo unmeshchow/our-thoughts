@@ -59,17 +59,18 @@
                                     </div>
 
                                     <!-- Image -->
-                                    <div class="custom-file">
+                                    <div class="md-form custom-file">
                                         <input type="file"
-                                               class="custom-file-input"
+                                               accept="image/jpeg"
+                                               class="form-control custom-file-input"
                                                id="postImage"
-                                               aria-describedby="inputGroupFileAddon01"
-                                               th:field="*{image}">
+                                               th:field="*{photo}">
                                         <label class="custom-file-label"
                                                for="postImage"
+                                               style="color: #999"
                                                th:text="#{create.post.page.form.image}">
                                             image</label>
-                                        <p th:each="error : ${#fields.errors('image')}"
+                                        <p th:each="error : ${#fields.errors('photo')}"
                                            th:text="${error}" class="text-danger">error</p>
                                     </div>
 

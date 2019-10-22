@@ -24,11 +24,11 @@ public class Post {
 
     private String title;
 
-    @Column(length = 100000)
+    @Column(length = 300000)
     private String body;
 
     @Lob
-    private Byte[] image;
+    private Byte[] photo;
     private String caption;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -13,6 +13,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class PostCommand {
 
     private Long id;
@@ -23,7 +24,7 @@ public class PostCommand {
     @NotBlank
     private String body;
 
-    private MultipartFile image;
+    private MultipartFile photo;
 
     @NotBlank
     private String caption;

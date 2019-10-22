@@ -6,6 +6,7 @@ import com.unmeshc.ourthoughts.configurations.SecurityUtils;
 import com.unmeshc.ourthoughts.converters.UserToUserCommand;
 import com.unmeshc.ourthoughts.domain.User;
 import com.unmeshc.ourthoughts.services.ImageService;
+import com.unmeshc.ourthoughts.services.PostService;
 import com.unmeshc.ourthoughts.services.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
@@ -38,15 +39,18 @@ public class UserController {
     private final UserToUserCommand userToUserCommand;
     private final ImageService imageService;
     private final SecurityUtils securityUtils;
+    private final PostService postService;
 
     public UserController(UserService userService,
                           UserToUserCommand userToUserCommand,
                           ImageService imageService,
-                          SecurityUtils securityUtils) {
+                          SecurityUtils securityUtils,
+                          PostService postService) {
         this.imageService = imageService;
         this.securityUtils = securityUtils;
         this.userService = userService;
         this.userToUserCommand = userToUserCommand;
+        this.postService = postService;
     }
 
     @InitBinder
@@ -68,11 +72,24 @@ public class UserController {
     }
 
     @PostMapping("/create/post")
-    public String processCreatePost(@Valid PostCommand postCommand, BindingResult result) {
+    public String processCreatePost(@Valid PostCommand postCommand,
+                                    BindingResult result,
+                                    @ModelAttribute("user") User user) {
         if (result.hasErrors()) {
             return CREATE_POST_FORM;
         }
-        return null;
+
+        if (postCommand.getPhoto() == null ||
+                postCommand.getPhoto().getSize() > 200000 ||
+                !postCommand.getPhoto().getContentType().equals("image/jpeg")) {
+
+            result.rejectValue("photo", "NotCorrect");
+            return CREATE_POST_FORM;
+        }
+
+        postService.savePostForUser(user, postCommand);
+
+        return "redirect:/index.html";
     }
 
     @GetMapping("/profile")
@@ -93,7 +110,7 @@ public class UserController {
                               @RequestParam("myImage") MultipartFile imageFile,
                               Model model) {
 
-        if (isErrorInImage(imageFile)) {
+        if (isErrorInUserImage(imageFile)) {
             model.addAttribute("error", true);
             return UPLOAD_IMAGE;
         } else {
@@ -122,7 +139,7 @@ public class UserController {
         }
     }
 
-    boolean isErrorInImage(MultipartFile myImage) {
+    boolean isErrorInUserImage(MultipartFile myImage) {
         return (myImage == null) ||
                (myImage.getSize() > 100000) ||
                 (!myImage.getContentType().equals("image/jpeg"));
