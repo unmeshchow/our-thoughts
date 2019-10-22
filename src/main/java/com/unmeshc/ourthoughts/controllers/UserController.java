@@ -66,7 +66,15 @@ public class UserController {
 
     @PostMapping("/change/image")
     public String changeImage(@ModelAttribute("user") User user,
-                              @RequestParam("myImage") MultipartFile imageFile) {
+                              @RequestParam("myImage") MultipartFile imageFile,
+                              Model model) {
+
+        if (isErrorInImage(imageFile)) {
+            model.addAttribute("error", true);
+            return UPLOAD_IMAGE;
+        } else {
+            model.addAttribute("error", false);
+        }
 
         Byte[] bytes = imageService.convertIntoByteArray(imageFile);
         user.setImage(bytes);
@@ -88,5 +96,11 @@ public class UserController {
             log.error("Error occurred during copying input stream into output stream");
             throw new RuntimeException("Error occurred in retrieving image, try again.");
         }
+    }
+
+    boolean isErrorInImage(MultipartFile myImage) {
+        return (myImage == null) ||
+               (myImage.getSize() > 100000) ||
+                (!myImage.getContentType().equals("image/jpeg"));
     }
 }

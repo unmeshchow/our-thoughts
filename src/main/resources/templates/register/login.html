@@ -31,7 +31,7 @@
                                       th:action="@{/login}" method="post">
 
                                     <!-- Error -->
-                                    <div th:if="${param.error }" class="mt-4 mb-5">
+                                    <div th:if="${param.error }" class="mt-3 mb-4">
                                         <span class="alert alert-danger"
                                               th:text="#{login.page.invalid.login}"></span>
                                     </div>

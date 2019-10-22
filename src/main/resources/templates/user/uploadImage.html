@@ -19,6 +19,12 @@
                         <form method="post" enctype="multipart/form-data"
                               th:action="@{/user/change/image}">
 
+                            <!-- Error -->
+                            <div th:if="${error}" class="mt-3 mb-4 text-center">
+                                <span class="alert alert-danger"
+                                      th:text="#{user.image.upload.error.message}"></span>
+                            </div>
+
                             <div class="input-group">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text"
@@ -27,11 +33,11 @@
                                 <div class="custom-file">
                                     <input type="file"
                                            class="custom-file-input"
-                                           id="inputGroupFile01"
+                                           id="myImage"
                                            aria-describedby="inputGroupFileAddon01"
                                            name="myImage">
                                     <label class="custom-file-label"
-                                           for="inputGroupFile01"
+                                           for="myImage"
                                            th:text="#{choose.link.label}">choose file</label>
                                 </div>
                             </div>
@@ -47,5 +53,6 @@
 
     <footer th:replace="fragments/footerFragment :: footer"></footer>
     <div th:replace="fragments/scriptsFragment :: scripts"></div>
+
 </body>
 </html>
