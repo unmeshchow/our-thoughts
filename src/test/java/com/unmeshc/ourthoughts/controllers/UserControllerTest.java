@@ -49,6 +49,14 @@ public class UserControllerTest {
     }
 
     @Test
+    public void showCreatePostForm() throws Exception {
+        mockMvc.perform(get("/user/create/post/form"))
+               .andExpect(status().isOk())
+               .andExpect(model().attributeExists("postCommand"))
+               .andExpect(view().name(UserController.CREATE_POST_FORM));
+    }
+
+    @Test
     public void showProfile() throws Exception {
         User user = User.builder().id(1L).email("unmesh@gmail.com").build();
         when(userToUserCommand.convert(any())).thenReturn(UserCommand.builder().build());

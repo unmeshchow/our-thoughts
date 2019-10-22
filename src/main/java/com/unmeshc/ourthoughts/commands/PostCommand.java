@@ -23,7 +23,6 @@ public class PostCommand {
     @NotBlank
     private String body;
 
-    @NotBlank
     private MultipartFile image;
 
     @NotBlank

@@ -1,5 +1,6 @@
 package com.unmeshc.ourthoughts.controllers;
 
+import com.unmeshc.ourthoughts.commands.PostCommand;
 import com.unmeshc.ourthoughts.commands.UserCommand;
 import com.unmeshc.ourthoughts.configurations.SecurityUtils;
 import com.unmeshc.ourthoughts.converters.UserToUserCommand;
@@ -10,10 +11,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
@@ -28,6 +32,7 @@ public class UserController {
     static final String MY_PROFILE = "user/myProfile";
     static final String UPLOAD_IMAGE = "user/uploadImage";
     static final String REDIRECT_USER_PROFILE = "redirect:/user/profile";
+    static final String CREATE_POST_FORM = "user/createPostForm";
 
     private final UserService userService;
     private final UserToUserCommand userToUserCommand;
@@ -44,11 +49,30 @@ public class UserController {
         this.userToUserCommand = userToUserCommand;
     }
 
+    @InitBinder
+    public void dataBinder(WebDataBinder webDataBinder) {
+        webDataBinder.setDisallowedFields("id");
+    }
+
     @ModelAttribute("user")
     public User loggedInUser() {
         String email = securityUtils.getEmailFromSecurityContext();
 
         return userService.getByEmail(email);
+    }
+
+    @GetMapping("/create/post/form")
+    public String showCreatePostForm(Model model) {
+        model.addAttribute("postCommand", PostCommand.builder().build());
+        return CREATE_POST_FORM;
+    }
+
+    @PostMapping("/create/post")
+    public String processCreatePost(@Valid PostCommand postCommand, BindingResult result) {
+        if (result.hasErrors()) {
+            return CREATE_POST_FORM;
+        }
+        return null;
     }
 
     @GetMapping("/profile")

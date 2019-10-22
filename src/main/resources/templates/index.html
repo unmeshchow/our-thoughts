@@ -24,7 +24,7 @@
                 </span>
                 <span sec:authorize="isAuthenticated() and !hasAuthority('CHANGE_PASSWORD_PRIVILEGE')">
                     <span th:text="#{index.page.new.post.message}">add your thoughts</span>
-                    <a th:href="@{/create/post}"
+                    <a th:href="@{/user/create/post/form}"
                        th:text="#{create.post.link.label}"
                        style="font-size: large; font-weight: bold;">post</a>
                 </span>

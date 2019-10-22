@@ -24,7 +24,7 @@ public class Post {
 
     private String title;
 
-    @Column(columnDefinition="LONGTEXT")
+    @Column(length = 100000)
     private String body;
 
     @Lob

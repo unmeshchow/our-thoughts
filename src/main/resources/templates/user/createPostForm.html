@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/headFragment :: head(#{create.post.page.title})"></head>
+<body>
+    <header th:replace="fragments/headerFragment :: header"></header>
+
+    <div class="container">
+        <main class="mb-3 main-top-margin">
+            <section id="heading" class="mb-3">
+                <h1 th:replace="fragments/headingFragment :: heading(#{create.post.page.heading})"></h1>
+            </section>
+
+            <hr>
+
+            <section id="thought" class="mb-3">
+                <div class="row d-flex justify-content-center">
+                    <div class="col-lg-8 col-md-10 col-12">
+                        <div class="card">
+
+                            <h5 class="card-header indigo white-text text-center py-4">
+                                <strong th:text="#{create.post.page.form.heading}">
+                                    register</strong>
+                            </h5>
+
+                            <!--Card content-->
+                            <div class="card-body px-lg-5 pt-0">
+
+                                <!-- Form -->
+                                <form class="text-center" style="color: #757575;"
+                                      method="post"
+                                      enctype="multipart/form-data"
+                                      th:object="${postCommand}"
+                                      th:action="@{/user/create/post}">
+
+                                    <!-- Title -->
+                                    <div class="md-form">
+                                        <input type="text"
+                                               id="title"
+                                               class="form-control"
+                                               th:field="*{title}">
+                                        <label for="title"
+                                               th:text="#{create.post.page.form.title}">
+                                            first name</label>
+                                        <p th:each="error : ${#fields.errors('title')}"
+                                           th:text="${error}" class="text-danger">error</p>
+                                    </div>
+
+                                    <!--Message-->
+                                    <div class="md-form">
+                                        <textarea id="body"
+                                                  class="form-control md-textarea"
+                                                  rows="10"
+                                                  th:field="*{body}"></textarea>
+                                        <label for="body"
+                                               th:text="#{create.post.page.form.body}">
+                                            Message</label>
+                                        <p th:each="error : ${#fields.errors('body')}"
+                                           th:text="${error}" class="text-danger">error</p>
+                                    </div>
+
+                                    <!-- Image -->
+                                    <div class="custom-file">
+                                        <input type="file"
+                                               class="custom-file-input"
+                                               id="postImage"
+                                               aria-describedby="inputGroupFileAddon01"
+                                               th:field="*{image}">
+                                        <label class="custom-file-label"
+                                               for="postImage"
+                                               th:text="#{create.post.page.form.image}">
+                                            image</label>
+                                        <p th:each="error : ${#fields.errors('image')}"
+                                           th:text="${error}" class="text-danger">error</p>
+                                    </div>
+
+                                    <!-- Caption -->
+                                    <div class="md-form">
+                                        <textarea id="caption"
+                                                  class="form-control md-textarea"
+                                                  rows="1"
+                                                  th:field="*{caption}"></textarea>
+                                        <label for="body"
+                                               th:text="#{create.post.page.form.caption}">
+                                            caption</label>
+                                        <p th:each="error : ${#fields.errors('caption')}"
+                                           th:text="${error}" class="text-danger">error</p>
+                                    </div>
+
+                                    <!-- Sign up button -->
+                                    <button class="btn btn-outline-indigo btn-block my-4 waves-effect z-depth-0"
+                                            type="submit"
+                                            th:text="#{submit.link.label}">sign in
+                                    </button>
+
+                                </form>
+                                <!-- Form -->
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer th:replace="fragments/footerFragment :: footer"></footer>
+    <div th:replace="fragments/scriptsFragment :: scripts"></div>
+</body>
+</html>
