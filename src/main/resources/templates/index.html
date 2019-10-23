@@ -33,8 +33,61 @@
             <section id="search" class="mb-3">
                 Search
             </section>
-            <section id="result">
-                Search Result
+
+            <section id="result" class="mb-3">
+                <div class="row">
+                    <div class="col-lg-3 col-md-4 col-sm-6"
+                         th:each="post : ${posts}">
+
+                        <!-- Card -->
+                        <div class="card mb-4">
+
+                            <!-- Card image -->
+                            <div class="view overlay">
+                                <img class="card-img-top"
+                                     th:src="@{/post/{postId}/photo(postId=${post.id})}"
+                                     width="300"
+                                     height="200">
+                                <a href="#!">
+                                    <div class="mask rgba-white-slight"></div>
+                                </a>
+                            </div>
+
+                            <!-- Card content -->
+                            <div class="card-body">
+                                <!-- Title -->
+                                <h4 class="card-title"
+                                    th:text="${post.title}">Card title</h4>
+
+                                <!-- Text -->
+                                <p class="card-text"
+                                   th:text="${post.body}">
+                                    Some quick example
+                                </p>
+
+                                <!-- Button -->
+                                <a href="#" class="btn btn-indigo btn-sm"
+                                   th:text="#{view.link.label}">Button</a>
+                            </div>
+
+                        </div>
+                        <!-- Card -->
+                    </div>
+                </div>
+            </section>
+
+            <section id="pagination">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination pg-blue">
+                        <li class="page-item"
+                            th:each="i : ${pageNumbers}"
+                            th:classappend="${currentPage  == i} ? active : ''">
+                            <a th:text="${i}"
+                               class="page-link"
+                               th:href="@{/post/search(page=${i})}">1</a>
+                        </li>
+                    </ul>
+                </nav>
             </section>
         </main>
     </div>

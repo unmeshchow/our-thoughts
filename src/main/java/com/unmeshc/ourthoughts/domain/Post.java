@@ -24,7 +24,7 @@ public class Post {
 
     private String title;
 
-    @Column(length = 300000)
+    @Column(length = 500000)
     private String body;
 
     @Lob

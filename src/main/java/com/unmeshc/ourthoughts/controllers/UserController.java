@@ -9,7 +9,6 @@ import com.unmeshc.ourthoughts.services.ImageService;
 import com.unmeshc.ourthoughts.services.PostService;
 import com.unmeshc.ourthoughts.services.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,8 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 
 /**
  * Created by uc on 10/19/2019
@@ -40,17 +37,20 @@ public class UserController {
     private final ImageService imageService;
     private final SecurityUtils securityUtils;
     private final PostService postService;
+    private final ControllerUtils controllerUtils;
 
     public UserController(UserService userService,
                           UserToUserCommand userToUserCommand,
                           ImageService imageService,
                           SecurityUtils securityUtils,
-                          PostService postService) {
+                          PostService postService,
+                          ControllerUtils controllerUtils) {
         this.imageService = imageService;
         this.securityUtils = securityUtils;
         this.userService = userService;
         this.userToUserCommand = userToUserCommand;
         this.postService = postService;
+        this.controllerUtils = controllerUtils;
     }
 
     @InitBinder
@@ -79,10 +79,7 @@ public class UserController {
             return CREATE_POST_FORM;
         }
 
-        if (postCommand.getPhoto() == null ||
-                postCommand.getPhoto().getSize() > 200000 ||
-                !postCommand.getPhoto().getContentType().equals("image/jpeg")) {
-
+        if (controllerUtils.isNotCorrectPostPhoto(postCommand.getPhoto())) {
             result.rejectValue("photo", "NotCorrect");
             return CREATE_POST_FORM;
         }
@@ -110,7 +107,7 @@ public class UserController {
                               @RequestParam("myImage") MultipartFile imageFile,
                               Model model) {
 
-        if (isErrorInUserImage(imageFile)) {
+        if (controllerUtils.isNotCorrectUserImage(imageFile)) {
             model.addAttribute("error", true);
             return UPLOAD_IMAGE;
         } else {
@@ -127,21 +124,6 @@ public class UserController {
     @GetMapping("/get/image")
     public void obtainImage(@ModelAttribute("user") User user, HttpServletResponse response) {
         byte[] bytes = imageService.convertIntoByteArray(user.getImage());
-
-        response.setContentType("image/jpeg");
-        InputStream inputStream = new ByteArrayInputStream((bytes));
-
-        try {
-            IOUtils.copy(inputStream, response.getOutputStream());
-        } catch (Exception exc) {
-            log.error("Error occurred during copying input stream into output stream");
-            throw new RuntimeException("Error occurred in retrieving image, try again.");
-        }
-    }
-
-    boolean isErrorInUserImage(MultipartFile myImage) {
-        return (myImage == null) ||
-               (myImage.getSize() > 100000) ||
-                (!myImage.getContentType().equals("image/jpeg"));
+        controllerUtils.copyBytesToResponse(response, bytes);
     }
 }

@@ -92,6 +92,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             "/img/**",
             "/index.html",
             "/registration/**",
-            "/password/**"
+            "/password/**",
+            "/post/**"
     };
 }
