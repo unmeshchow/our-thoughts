@@ -30,11 +30,43 @@
                 </span>
             </section>
 
-            <section id="search" class="mb-3">
-                Search
+            <section id="searchByTitle" class="mb-5 mt-4">
+                <div class="card white" width="100%">
+                    <div class="card-body p-0">
+                        <div class="row d-flex justify-content-center">
+                            <div class="col-lg-6 col-md-8 col-12">
+                                <form th:action="@{/post/search}" method="get">
+
+                                    <div class="md-form input-group mb-3">
+                                        <input type="text"
+                                               id="search"
+                                               class="form-control"
+                                               name="search">
+                                        <label for="search"
+                                               th:text="#{index.page.search.label}">email
+                                        </label>
+                                        <div class="input-group-append">
+                                            <button class="btn btn-lg btn-indigo m-0 px-3"
+                                                    type="submit"
+                                                    th:text="#{submit.link.label}">send</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
 
-            <section id="result" class="mb-3">
+            <section id="noPosts"
+                     class="mb-3 text-center"
+                     th:if="${#sets.isEmpty(posts)}">
+                <span th:text="#{index.page.no.posts}"
+                      style="font-weight: bold">no posts</span>
+            </section>
+
+            <section id="result" class="mb-3"
+                     th:if="${!#sets.isEmpty(posts)}">
                 <div class="row">
                     <div class="col-lg-3 col-md-4 col-sm-6"
                          th:each="post : ${posts}">
@@ -76,7 +108,8 @@
                 </div>
             </section>
 
-            <section id="pagination">
+            <section id="pagination" class="mb-3"
+                     th:if="${!#sets.isEmpty(posts)}">
                 <nav aria-label="Page navigation example">
                     <ul class="pagination pg-blue">
                         <li class="page-item"

@@ -50,9 +50,14 @@ public class IndexController {
                          @RequestParam("search") Optional<String> search,
                          Model model) {
 
-        int currentPage = page.orElse(postPageTracker.getCurrentPage());
-        int pageSize = size.orElse(1);
         String searchValue = search.orElse(postPageTracker.getSearchValue());
+        if (!searchValue.equalsIgnoreCase(postPageTracker.getSearchValue())) {
+            postPageTracker.reset();
+        }
+
+        int currentPage = page.orElse(postPageTracker.getCurrentPage());
+        int pageSize = size.orElse(2);
+
         Pageable pageable = PageRequest.of((currentPage - 1), pageSize); // zero based
 
         Page<Post> postPage = postService.getPostsLikeTitle(searchValue, pageable);

@@ -51,4 +51,10 @@ public class PostPageTracker {
 
         return IntStream.rangeClosed(startPage, endPage).boxed().collect(Collectors.toSet());
     }
+
+    void reset() {
+        currentPage = 1;
+        startPage = 1;
+        endPage = 4;
+    }
 }

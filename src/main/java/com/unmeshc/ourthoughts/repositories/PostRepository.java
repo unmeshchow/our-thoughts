@@ -10,5 +10,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    Page<Post> findByTitleLike(String title, Pageable pageable);
+    Page<Post> findByTitleLikeIgnoreCase(String title, Pageable pageable);
+
 }
