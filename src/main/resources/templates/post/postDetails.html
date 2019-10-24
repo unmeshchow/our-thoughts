@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head th:replace="fragments/headFragment :: head(#{post.details.page.title})"></head>
 <body>
     <header th:replace="fragments/headerFragment :: header"></header>
@@ -13,38 +14,71 @@
             <hr>
 
             <section id="thought" class="mb-3">
-                <div class="text-center">
-                    <h3 th:text="${post.title}">title</h3>
+
+                <div class="text-center mb-3">
+                    <h2 th:text="${post.title}">title</h2>
                     <h5 th:text="#{post.details.page.written.by(${post.writerName})}">writer</h5>
                 </div>
 
-                <figure>
-                    <img class="card-img-top img-fluid"
+                <!-- Post Photo -->
+                <figure class="mb-5">
+                    <img class="img-fluid"
                          th:src="@{/everyone/post/{postId}/photo(postId=${post.id})}">
                     <figcaption th:text="${post.caption}">caption</figcaption>
                 </figure>
 
-                <div>
-                    <p th:text="${post.body}">body</p>
+                <!-- Post Body -->
+                <div class="mb-5">
+                    <p th:text="${post.body}"
+                       class="text-justify"
+                       style="font-size: 1.5rem; line-height: 1.75">body</p>
                 </div>
 
-                <div class="card">
+                <!-- Comments -->
+                <div class="card mb-3"
+                     th:each="comment : ${post.commentCommands}">
                     <div class="card-body">
-                        <form>
+                        <div class="row">
+                            <div class="col-lg-2 col-3 d-flex justify-content-center align-items-center">
+                                <img class="rounded-circle"
+                                     th:src="@{/everyone/user/{userId}/image(userId=${comment.userId})}"
+                                     width="75"
+                                     height="75">
+                            </div>
+                            <div class="col-lg-10 col-9">
+                                <p th:text="${comment.message}"
+                                   style="font-size: 1.25rem; line-height: 1.75">message</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Comment -->
+                <div class="card mt-5">
+                    <div class="card-body">
+                        <form th:action="@{/post/{postId}/comment/add(postId=${post.id})}"
+                              method="post">
                             <div class="md-form">
                                 <textarea id="comment"
                                           class="form-control md-textarea"
-                                          rows="2"></textarea>
+                                          rows="2"
+                                          name="comment"></textarea>
                                 <label for="comment"
                                        th:text="#{post.details.page.comment.label}">
                                     caption</label>
-                                <!--<p th:each="error : ${#fields.errors('caption')}"-->
-                                   <!--th:text="${error}" class="text-danger">error</p>-->
                             </div>
-                            <div class="input-group-append">
+                            <div sec:authorize="!isAuthenticated()">
+                                <span th:text="#{post.details.page.login.required.message}"
+                                      class="text-info"
+                                      style="font-weight: bold">login
+                                </span>
+                            </div>
+                            <div class="input-group-append" sec:authorize="isAuthenticated()">
                                 <button class="btn btn-lg btn-indigo m-0 px-3 btn-sm"
                                         type="submit"
-                                        th:text="#{post.details.page.comment.button.label}">add</button>
+                                        th:text="#{post.details.page.comment.button.label}">
+                                    add
+                                </button>
                             </div>
                         </form>
                     </div>

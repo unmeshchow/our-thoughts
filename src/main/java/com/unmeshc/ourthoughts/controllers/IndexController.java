@@ -1,9 +1,10 @@
 package com.unmeshc.ourthoughts.controllers;
 
 import com.unmeshc.ourthoughts.domain.Post;
-import com.unmeshc.ourthoughts.exceptions.NotFoundException;
+import com.unmeshc.ourthoughts.domain.User;
 import com.unmeshc.ourthoughts.services.ImageService;
 import com.unmeshc.ourthoughts.services.PostService;
+import com.unmeshc.ourthoughts.services.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,15 +29,18 @@ public class IndexController {
     private final ImageService imageService;
     private final ControllerUtils controllerUtils;
     private final PostPageTracker postPageTracker;
+    private final UserService userService;
 
     public IndexController(PostService postService,
                            ImageService imageService,
                            ControllerUtils controllerUtils,
-                           PostPageTracker postPageTracker) {
+                           PostPageTracker postPageTracker,
+                           UserService userService) {
         this.postService = postService;
         this.imageService = imageService;
         this.controllerUtils = controllerUtils;
         this.postPageTracker = postPageTracker;
+        this.userService = userService;
     }
 
     @GetMapping("/index.html")
@@ -79,13 +83,26 @@ public class IndexController {
     }
 
     @GetMapping("/everyone/post/{postId}/photo")
-    public void obtainImage(@PathVariable long postId, HttpServletResponse response) {
-        Post post = postService.getPostById(postId);
+    public void obtainPostPhoto(@PathVariable long postId, HttpServletResponse response) {
+        Post post = postService.getById(postId);
         if (post == null) {
-            throw new NotFoundException("Post not found with id - " + postId);
+            log.error("Post not found with id - " + postId + " during obtain post photo");
+            return;
         }
 
         byte[] bytes = imageService.convertIntoByteArray(post.getPhoto());
+        controllerUtils.copyBytesToResponse(response, bytes);
+    }
+
+    @GetMapping("/everyone/user/{userId}/image")
+    public void obtainUserImage(@PathVariable long userId, HttpServletResponse response) {
+        User user = userService.getById(userId);
+        if (user == null) {
+            log.error("User not found with id - " + userId + " during obtain user photo");
+            return;
+        }
+
+        byte[] bytes = imageService.convertIntoByteArray(user.getImage());
         controllerUtils.copyBytesToResponse(response, bytes);
     }
 }

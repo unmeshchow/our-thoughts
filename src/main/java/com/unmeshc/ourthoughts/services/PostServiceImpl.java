@@ -1,16 +1,22 @@
 package com.unmeshc.ourthoughts.services;
 
+import com.unmeshc.ourthoughts.commands.CommentCommand;
 import com.unmeshc.ourthoughts.commands.PostCommand;
+import com.unmeshc.ourthoughts.converters.CommentToCommentCommand;
 import com.unmeshc.ourthoughts.converters.PostCommandToPost;
 import com.unmeshc.ourthoughts.converters.PostToPostCommand;
 import com.unmeshc.ourthoughts.domain.Post;
 import com.unmeshc.ourthoughts.domain.User;
 import com.unmeshc.ourthoughts.exceptions.NotFoundException;
+import com.unmeshc.ourthoughts.repositories.CommentRepository;
 import com.unmeshc.ourthoughts.repositories.PostRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by uc on 10/22/2019
@@ -23,15 +29,21 @@ public class PostServiceImpl implements PostService {
     private final PostCommandToPost postCommandToPost;
     private final ImageService imageService;
     private final PostToPostCommand postToPostCommand;
+    private final CommentRepository commentRepository;
+    private final CommentToCommentCommand commentToCommentCommand;
 
     public PostServiceImpl(PostRepository postRepository,
                            PostCommandToPost postCommandToPost,
                            ImageService imageService,
-                           PostToPostCommand postToPostCommand) {
+                           PostToPostCommand postToPostCommand,
+                           CommentRepository commentRepository,
+                           CommentToCommentCommand commentToCommentCommand) {
         this.postRepository = postRepository;
         this.postCommandToPost = postCommandToPost;
         this.imageService = imageService;
         this.postToPostCommand = postToPostCommand;
+        this.commentRepository = commentRepository;
+        this.commentToCommentCommand = commentToCommentCommand;
     }
 
     @Override
@@ -44,7 +56,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post getPostById(long postId) {
+    public Post getById(long postId) {
         return postRepository.findById(postId).orElse(null);
     }
 
@@ -63,6 +75,16 @@ public class PostServiceImpl implements PostService {
         PostCommand postCommand = postToPostCommand.convert(foundPost);
         postCommand.setWriterName(foundPost.getUser().getFirstName() + " "
                 + foundPost.getUser().getLastName());
+
+        // get comments for this post
+        Set<CommentCommand> commentCommands = new HashSet<>();
+        commentRepository.findByPost(foundPost).forEach(comment -> {
+            CommentCommand commentCommand = commentToCommentCommand.convert(comment);
+            commentCommand.setUserId(comment.getUser().getId());
+            commentCommand.setPostId(comment.getPost().getId());
+            commentCommands.add(commentCommand);
+        });
+        postCommand.setCommentCommands(commentCommands);
 
         return postCommand;
     }

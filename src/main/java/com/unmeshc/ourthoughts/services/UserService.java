@@ -12,4 +12,6 @@ public interface UserService {
     User saveOrUpdateUser(User user);
 
     User getByEmail(String email);
+
+    User getById(long userId);
 }

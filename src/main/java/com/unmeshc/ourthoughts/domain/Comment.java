@@ -3,11 +3,10 @@ package com.unmeshc.ourthoughts.domain;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
- * Created by uc on 10/22/2019
+ * Created by uc on 10/24/2019
  */
 @Getter
 @Setter
@@ -16,39 +15,30 @@ import java.util.Objects;
 @Builder
 @ToString
 @Entity
-@Table(name = "posts")
-public class Post {
+@Table(name = "comments")
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String title;
+    @Column(length = 300000)
+    private String message;
 
-    @Column(length = 500000)
-    private String body;
+    @ManyToOne
+    @JoinColumn(name = "post_id")
+    private Post post;
 
-    @Lob
-    private Byte[] photo;
-    private String caption;
-
-    private LocalDateTime creationDateTime;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
-    @PrePersist
-    public void setCreationDateAndTime() {
-        creationDateTime = LocalDateTime.now();
-    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Post post = (Post) o;
-        return Objects.equals(id, post.id);
+        Comment comment = (Comment) o;
+        return Objects.equals(id, comment.id);
     }
 
     @Override

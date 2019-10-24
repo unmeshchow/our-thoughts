@@ -4,6 +4,7 @@ import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
+import java.util.Set;
 
 /**
  * Created by uc on 10/22/2019
@@ -30,4 +31,6 @@ public class PostCommand {
     private String caption;
 
     private String writerName;
+
+    private Set<CommentCommand> commentCommands;
 }

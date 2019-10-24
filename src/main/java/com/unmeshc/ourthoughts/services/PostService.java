@@ -13,7 +13,7 @@ public interface PostService {
 
     void savePostForUser(User user, PostCommand postCommand);
 
-    Post getPostById(long postId);
+    Post getById(long postId);
 
     Page<Post> getPostsLikeTitle(String searchValue, Pageable pageable);
 
