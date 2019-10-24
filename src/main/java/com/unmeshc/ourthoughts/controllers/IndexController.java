@@ -41,10 +41,10 @@ public class IndexController {
 
     @GetMapping("/index.html")
     public String index() {
-        return "redirect:/post/search";
+        return "redirect:/everyone/post/search";
     }
 
-    @GetMapping("/post/search")
+    @GetMapping("/everyone/post/search")
     public String search(@RequestParam("page") Optional<Integer> page,
                          @RequestParam("size") Optional<Integer> size,
                          @RequestParam("search") Optional<String> search,
@@ -71,11 +71,14 @@ public class IndexController {
         return "index";
     }
 
-    //"/post/{postId}/photo"
-    //"/post/{postId}/view"
-    //"/post/search"
+    @GetMapping("/everyone/post/{postId}/details")
+    public String viewPostDetails(@PathVariable long postId,
+                                  Model model) {
+        model.addAttribute("post", postService.getPostDetailsById(postId));
+        return "post/postDetails";
+    }
 
-    @GetMapping("/post/{postId}/photo")
+    @GetMapping("/everyone/post/{postId}/photo")
     public void obtainImage(@PathVariable long postId, HttpServletResponse response) {
         Post post = postService.getPostById(postId);
         if (post == null) {

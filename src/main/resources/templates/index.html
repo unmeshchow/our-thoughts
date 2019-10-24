@@ -35,7 +35,7 @@
                     <div class="card-body p-0">
                         <div class="row d-flex justify-content-center">
                             <div class="col-lg-6 col-md-8 col-12">
-                                <form th:action="@{/post/search}" method="get">
+                                <form th:action="@{/everyone/post/search}" method="get">
 
                                     <div class="md-form input-group mb-3">
                                         <input type="text"
@@ -77,7 +77,7 @@
                             <!-- Card image -->
                             <div class="view overlay">
                                 <img class="card-img-top"
-                                     th:src="@{/post/{postId}/photo(postId=${post.id})}"
+                                     th:src="@{/everyone/post/{postId}/photo(postId=${post.id})}"
                                      width="300"
                                      height="200">
                                 <a href="#!">
@@ -99,7 +99,10 @@
 
                                 <!-- Button -->
                                 <a href="#" class="btn btn-indigo btn-sm"
-                                   th:text="#{view.link.label}">Button</a>
+                                   th:text="#{view.link.label}"
+                                   th:href="@{/everyone/post/{postId}/details(postId=${post.id})}">
+                                    Button
+                                </a>
                             </div>
 
                         </div>
@@ -117,7 +120,7 @@
                             th:classappend="${currentPage  == i} ? active : ''">
                             <a th:text="${i}"
                                class="page-link"
-                               th:href="@{/post/search(page=${i})}">1</a>
+                               th:href="@{/everyone/post/search(page=${i})}">1</a>
                         </li>
                     </ul>
                 </nav>

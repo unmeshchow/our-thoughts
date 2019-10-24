@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/headFragment :: head(#{post.details.page.title})"></head>
+<body>
+    <header th:replace="fragments/headerFragment :: header"></header>
+
+    <div class="container">
+        <main class="mb-3 main-top-margin">
+            <section id="heading" class="mb-3">
+                <h1 th:replace="fragments/headingFragment :: heading(#{post.details.page.heading})"></h1>
+            </section>
+
+            <hr>
+
+            <section id="thought" class="mb-3">
+                <div class="text-center">
+                    <h3 th:text="${post.title}">title</h3>
+                    <h5 th:text="#{post.details.page.written.by(${post.writerName})}">writer</h5>
+                </div>
+
+                <figure>
+                    <img class="card-img-top img-fluid"
+                         th:src="@{/everyone/post/{postId}/photo(postId=${post.id})}">
+                    <figcaption th:text="${post.caption}">caption</figcaption>
+                </figure>
+
+                <div>
+                    <p th:text="${post.body}">body</p>
+                </div>
+
+                <div>
+
+                </div>
+
+            </section>
+        </main>
+    </div>
+
+    <footer th:replace="fragments/footerFragment :: footer"></footer>
+    <div th:replace="fragments/scriptsFragment :: scripts"></div>
+</body>
+</html>

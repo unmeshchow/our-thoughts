@@ -16,4 +16,6 @@ public interface PostService {
     Post getPostById(long postId);
 
     Page<Post> getPostsLikeTitle(String searchValue, Pageable pageable);
+
+    PostCommand getPostDetailsById(long postId);
 }
