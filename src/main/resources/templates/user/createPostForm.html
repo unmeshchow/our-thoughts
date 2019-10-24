@@ -80,7 +80,7 @@
                                                   class="form-control md-textarea"
                                                   rows="1"
                                                   th:field="*{caption}"></textarea>
-                                        <label for="body"
+                                        <label for="caption"
                                                th:text="#{create.post.page.form.caption}">
                                             caption</label>
                                         <p th:each="error : ${#fields.errors('caption')}"
@@ -89,9 +89,9 @@
 
                                     <!-- Sign up button -->
                                     <button class="btn btn-outline-indigo btn-block my-4 waves-effect z-depth-0"
-                                            type="submit"
-                                            th:text="#{submit.link.label}">sign in
-                                    </button>
+                                                     type="submit"
+                                                     th:text="#{submit.link.label}">sign in
+                                </button>
 
                                 </form>
                                 <!-- Form -->

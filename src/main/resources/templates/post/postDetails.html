@@ -28,8 +28,26 @@
                     <p th:text="${post.body}">body</p>
                 </div>
 
-                <div>
-
+                <div class="card">
+                    <div class="card-body">
+                        <form>
+                            <div class="md-form">
+                                <textarea id="comment"
+                                          class="form-control md-textarea"
+                                          rows="2"></textarea>
+                                <label for="comment"
+                                       th:text="#{post.details.page.comment.label}">
+                                    caption</label>
+                                <!--<p th:each="error : ${#fields.errors('caption')}"-->
+                                   <!--th:text="${error}" class="text-danger">error</p>-->
+                            </div>
+                            <div class="input-group-append">
+                                <button class="btn btn-lg btn-indigo m-0 px-3 btn-sm"
+                                        type="submit"
+                                        th:text="#{post.details.page.comment.button.label}">add</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
 
             </section>
