@@ -9,9 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by uc on 10/23/2019
@@ -20,15 +18,14 @@ import java.util.Set;
 @Component
 public class ControllerUtils {
 
-    public Set<Post> adjustTitleAndBody(List<Post> posts) {
-        Set<Post> modifiedPosts = new HashSet<>();
+    public List<Post> adjustTitleAndBody(List<Post> posts) {
+
         posts.forEach(post -> {
             post.setTitle(addSpacesOrEllipsis(post.getTitle(), 15));
             post.setBody(addSpacesOrEllipsis(post.getBody(), 50));
-            modifiedPosts.add(post);
         });
 
-        return modifiedPosts;
+        return posts;
     }
 
     public void copyBytesToResponse(HttpServletResponse response, byte[] bytes) {

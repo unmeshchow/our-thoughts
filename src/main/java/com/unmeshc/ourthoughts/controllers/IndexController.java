@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -62,10 +63,11 @@ public class IndexController {
         int currentPage = page.orElse(postPageTracker.getCurrentPage());
         int pageSize = size.orElse(2);
 
-        Pageable pageable = PageRequest.of((currentPage - 1), pageSize); // zero based
+        Pageable pageable = PageRequest.of((currentPage - 1), pageSize,
+                Sort.by("creationDateTime").descending()); // zero based page
 
         Page<Post> postPage = postService.getPostsLikeTitle(searchValue, pageable);
-        postPageTracker.setCurrentPage(postPage.getNumber() + 1); // one based
+        postPageTracker.setCurrentPage(postPage.getNumber() + 1);
         postPageTracker.setSearchValue(searchValue);
 
         model.addAttribute("posts", controllerUtils.adjustTitleAndBody(postPage.getContent()));

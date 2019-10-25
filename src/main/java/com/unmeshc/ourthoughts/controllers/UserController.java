@@ -38,19 +38,22 @@ public class UserController {
     private final SecurityUtils securityUtils;
     private final PostService postService;
     private final ControllerUtils controllerUtils;
+    private final PostPageTracker postPageTracker;
 
     public UserController(UserService userService,
                           UserToUserCommand userToUserCommand,
                           ImageService imageService,
                           SecurityUtils securityUtils,
                           PostService postService,
-                          ControllerUtils controllerUtils) {
+                          ControllerUtils controllerUtils,
+                          PostPageTracker postPageTracker) {
         this.imageService = imageService;
         this.securityUtils = securityUtils;
         this.userService = userService;
         this.userToUserCommand = userToUserCommand;
         this.postService = postService;
         this.controllerUtils = controllerUtils;
+        this.postPageTracker = postPageTracker;
     }
 
     @InitBinder
@@ -85,6 +88,7 @@ public class UserController {
         }
 
         postService.savePostForUser(user, postCommand);
+        postPageTracker.newPost();
 
         return "redirect:/index.html";
     }

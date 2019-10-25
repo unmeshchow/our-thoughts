@@ -15,8 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by uc on 10/22/2019
@@ -77,8 +77,8 @@ public class PostServiceImpl implements PostService {
                 + foundPost.getUser().getLastName());
 
         // get comments for this post
-        Set<CommentCommand> commentCommands = new HashSet<>();
-        commentRepository.findByPost(foundPost).forEach(comment -> {
+        List<CommentCommand> commentCommands = new ArrayList<>();
+        commentRepository.findByPostOrderByAddingDateTime(foundPost).forEach(comment -> {
             CommentCommand commentCommand = commentToCommentCommand.convert(comment);
             commentCommand.setUserId(comment.getUser().getId());
             commentCommand.setPostId(comment.getPost().getId());

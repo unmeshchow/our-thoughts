@@ -15,23 +15,30 @@
 
             <section id="thought" class="mb-3">
 
-                <div class="text-center mb-3">
-                    <h2 th:text="${post.title}">title</h2>
-                    <h5 th:text="#{post.details.page.written.by(${post.writerName})}">writer</h5>
-                </div>
+                <div class="card mb-5">
+                    <div class="card-body">
 
-                <!-- Post Photo -->
-                <figure class="mb-5">
-                    <img class="img-fluid"
-                         th:src="@{/everyone/post/{postId}/photo(postId=${post.id})}">
-                    <figcaption th:text="${post.caption}">caption</figcaption>
-                </figure>
+                        <div class="text-center mb-3">
+                            <h2 th:text="${post.title}">title</h2>
+                            <h5 th:text="#{post.details.page.written.by(${post.writerName})}">
+                                writer
+                            </h5>
+                        </div>
 
-                <!-- Post Body -->
-                <div class="mb-5">
-                    <p th:text="${post.body}"
-                       class="text-justify"
-                       style="font-size: 1.5rem; line-height: 1.75">body</p>
+                        <!-- Post Photo -->
+                        <figure class="mb-3">
+                            <img class="img-fluid"
+                                 th:src="@{/everyone/post/{postId}/photo(postId=${post.id})}">
+                            <figcaption th:text="${post.caption}">caption</figcaption>
+                        </figure>
+
+                        <!-- Post Body -->
+                        <div class="mb-3">
+                            <p th:text="${post.body}"
+                               class="text-justify"
+                               style="font-size: 1.5rem; line-height: 1.75">body</p>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Comments -->
@@ -48,6 +55,9 @@
                             <div class="col-lg-10 col-9">
                                 <p th:text="${comment.message}"
                                    style="font-size: 1.25rem; line-height: 1.75">message</p>
+                                <p th:text="${#temporals.format(comment.addingDateTime, 'dd/MM/yyyy')}">
+                                    adding date and time
+                                </p>
                             </div>
                         </div>
                     </div>

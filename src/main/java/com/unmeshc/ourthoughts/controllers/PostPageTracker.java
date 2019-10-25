@@ -26,7 +26,7 @@ public class PostPageTracker {
 
     private String searchValue = "";
 
-    private int currentPage = 1;
+    private int currentPage = 1; // one based page
     private int startPage = 1;
     private int endPage = 4; // maximum number of pagination links at a time
 
@@ -50,6 +50,11 @@ public class PostPageTracker {
         log.debug("Total: " + postPage.getTotalPages());
 
         return IntStream.rangeClosed(startPage, endPage).boxed().collect(Collectors.toSet());
+    }
+
+    void newPost() {
+        searchValue = "";
+        reset();
     }
 
     void reset() {

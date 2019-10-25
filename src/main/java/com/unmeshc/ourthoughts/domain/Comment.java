@@ -3,6 +3,7 @@ package com.unmeshc.ourthoughts.domain;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -25,6 +26,8 @@ public class Comment {
     @Column(length = 300000)
     private String message;
 
+    private LocalDateTime addingDateTime;
+
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
@@ -32,6 +35,11 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @PrePersist
+    public void setAddingDateTime() {
+        addingDateTime = LocalDateTime.now();
+    }
 
     @Override
     public boolean equals(Object o) {
