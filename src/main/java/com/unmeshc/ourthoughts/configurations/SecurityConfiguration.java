@@ -58,6 +58,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .hasAuthority("CHANGE_PASSWORD_PRIVILEGE")
             .antMatchers("/user/**", "/post/**")
                 .hasAuthority("USER")
+            .antMatchers("/admin/**")
+                .hasAuthority("ADMIN")
             .antMatchers(PUBLIC).permitAll()
             .antMatchers("/login").permitAll()
             .anyRequest().authenticated()

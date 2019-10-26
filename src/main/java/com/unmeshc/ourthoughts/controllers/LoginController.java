@@ -15,4 +15,10 @@ public class LoginController {
     public String login() {
         return "register/login";
     }
+
+    @GetMapping("/access/denied")
+    public String accessDenied() {
+        return "error/accessDenied";
+    }
+
 }

@@ -17,6 +17,9 @@ import java.util.Set;
 @Service
 public class AdminServiceImpl implements AdminService {
 
+    static final String ADMIN_EMAIL = "admin@localhost.com";
+    static final String ADMIN_PASSWORD = "admin";
+
     private final UserService userService;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
@@ -30,7 +33,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void createAdminUser(User adminUser) {
+    public void createAdminUser() {
         Role admin = roleRepository.findByName("ADMIN").orElse(null);
         if (admin == null) {
             log.error("Admin role not found");
@@ -40,10 +43,14 @@ public class AdminServiceImpl implements AdminService {
         Set<Role> roles = new HashSet<>();
         roles.add(admin);
 
-        adminUser.setPassword(passwordEncoder.encode(adminUser.getPassword()));
-        adminUser.setRoles(roles);
-        adminUser.setActive(true);
+        User adminUser = User.builder().email(ADMIN_EMAIL).active(true).roles(roles).
+                password(passwordEncoder.encode(ADMIN_PASSWORD)).build();
 
         userService.saveOrUpdateUser(adminUser);
+    }
+
+    @Override
+    public boolean isAdminExists() {
+        return userService.isEmailExists(ADMIN_EMAIL);
     }
 }

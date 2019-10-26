@@ -10,7 +10,19 @@
         <div class="container">
 
             <!-- Navbar brand -->
-            <a class="navbar-brand" href="#" th:href="@{/index.html}"><span class="brand-shadow">
+            <a class="navbar-brand" href="#"
+               th:href="@{/index.html}"
+               sec:authorize="!isAuthenticated()
+                              or hasAuthority('CHANGE_PASSWORD_PRIVILEGE')
+                              or hasAuthority('USER')"><span class="brand-shadow">
+                Monad Computer</span></a>
+
+            <!-- Admin Navbar brand -->
+            <a class="navbar-brand" href="#"
+               th:href="@{/admin/console.html}"
+               sec:authorize="isAuthenticated()
+                              and !hasAuthority('CHANGE_PASSWORD_PRIVILEGE')
+                              and hasAuthority('ADMIN')"><span class="brand-shadow">
                 Monad Computer</span></a>
 
             <!-- Collapse button -->
@@ -22,9 +34,10 @@
             <!-- Collapsible content -->
             <div class="collapse navbar-collapse" id="basicExampleNav">
 
-                <!-- Links -->
+                <!-- Visitor links -->
                 <ul class="navbar-nav ml-auto"
-                    sec:authorize="!isAuthenticated() or hasAuthority('CHANGE_PASSWORD_PRIVILEGE')">
+                    sec:authorize="!isAuthenticated()
+                                   or hasAuthority('CHANGE_PASSWORD_PRIVILEGE')">
                     <li class="nav-item">
                         <a class="nav-link" href="#"
                            th:text="#{login.link.label}"
@@ -41,9 +54,11 @@
                     </li>
                 </ul>
 
-                <!-- Links -->
+                <!-- User Links -->
                 <ul class="navbar-nav ml-auto"
-                    sec:authorize="isAuthenticated() and !hasAuthority('CHANGE_PASSWORD_PRIVILEGE')">
+                    sec:authorize="isAuthenticated()
+                                   and !hasAuthority('CHANGE_PASSWORD_PRIVILEGE')
+                                   and hasAuthority('USER')">
                     <li class="nav-item">
                         <span th:text="#{welcome.message(${session.fullName})}"
                               class="nav-link">welcome</span>
@@ -61,6 +76,23 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#"
                            th:text="#{contact.link.label}">contact</a>
+                    </li>
+                </ul>
+
+                <!-- Admin Links -->
+                <ul class="navbar-nav ml-auto"
+                    sec:authorize="isAuthenticated()
+                                   and !hasAuthority('CHANGE_PASSWORD_PRIVILEGE')
+                                   and hasAuthority('ADMIN')">
+                    <li class="nav-item">
+                        <form method="post">
+                            <a class="nav-link" th:href="@{/logout}"
+                               th:text="#{logout.link.label}">register</a>
+                        </form>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"
+                           th:text="#{admin.change.password.link.label}">change password</a>
                     </li>
                 </ul>
 

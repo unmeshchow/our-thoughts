@@ -1,6 +1,5 @@
 package com.unmeshc.ourthoughts.bootstrap;
 
-import com.unmeshc.ourthoughts.domain.User;
 import com.unmeshc.ourthoughts.services.AdminService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -19,8 +18,8 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        User adminUser = User.builder().firstName("Admin").lastName("Localhost")
-                         .email("admin@localhost.com").password("admin").build();
-        adminService.createAdminUser(adminUser);
+        if (!adminService.isAdminExists()) {
+            adminService.createAdminUser();
+        }
     }
 }

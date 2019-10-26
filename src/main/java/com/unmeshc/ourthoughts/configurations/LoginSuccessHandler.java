@@ -33,7 +33,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         boolean admin = false;
         for (GrantedAuthority authority : authentication.getAuthorities()) {
-            if ("ROLE_ADMIN".equals(authority.getAuthority())) {
+            if ("ADMIN".equals(authority.getAuthority())) {
                 admin = true;
             }
         }
@@ -42,7 +42,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         httpServletResponse.setStatus(HttpServletResponse.SC_OK);
 
         if (admin) {
-            httpServletResponse.sendRedirect("/console.html");
+            httpServletResponse.sendRedirect("/admin/console.html");
         }
         else {
             httpServletResponse.sendRedirect("/index.html");

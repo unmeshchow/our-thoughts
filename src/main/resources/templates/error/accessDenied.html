@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/headFragment :: head(#{access.denied.page.title})"></head>
+<body>
+    <header th:replace="fragments/headerFragment :: header"></header>
+
+    <div class="container">
+        <main class="mb-3 main-top-margin">
+            <section id="heading" class="mb-3">
+                <h1 th:replace="fragments/headingFragment :: heading(#{access.denied.page.heading})"></h1>
+            </section>
+
+            <hr>
+
+            <section id="message" class="mb-3">
+                <p th:text="#{access.denied.page.message}">access denied</p>
+            </section>
+        </main>
+    </div>
+
+    <footer th:replace="fragments/footerFragment :: footer"></footer>
+    <div th:replace="fragments/scriptsFragment :: scripts"></div>
+</body>
+</html>
