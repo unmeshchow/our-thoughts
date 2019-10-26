@@ -30,12 +30,13 @@
                 </span>
             </section>
 
+            <!-- Search -->
             <section id="searchByTitle" class="mb-5 mt-4">
                 <div class="card white" width="100%">
                     <div class="card-body p-0">
                         <div class="row d-flex justify-content-center">
                             <div class="col-lg-6 col-md-8 col-12">
-                                <form th:action="@{/everyone/post/search}" method="get">
+                                <form th:action="@{/visitor/post/search}" method="get">
 
                                     <div class="md-form input-group mb-3">
                                         <input type="text"
@@ -65,9 +66,12 @@
                       style="font-weight: bold">no posts</span>
             </section>
 
+            <!-- Search Result -->
             <section id="result" class="mb-3"
                      th:if="${!#sets.isEmpty(posts)}">
                 <div class="row">
+
+                    <!-- Individual Post -->
                     <div class="col-lg-3 col-md-4 col-sm-6"
                          th:each="post : ${posts}">
 
@@ -77,7 +81,7 @@
                             <!-- Card image -->
                             <div class="view overlay">
                                 <img class="card-img-top"
-                                     th:src="@{/everyone/post/{postId}/photo(postId=${post.id})}"
+                                     th:src="@{/visitor/post/{postId}/photo(postId=${post.id})}"
                                      width="300"
                                      height="200">
                                 <a href="#!">
@@ -100,7 +104,7 @@
                                 <!-- Button -->
                                 <a href="#" class="btn btn-indigo btn-sm"
                                    th:text="#{view.link.label}"
-                                   th:href="@{/everyone/post/{postId}/details(postId=${post.id})}">
+                                   th:href="@{/visitor/post/{postId}/details(postId=${post.id})}">
                                     Button
                                 </a>
                             </div>
@@ -111,6 +115,7 @@
                 </div>
             </section>
 
+            <!-- Pagination -->
             <section id="pagination" class="mb-3"
                      th:if="${!#sets.isEmpty(posts)}">
                 <nav aria-label="Page navigation example">
@@ -120,7 +125,7 @@
                             th:classappend="${currentPage  == i} ? active : ''">
                             <a th:text="${i}"
                                class="page-link"
-                               th:href="@{/everyone/post/search(page=${i})}">1</a>
+                               th:href="@{/visitor/post/search(page=${i})}">1</a>
                         </li>
                     </ul>
                 </nav>

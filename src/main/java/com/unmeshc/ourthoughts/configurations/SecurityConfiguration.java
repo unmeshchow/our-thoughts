@@ -93,6 +93,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             "/index.html",
             "/registration/**",
             "/password/**",
-            "/everyone/**"
+            "/visitor/**"
     };
 }

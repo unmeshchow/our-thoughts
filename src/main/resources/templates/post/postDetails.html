@@ -28,7 +28,7 @@
                         <!-- Post Photo -->
                         <figure class="mb-3">
                             <img class="img-fluid"
-                                 th:src="@{/everyone/post/{postId}/photo(postId=${post.id})}">
+                                 th:src="@{/visitor/post/{postId}/photo(postId=${post.id})}">
                             <figcaption th:text="${post.caption}">caption</figcaption>
                         </figure>
 
@@ -48,7 +48,7 @@
                         <div class="row">
                             <div class="col-lg-2 col-3 d-flex justify-content-center align-items-center">
                                 <img class="rounded-circle"
-                                     th:src="@{/everyone/user/{userId}/image(userId=${comment.userId})}"
+                                     th:src="@{/visitor/user/{userId}/image(userId=${comment.userId})}"
                                      width="75"
                                      height="75">
                             </div>
