@@ -41,8 +41,17 @@
                     </div>
                 </div>
 
+                <!-- No Comments -->
+                <div id="noPosts"
+                         class="mb-3 text-center"
+                         th:if="${#lists.isEmpty(post.commentCommands)}">
+                    <span th:text="#{post.details.page.no.comments}"
+                          style="font-weight: bold">no comments</span>
+                </div>
+
                 <!-- Comments -->
                 <div class="card mb-3"
+                     th:if="${!#lists.isEmpty(post.commentCommands)}"
                      th:each="comment : ${post.commentCommands}">
                     <div class="card-body">
                         <div class="row">
@@ -77,13 +86,17 @@
                                        th:text="#{post.details.page.comment.label}">
                                     caption</label>
                             </div>
-                            <div sec:authorize="!isAuthenticated()">
+                            <div sec:authorize="!isAuthenticated()
+                                                or hasAuthority('CHANGE_PASSWORD_PRIVILEGE')
+                                                or hasAuthority('ADMIN')">
                                 <span th:text="#{post.details.page.login.required.message}"
                                       class="text-info"
                                       style="font-weight: bold">login
                                 </span>
                             </div>
-                            <div class="input-group-append" sec:authorize="isAuthenticated()">
+                            <div class="input-group-append"
+                                 sec:authorize="isAuthenticated()
+                                                and hasAuthority('USER')">
                                 <button class="btn btn-lg btn-indigo m-0 px-3 btn-sm"
                                         type="submit"
                                         th:text="#{post.details.page.comment.button.label}">

@@ -1,5 +1,6 @@
 package com.unmeshc.ourthoughts.controllers;
 
+import com.unmeshc.ourthoughts.commands.PostCommand;
 import com.unmeshc.ourthoughts.configurations.SecurityUtils;
 import com.unmeshc.ourthoughts.domain.Post;
 import com.unmeshc.ourthoughts.domain.User;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -74,7 +76,10 @@ public class PostController {
         postPageTracker.setCurrentPage(postPage.getNumber() + 1);
         postPageTracker.setSearchValue(searchValue);
 
-        model.addAttribute("posts", controllerUtils.adjustTitleAndBody(postPage.getContent()));
+        List<PostCommand> postCommands =
+                controllerUtils.convertToPostCommandList(postPage.getContent());
+
+        model.addAttribute("posts", controllerUtils.adjustTitleAndBody(postCommands));
         model.addAttribute("currentPage", postPageTracker.getCurrentPage());
         model.addAttribute("pageNumbers", postPageTracker.getPageNumbersForPagination(postPage));
 

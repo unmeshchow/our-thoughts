@@ -56,7 +56,8 @@ public class AdminController {
         Page<User> userPage = adminService.getAllUsers(pageable);
         userPageTracker.setCurrentPage(userPage.getNumber() + 1);
 
-        List<UserCommand> userCommands = controllerUtils.convertToUserCommandList(userPage.getContent());
+        List<UserCommand> userCommands =
+                controllerUtils.convertToUserCommandList(userPage.getContent());
 
         model.addAttribute("users", userCommands);
         model.addAttribute("currentPage", userPageTracker.getCurrentPage());

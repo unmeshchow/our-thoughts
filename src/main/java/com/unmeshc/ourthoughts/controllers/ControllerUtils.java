@@ -1,6 +1,8 @@
 package com.unmeshc.ourthoughts.controllers;
 
+import com.unmeshc.ourthoughts.commands.PostCommand;
 import com.unmeshc.ourthoughts.commands.UserCommand;
+import com.unmeshc.ourthoughts.converters.PostToPostCommand;
 import com.unmeshc.ourthoughts.converters.UserToUserCommand;
 import com.unmeshc.ourthoughts.domain.Post;
 import com.unmeshc.ourthoughts.domain.User;
@@ -24,9 +26,24 @@ import java.util.List;
 public class ControllerUtils {
 
     private final UserToUserCommand userToUserCommand;
+    private final PostToPostCommand postToPostCommand;
 
-    public ControllerUtils(UserToUserCommand userToUserCommand) {
+    public ControllerUtils(UserToUserCommand userToUserCommand,
+                           PostToPostCommand postToPostCommand) {
         this.userToUserCommand = userToUserCommand;
+        this.postToPostCommand = postToPostCommand;
+    }
+
+    public List<PostCommand> convertToPostCommandList(List<Post> posts) {
+        List<PostCommand> postCommands = new ArrayList<>();
+        posts.forEach(post -> {
+            post.setCaption(null);
+            post.setPhoto(null);
+            PostCommand postCommand = postToPostCommand.convert(post);
+            postCommands.add(postCommand);
+        });
+
+        return postCommands;
     }
 
     public List<UserCommand> convertToUserCommandList(List<User> users) {
@@ -41,14 +58,14 @@ public class ControllerUtils {
         return userCommands;
     }
 
-    public List<Post> adjustTitleAndBody(List<Post> posts) {
+    public List<PostCommand> adjustTitleAndBody(List<PostCommand> postCommands) {
 
-        posts.forEach(post -> {
+        postCommands.forEach(post -> {
             post.setTitle(addSpacesOrEllipsis(post.getTitle(), 15));
             post.setBody(addSpacesOrEllipsis(post.getBody(), 50));
         });
 
-        return posts;
+        return postCommands;
     }
 
     public void copyBytesToResponse(HttpServletResponse response, byte[] bytes) {
