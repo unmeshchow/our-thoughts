@@ -46,6 +46,7 @@ public class ControllerExceptionHandler {
     public ModelAndView handleInternalServerError(Exception exc) {
         log.error("Error occurred");
         log.error(exc.getMessage());
+        log.error(exc.toString());
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("error/internalServerError");

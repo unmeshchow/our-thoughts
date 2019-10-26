@@ -4,6 +4,7 @@ package com.unmeshc.ourthoughts.domain;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
 
@@ -33,6 +34,7 @@ public class User {
     @Column(length = 60)
     private String password;
     private Boolean active = false;
+    private LocalDateTime registrationDateTime;
 
     @Lob
     private Byte[] image;
@@ -42,6 +44,11 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
+
+    @PrePersist
+    public void setRegistrationDateAndTime() {
+        registrationDateTime = LocalDateTime.now();
+    }
 
     @Override
     public boolean equals(Object o) {

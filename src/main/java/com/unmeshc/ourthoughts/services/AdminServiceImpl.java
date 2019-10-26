@@ -4,6 +4,8 @@ import com.unmeshc.ourthoughts.domain.Role;
 import com.unmeshc.ourthoughts.domain.User;
 import com.unmeshc.ourthoughts.repositories.RoleRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +19,7 @@ import java.util.Set;
 @Service
 public class AdminServiceImpl implements AdminService {
 
-    static final String ADMIN_EMAIL = "admin@localhost.com";
+    public static final String ADMIN_EMAIL = "admin@localhost.com";
     static final String ADMIN_PASSWORD = "admin";
 
     private final UserService userService;
@@ -52,5 +54,11 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public boolean isAdminExists() {
         return userService.isEmailExists(ADMIN_EMAIL);
+    }
+
+    @Override
+    public Page<User> getAllUsers(Pageable pageable) {
+
+        return userService.getAllUsers(ADMIN_EMAIL, pageable);
     }
 }
