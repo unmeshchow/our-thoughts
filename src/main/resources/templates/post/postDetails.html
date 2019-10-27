@@ -26,11 +26,13 @@
                         </div>
 
                         <!-- Post Photo -->
-                        <figure class="mb-3">
-                            <img class="img-fluid"
-                                 th:src="@{/visitor/post/{postId}/photo(postId=${postDetails.id})}">
-                            <figcaption th:text="${postDetails.caption}">caption</figcaption>
-                        </figure>
+                        <div class="mb-3 d-flex justify-content-center">
+                            <figure>
+                                <img class="img-fluid"
+                                     th:src="@{/visitor/post/{postId}/photo(postId=${postDetails.id})}">
+                                <figcaption th:text="${postDetails.caption}">caption</figcaption>
+                            </figure>
+                        </div>
 
                         <!-- Post Body -->
                         <div class="mb-3">

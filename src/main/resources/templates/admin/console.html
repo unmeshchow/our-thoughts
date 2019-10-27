@@ -28,18 +28,18 @@
                         <table class="table">
                             <thead class="green white-text">
                                 <tr>
+                                    <th th:text="#{console.page.user.table.heading.registrationDate}">date</th>
                                     <th th:text="#{console.page.user.table.heading.firstName}">first name</th>
                                     <th th:text="#{console.page.user.table.heading.lastName}">last name</th>
-                                    <th th:text="#{console.page.user.table.heading.email}">email</th>
                                     <th th:text="#{console.page.user.table.heading.view}">view</th>
                                     <th th:text="#{console.page.user.table.heading.delete}">delete</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr th:each="user : ${userDtos}">
+                                    <td th:text="${#temporals.format(user.registrationDateTime, 'dd/MM/yyyy')}">date</td>
                                     <td th:text="${user.firstName}">first</td>
                                     <td th:text="${user.lastName}">last</td>
-                                    <td th:text="${user.email}">email</td>
                                     <td>view</td>
                                     <td>delete</td>
                                 </tr>
@@ -51,7 +51,7 @@
 
             <!-- Pagination -->
             <section id="pagination" class="mb-3"
-                     th:if="${!#sets.isEmpty(users)}">
+                     th:if="${!#lists.isEmpty(userDtos)}">
                 <nav aria-label="Page navigation example">
                     <ul class="pagination pg-blue">
                         <li class="page-item"

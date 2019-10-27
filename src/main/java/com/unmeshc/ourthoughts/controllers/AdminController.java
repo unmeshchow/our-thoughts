@@ -51,7 +51,7 @@ public class AdminController {
         int pageSize = size.orElse(2);
 
         Pageable pageable = PageRequest.of((currentPage - 1), pageSize,
-                Sort.by("registrationDateTime").descending()); // zero based page
+                Sort.by("lastName").ascending().and(Sort.by("firstName").descending())); // zero based page
 
         Page<User> userPage = adminService.getAllUsers(pageable);
         userPageTracker.setCurrentPage(userPage.getNumber() + 1);
