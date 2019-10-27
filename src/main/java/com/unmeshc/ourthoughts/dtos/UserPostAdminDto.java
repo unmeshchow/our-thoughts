@@ -13,12 +13,9 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @ToString
-public class PostDetailsDto {
+public class UserPostAdminDto {
 
     private Long id;
-    private String title;
-    private String body;
-    private String caption;
-    private String writerName;
-    private List<CommentPostDetailsDto> postDetailsCommentDtos;
+    private String firstName;
+    private List<PostAdminDto> postAdminDtos;
 }

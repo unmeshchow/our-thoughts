@@ -1,12 +1,12 @@
 package com.unmeshc.ourthoughts.services;
 
 import com.unmeshc.ourthoughts.commands.PostCommand;
-import com.unmeshc.ourthoughts.converters.CommentToPostDetailsCommentDto;
+import com.unmeshc.ourthoughts.converters.CommentToCommentPostDetailsDto;
 import com.unmeshc.ourthoughts.converters.PostCommandToPost;
 import com.unmeshc.ourthoughts.converters.PostToPostDetailsDto;
 import com.unmeshc.ourthoughts.domain.Post;
 import com.unmeshc.ourthoughts.domain.User;
-import com.unmeshc.ourthoughts.dtos.PostDetailsCommentDto;
+import com.unmeshc.ourthoughts.dtos.CommentPostDetailsDto;
 import com.unmeshc.ourthoughts.dtos.PostDetailsDto;
 import com.unmeshc.ourthoughts.exceptions.NotFoundException;
 import com.unmeshc.ourthoughts.repositories.CommentRepository;
@@ -31,14 +31,14 @@ public class PostServiceImpl implements PostService {
     private final ImageService imageService;
     private final CommentRepository commentRepository;
     private final PostToPostDetailsDto postToPostDetailsDto;
-    private final CommentToPostDetailsCommentDto commentToPostDetailsCommentDto;
+    private final CommentToCommentPostDetailsDto commentToPostDetailsCommentDto;
 
     public PostServiceImpl(PostRepository postRepository,
                            PostCommandToPost postCommandToPost,
                            ImageService imageService,
                            CommentRepository commentRepository,
                            PostToPostDetailsDto postToPostDetailsDto,
-                           CommentToPostDetailsCommentDto commentToPostDetailsCommentDto) {
+                           CommentToCommentPostDetailsDto commentToPostDetailsCommentDto) {
         this.postRepository = postRepository;
         this.postCommandToPost = postCommandToPost;
         this.imageService = imageService;
@@ -78,9 +78,9 @@ public class PostServiceImpl implements PostService {
                 + foundPost.getUser().getLastName());
 
         // get comments for this post
-        List<PostDetailsCommentDto> postDetailsCommentDtos = new ArrayList<>();
+        List<CommentPostDetailsDto> postDetailsCommentDtos = new ArrayList<>();
         commentRepository.findByPostOrderByAddingDateTime(foundPost).forEach(comment -> {
-            PostDetailsCommentDto postDetailsCommentDto =
+            CommentPostDetailsDto postDetailsCommentDto =
                     commentToPostDetailsCommentDto.convert(comment);
             postDetailsCommentDto.setUserId(comment.getUser().getId());
             postDetailsCommentDtos.add(postDetailsCommentDto);
@@ -89,5 +89,10 @@ public class PostServiceImpl implements PostService {
         postDetailsDto.setPostDetailsCommentDtos(postDetailsCommentDtos);
 
         return postDetailsDto;
+    }
+
+    @Override
+    public Page<Post> getPostForUser(User user, Pageable pageable) {
+        return postRepository.findByUser(user, pageable);
     }
 }

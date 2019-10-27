@@ -1,5 +1,6 @@
 package com.unmeshc.ourthoughts.services;
 
+import com.unmeshc.ourthoughts.domain.Post;
 import com.unmeshc.ourthoughts.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,4 +18,8 @@ public interface AdminService {
     boolean isAdminExists();
 
     Page<User> getAllUsers(Pageable pageable);
+
+    Page<Post> getPostForUser(User user, Pageable pageable);
+
+    User getUserById(long userId);
 }

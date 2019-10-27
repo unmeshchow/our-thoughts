@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @ToString
-public class AdminUserDto {
+public class UserAdminDto {
 
     private Long id;
     private String firstName;

@@ -5,7 +5,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 /**
- * Created by uc on 10/24/2019
+ * Created by uc on 10/27/2019
  */
 @Getter
 @Setter
@@ -13,9 +13,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @ToString
-public class PostDetailsCommentDto {
+public class PostAdminDto {
 
-    private String message;
-    private LocalDateTime addingDateTime;
-    private Long userId;
+    private Long id;
+    private String title;
+    private LocalDateTime creationDateTime;
 }

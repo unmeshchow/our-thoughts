@@ -1,47 +1,48 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/headFragment :: head(#{console.page.title})"></head>
+<head th:replace="fragments/headFragment :: head(#{user.posts.page.title})"></head>
 <body>
     <header th:replace="fragments/headerFragment :: header"></header>
 
     <div class="container">
         <main class="mb-3 main-top-margin">
             <section id="heading" class="mb-3">
-                <h1 th:replace="fragments/headingFragment :: heading(#{console.page.heading})"></h1>
+                <h1 th:replace="fragments/headingFragment :: heading(#{user.posts.page.heading})"></h1>
             </section>
 
             <hr>
 
-            <section id="noUsers"
-                     class="text-center mb-3"
-                     th:if="${#lists.isEmpty(userAdminDtos)}">
-                <span th:text="#{console.page.no.users}"
-                      style="font-weight: bold">no users</span>
+            <section id="user" class="mb-3 text-center">
+                <h3 th:text="#{user.posts.page.caption(${userPostAdminDto.firstName})}"></h3>
             </section>
 
-            <!-- Users -->
-            <section id="users"
+            <!-- No Posts -->
+            <section id="noPosts"
+                     class="mb-3 text-center"
+                     th:if="${#lists.isEmpty(userPostAdminDto.postAdminDtos)}">
+                <span th:text="#{no.posts}"
+                      style="font-weight: bold">no posts</span>
+            </section>
+
+            <section id="posts"
                      class="mb-3"
-                     th:if="${!#lists.isEmpty(userAdminDtos)}">
+                     th:if="${!#lists.isEmpty(userPostAdminDto.postAdminDtos)}">
                 <div class="card">
                     <div class="card-body">
                         <table class="table">
                             <thead class="green white-text">
                                 <tr>
-                                    <th th:text="#{console.page.user.table.heading.registrationDate}">date</th>
-                                    <th th:text="#{console.page.user.table.heading.firstName}">first name</th>
-                                    <th th:text="#{console.page.user.table.heading.lastName}">last name</th>
+                                    <th th:text="#{user.posts.page.post.table.heading.createdDate}">date</th>
+                                    <th th:text="#{user.posts.page.post.table.heading.title}">title</th>
                                     <th th:text="#{table.heading.view}">view</th>
                                     <th th:text="#{table.heading.delete}">delete</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="userAdminDto : ${userAdminDtos}">
-                                    <td th:text="${#temporals.format(userAdminDto.registrationDateTime, 'dd/MM/yyyy')}">date</td>
-                                    <td th:text="${userAdminDto.firstName}">first</td>
-                                    <td th:text="${userAdminDto.lastName}">last</td>
-                                    <td><a th:href="@{/admin/user/{userId}/post(userId=${userAdminDto.id})}"
-                                           th:text="#{table.heading.view}">view</a></td>
+                                <tr th:each="postAdminDto : ${userPostAdminDto.postAdminDtos}">
+                                    <td th:text="${#temporals.format(postAdminDto.creationDateTime, 'dd/MM/yyyy')}">date</td>
+                                    <td th:text="${postAdminDto.title}">title</td>
+                                    <td>view</td>
                                     <td>delete</td>
                                 </tr>
                             </tbody>
@@ -52,7 +53,7 @@
 
             <!-- Pagination -->
             <section id="pagination" class="mb-3"
-                     th:if="${!#lists.isEmpty(userAdminDtos)}">
+                     th:if="${!#lists.isEmpty(userPostAdminDto.postAdminDtos)}">
                 <nav aria-label="Page navigation example">
                     <ul class="pagination pg-blue">
                         <li class="page-item"
@@ -60,7 +61,7 @@
                             th:classappend="${currentPage  == i} ? active : ''">
                             <a th:text="${i}"
                                class="page-link"
-                               th:href="@{/admin/all/users(page=${i})}">1</a>
+                               th:href="@{/admin/user/{userId}/post(userId=${userPostAdminDto.id}, page=${i})}">1</a>
                         </li>
                     </ul>
                 </nav>

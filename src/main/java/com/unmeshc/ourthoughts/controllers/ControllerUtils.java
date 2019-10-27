@@ -1,11 +1,13 @@
 package com.unmeshc.ourthoughts.controllers;
 
+import com.unmeshc.ourthoughts.converters.PostToPostAdminDto;
 import com.unmeshc.ourthoughts.converters.PostToPostSearchDto;
-import com.unmeshc.ourthoughts.converters.UserToAdminUserDto;
+import com.unmeshc.ourthoughts.converters.UserToUserAdminDto;
 import com.unmeshc.ourthoughts.domain.Post;
 import com.unmeshc.ourthoughts.domain.User;
-import com.unmeshc.ourthoughts.dtos.AdminUserDto;
+import com.unmeshc.ourthoughts.dtos.PostAdminDto;
 import com.unmeshc.ourthoughts.dtos.PostSearchDto;
+import com.unmeshc.ourthoughts.dtos.UserAdminDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.data.domain.Page;
@@ -25,13 +27,26 @@ import java.util.List;
 @Component
 public class ControllerUtils {
 
-    private final UserToAdminUserDto userToAdminUserDto;
+    private final UserToUserAdminDto userToAdminUserDto;
     private final PostToPostSearchDto postToPostSearchDto;
+    private final PostToPostAdminDto postToPostAdminDto;
 
-    public ControllerUtils(UserToAdminUserDto userToAdminUserDto,
-                           PostToPostSearchDto postToPostSearchDto) {
+    public ControllerUtils(UserToUserAdminDto userToAdminUserDto,
+                           PostToPostSearchDto postToPostSearchDto,
+                           PostToPostAdminDto postToPostAdminDto) {
         this.userToAdminUserDto = userToAdminUserDto;
         this.postToPostSearchDto = postToPostSearchDto;
+        this.postToPostAdminDto = postToPostAdminDto;
+    }
+
+    public List<PostAdminDto> convertToPostAdminDtoList(List<Post> posts) {
+        List<PostAdminDto> postAdminDtos = new ArrayList<>();
+        posts.forEach(post -> {
+            PostAdminDto postAdminDto = postToPostAdminDto.convert(post);
+            postAdminDtos.add(postAdminDto);
+        });
+
+        return postAdminDtos;
     }
 
     public List<PostSearchDto> convertToPostSearchDtoList(List<Post> posts) {
@@ -44,10 +59,10 @@ public class ControllerUtils {
         return postSearchDtos;
     }
 
-    public List<AdminUserDto> convertToAdminUserDtoList(List<User> users) {
-        List<AdminUserDto> adminUserDtos = new ArrayList<>();
+    public List<UserAdminDto> convertToAdminUserDtoList(List<User> users) {
+        List<UserAdminDto> adminUserDtos = new ArrayList<>();
         users.forEach(user -> {
-            AdminUserDto userDto = userToAdminUserDto.convert(user);
+            UserAdminDto userDto = userToAdminUserDto.convert(user);
             adminUserDtos.add(userDto);
         });
 
@@ -140,4 +155,6 @@ public class ControllerUtils {
 
         return text.substring(0, length - 3) + "...";
     }
+
+
 }
