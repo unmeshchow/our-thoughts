@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @ToString
-public class CommentDto {
+public class PostDetailsCommentDto {
 
     private String message;
     private LocalDateTime addingDateTime;

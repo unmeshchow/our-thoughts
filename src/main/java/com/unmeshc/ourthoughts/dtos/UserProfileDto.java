@@ -1,12 +1,11 @@
 package com.unmeshc.ourthoughts.dtos;
 
-
 import lombok.*;
 
 import java.time.LocalDateTime;
 
 /**
- * Created by uc on 10/9/2019
+ * Created by uc on 10/27/2019
  */
 @Getter
 @Setter
@@ -14,7 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @ToString
-public class UserDto {
+public class UserProfileDto {
 
     private String firstName;
     private String lastName;

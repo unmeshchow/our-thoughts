@@ -19,9 +19,6 @@ import java.util.Set;
 @Service
 public class AdminServiceImpl implements AdminService {
 
-    public static final String ADMIN_EMAIL = "admin@localhost.com";
-    static final String ADMIN_PASSWORD = "admin";
-
     private final UserService userService;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;

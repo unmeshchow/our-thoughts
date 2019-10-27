@@ -1,7 +1,7 @@
 package com.unmeshc.ourthoughts.controllers;
 
 import com.unmeshc.ourthoughts.domain.User;
-import com.unmeshc.ourthoughts.dtos.UserDto;
+import com.unmeshc.ourthoughts.dtos.AdminUserDto;
 import com.unmeshc.ourthoughts.services.AdminService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -56,10 +56,10 @@ public class AdminController {
         Page<User> userPage = adminService.getAllUsers(pageable);
         userPageTracker.setCurrentPage(userPage.getNumber() + 1);
 
-        List<UserDto> userDtos =
-                controllerUtils.convertToUserDtoList(userPage.getContent());
+        List<AdminUserDto> adminUserDtos =
+                controllerUtils.convertToAdminUserDtoList(userPage.getContent());
 
-        model.addAttribute("userDtos", userDtos);
+        model.addAttribute("adminUserDtos", adminUserDtos);
         model.addAttribute("currentPage", userPageTracker.getCurrentPage());
         model.addAttribute("pageNumbers", userPageTracker.getPageNumbersForPagination(userPage));
 

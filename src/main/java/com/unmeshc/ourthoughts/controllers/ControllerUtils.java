@@ -1,11 +1,11 @@
 package com.unmeshc.ourthoughts.controllers;
 
-import com.unmeshc.ourthoughts.converters.PostToPostDto;
-import com.unmeshc.ourthoughts.converters.UserToUserDto;
+import com.unmeshc.ourthoughts.converters.PostToPostSearchDto;
+import com.unmeshc.ourthoughts.converters.UserToAdminUserDto;
 import com.unmeshc.ourthoughts.domain.Post;
 import com.unmeshc.ourthoughts.domain.User;
-import com.unmeshc.ourthoughts.dtos.PostDto;
-import com.unmeshc.ourthoughts.dtos.UserDto;
+import com.unmeshc.ourthoughts.dtos.AdminUserDto;
+import com.unmeshc.ourthoughts.dtos.PostSearchDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.data.domain.Page;
@@ -25,43 +25,43 @@ import java.util.List;
 @Component
 public class ControllerUtils {
 
-    private final UserToUserDto userToUserDto;
-    private final PostToPostDto postToPostDto;
+    private final UserToAdminUserDto userToAdminUserDto;
+    private final PostToPostSearchDto postToPostSearchDto;
 
-    public ControllerUtils(UserToUserDto userToUserDto,
-                           PostToPostDto postToPostDto) {
-        this.userToUserDto = userToUserDto;
-        this.postToPostDto = postToPostDto;
+    public ControllerUtils(UserToAdminUserDto userToAdminUserDto,
+                           PostToPostSearchDto postToPostSearchDto) {
+        this.userToAdminUserDto = userToAdminUserDto;
+        this.postToPostSearchDto = postToPostSearchDto;
     }
 
-    public List<PostDto> convertToPostDtoList(List<Post> posts) {
-        List<PostDto> postDtos = new ArrayList<>();
+    public List<PostSearchDto> convertToPostSearchDtoList(List<Post> posts) {
+        List<PostSearchDto> postSearchDtos = new ArrayList<>();
         posts.forEach(post -> {
-            PostDto postDto = postToPostDto.convert(post);
-            postDtos.add(postDto);
+            PostSearchDto postSearchDto = postToPostSearchDto.convert(post);
+            postSearchDtos.add(postSearchDto);
         });
 
-        return postDtos;
+        return postSearchDtos;
     }
 
-    public List<UserDto> convertToUserDtoList(List<User> users) {
-        List<UserDto> userDtos = new ArrayList<>();
+    public List<AdminUserDto> convertToAdminUserDtoList(List<User> users) {
+        List<AdminUserDto> adminUserDtos = new ArrayList<>();
         users.forEach(user -> {
-            UserDto userDto = userToUserDto.convert(user);
-            userDtos.add(userDto);
+            AdminUserDto userDto = userToAdminUserDto.convert(user);
+            adminUserDtos.add(userDto);
         });
 
-        return userDtos;
+        return adminUserDtos;
     }
 
-    public List<PostDto> adjustTitleAndBody(List<PostDto> postDtos) {
+    public List<PostSearchDto> adjustTitleAndBody(List<PostSearchDto> postSearchDtos) {
 
-        postDtos.forEach(post -> {
+        postSearchDtos.forEach(post -> {
             post.setTitle(addSpacesOrEllipsis(post.getTitle(), 15));
             post.setBody(addSpacesOrEllipsis(post.getBody(), 50));
         });
 
-        return postDtos;
+        return postSearchDtos;
     }
 
     public void copyBytesToResponse(HttpServletResponse response, byte[] bytes) {

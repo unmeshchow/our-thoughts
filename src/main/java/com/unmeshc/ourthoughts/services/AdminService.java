@@ -9,6 +9,9 @@ import org.springframework.data.domain.Pageable;
  */
 public interface AdminService {
 
+    String ADMIN_EMAIL = "admin@localhost.com";
+    String ADMIN_PASSWORD = "admin";
+
     void createAdminUser();
 
     boolean isAdminExists();

@@ -46,15 +46,15 @@
                 <!-- No Comments -->
                 <div id="noPosts"
                          class="mb-3 text-center"
-                         th:if="${#lists.isEmpty(postDetails.commentDtos)}">
+                         th:if="${#lists.isEmpty(postDetails.postDetailsCommentDtos)}">
                     <span th:text="#{post.details.page.no.comments}"
                           style="font-weight: bold">no comments</span>
                 </div>
 
                 <!-- Comments -->
                 <div class="card mb-3"
-                     th:if="${!#lists.isEmpty(postDetails.commentDtos)}"
-                     th:each="comment : ${postDetails.commentDtos}">
+                     th:if="${!#lists.isEmpty(postDetails.postDetailsCommentDtos)}"
+                     th:each="comment : ${postDetails.postDetailsCommentDtos}">
                     <div class="card-body">
                         <div class="row">
                             <div class="col-lg-2 col-3 d-flex justify-content-center align-items-center">

@@ -11,7 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @ToString
-public class PostDto {
+public class PostSearchDto {
 
     private Long id;
     private String title;

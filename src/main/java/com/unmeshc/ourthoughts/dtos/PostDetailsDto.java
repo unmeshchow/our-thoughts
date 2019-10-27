@@ -20,5 +20,5 @@ public class PostDetailsDto {
     private String body;
     private String caption;
     private String writerName;
-    private List<CommentDto> commentDtos;
+    private List<PostDetailsCommentDto> postDetailsCommentDtos;
 }

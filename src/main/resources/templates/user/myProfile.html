@@ -21,13 +21,13 @@
 
                             <!-- Avatar -->
                             <div class="mx-auto">
-                                <img th:if="${userDto.image == null}"
+                                <img th:if="${userProfileDto.image == null}"
                                      th:src="@{/img/avatar.jpg}"
                                      src="../../static/img/avatar.jpg"
                                      class="rounded-circle" alt="woman avatar"
                                      width="300" height="300">
 
-                                <img th:if="${userDto.image != null}"
+                                <img th:if="${userProfileDto.image != null}"
                                      th:src="@{/user/get/image}"
                                      src="../../static/img/avatar.jpg"
                                      class="rounded-circle" alt="woman avatar"
@@ -36,27 +36,36 @@
 
                             <!-- Content -->
                             <div class="card-body">
+
+                                <!-- Change Image Button -->
                                 <div class="card-title text-center">
                                     <a class="btn btn-indigo btn-sm"
                                             th:href="@{/user/change/image/form}">
-                                        Change Image</a></div>
+                                        Change Image</a>
+                                </div>
                                 <hr>
 
+                                <!-- User Data -->
                                 <table style="width: 400px" class="table table-borderless mx-auto">
                                     <tr>
                                         <td th:text="#{form.label.firstName} + ':'" class="text-right"
                                             style="font-weight: bold;">first name</td>
-                                        <td th:text="${userDto.firstName}">first</td>
+                                        <td th:text="${userProfileDto.firstName}">first</td>
                                     </tr>
                                     <tr>
                                         <td th:text="#{form.label.lastName} + ':'" class="text-right"
                                             style="font-weight: bold;">last name</td>
-                                        <td th:text="${userDto.lastName}">last</td>
+                                        <td th:text="${userProfileDto.lastName}">last</td>
                                     </tr>
                                     <tr>
                                         <td th:text="#{form.label.email} + ':'" class="text-right"
                                             style="font-weight: bold;">email</td>
-                                        <td th:text="${userDto.email}">last</td>
+                                        <td th:text="${userProfileDto.email}">email</td>
+                                    </tr>
+                                    <tr>
+                                        <td th:text="#{my.profile.page.registrationDate} + ':'" class="text-right"
+                                            style="font-weight: bold;">date</td>
+                                        <td th:text="${#temporals.format(userProfileDto.registrationDateTime, 'dd/MM/yyyy')}">last</td>
                                     </tr>
                                 </table>
                             </div>

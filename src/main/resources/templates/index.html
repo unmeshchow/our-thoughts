@@ -68,19 +68,19 @@
             <!-- No Posts -->
             <section id="noPosts"
                      class="mb-3 text-center"
-                     th:if="${#lists.isEmpty(postDtos)}">
+                     th:if="${#lists.isEmpty(postSearchDtos)}">
                 <span th:text="#{index.page.no.posts}"
                       style="font-weight: bold">no posts</span>
             </section>
 
             <!-- Search Result -->
             <section id="result" class="mb-3"
-                     th:if="${!#lists.isEmpty(postDtos)}">
+                     th:if="${!#lists.isEmpty(postSearchDtos)}">
                 <div class="row">
 
                     <!-- Individual Post -->
                     <div class="col-lg-3 col-md-4 col-sm-6"
-                         th:each="postDto : ${postDtos}">
+                         th:each="postSearchDto : ${postSearchDtos}">
 
                         <!-- Card -->
                         <div class="card mb-4">
@@ -88,7 +88,7 @@
                             <!-- Card image -->
                             <div class="view overlay">
                                 <img class="card-img-top"
-                                     th:src="@{/visitor/post/{postId}/photo(postId=${postDto.id})}"
+                                     th:src="@{/visitor/post/{postId}/photo(postId=${postSearchDto.id})}"
                                      width="300"
                                      height="200">
                                 <a href="#!">
@@ -100,18 +100,18 @@
                             <div class="card-body">
                                 <!-- Title -->
                                 <h4 class="card-title"
-                                    th:text="${postDto.title}">Card title</h4>
+                                    th:text="${postSearchDto.title}">title</h4>
 
                                 <!-- Text -->
                                 <p class="card-text"
-                                   th:text="${postDto.body}">
+                                   th:text="${postSearchDto.body}">
                                     Some quick example
                                 </p>
 
                                 <!-- Button -->
                                 <a href="#" class="btn btn-indigo btn-sm"
                                    th:text="#{view.link.label}"
-                                   th:href="@{/visitor/post/{postId}/details(postId=${postDto.id})}">
+                                   th:href="@{/visitor/post/{postId}/details(postId=${postSearchDto.id})}">
                                     Button
                                 </a>
                             </div>
@@ -124,7 +124,7 @@
 
             <!-- Pagination -->
             <section id="pagination" class="mb-3"
-                     th:if="${!#sets.isEmpty(postDtos)}">
+                     th:if="${!#sets.isEmpty(postSearchDtos)}">
                 <nav aria-label="Page navigation example">
                     <ul class="pagination pg-blue">
                         <li class="page-item"

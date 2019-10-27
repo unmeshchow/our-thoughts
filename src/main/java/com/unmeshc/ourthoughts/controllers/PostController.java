@@ -3,7 +3,7 @@ package com.unmeshc.ourthoughts.controllers;
 import com.unmeshc.ourthoughts.configurations.SecurityUtils;
 import com.unmeshc.ourthoughts.domain.Post;
 import com.unmeshc.ourthoughts.domain.User;
-import com.unmeshc.ourthoughts.dtos.PostDto;
+import com.unmeshc.ourthoughts.dtos.PostSearchDto;
 import com.unmeshc.ourthoughts.services.CommentService;
 import com.unmeshc.ourthoughts.services.ImageService;
 import com.unmeshc.ourthoughts.services.PostService;
@@ -76,9 +76,10 @@ public class PostController {
         postPageTracker.setCurrentPage(postPage.getNumber() + 1);
         postPageTracker.setSearchValue(searchValue);
 
-        List<PostDto> postDtos = controllerUtils.convertToPostDtoList(postPage.getContent());
+        List<PostSearchDto> postSearchDtos =
+                controllerUtils.convertToPostSearchDtoList(postPage.getContent());
 
-        model.addAttribute("postDtos", controllerUtils.adjustTitleAndBody(postDtos));
+        model.addAttribute("postSearchDtos", controllerUtils.adjustTitleAndBody(postSearchDtos));
         model.addAttribute("currentPage", postPageTracker.getCurrentPage());
         model.addAttribute("pageNumbers", postPageTracker.getPageNumbersForPagination(postPage));
 

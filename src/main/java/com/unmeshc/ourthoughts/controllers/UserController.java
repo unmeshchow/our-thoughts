@@ -2,9 +2,8 @@ package com.unmeshc.ourthoughts.controllers;
 
 import com.unmeshc.ourthoughts.commands.PostCommand;
 import com.unmeshc.ourthoughts.configurations.SecurityUtils;
-import com.unmeshc.ourthoughts.converters.UserToUserDto;
+import com.unmeshc.ourthoughts.converters.UserToUserProfileDto;
 import com.unmeshc.ourthoughts.domain.User;
-import com.unmeshc.ourthoughts.dtos.UserDto;
 import com.unmeshc.ourthoughts.services.ImageService;
 import com.unmeshc.ourthoughts.services.PostService;
 import com.unmeshc.ourthoughts.services.UserService;
@@ -38,7 +37,7 @@ public class UserController {
     private final PostService postService;
     private final ControllerUtils controllerUtils;
     private final PostPageTracker postPageTracker;
-    private final UserToUserDto userToUserDto;
+    private final UserToUserProfileDto userToUserProfileDto;
 
     public UserController(UserService userService,
                           ImageService imageService,
@@ -46,14 +45,14 @@ public class UserController {
                           PostService postService,
                           ControllerUtils controllerUtils,
                           PostPageTracker postPageTracker,
-                          UserToUserDto userToUserDto) {
+                          UserToUserProfileDto userToUserProfileDto) {
         this.imageService = imageService;
         this.securityUtils = securityUtils;
         this.userService = userService;
         this.postService = postService;
         this.controllerUtils = controllerUtils;
         this.postPageTracker = postPageTracker;
-        this.userToUserDto = userToUserDto;
+        this.userToUserProfileDto = userToUserProfileDto;
     }
 
     @InitBinder
@@ -94,9 +93,7 @@ public class UserController {
 
     @GetMapping("/profile")
     public String showProfile(@ModelAttribute("user") User user, Model model) {
-        UserDto userDto = userToUserDto.convert(user);
-        model.addAttribute("userDto", userDto);
-
+        model.addAttribute("userProfileDto", userToUserProfileDto.convert(user));
         return MY_PROFILE;
     }
 
