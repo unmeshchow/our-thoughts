@@ -1,12 +1,13 @@
 package com.unmeshc.ourthoughts.services;
 
-import com.unmeshc.ourthoughts.commands.CommentCommand;
 import com.unmeshc.ourthoughts.commands.PostCommand;
-import com.unmeshc.ourthoughts.converters.CommentToCommentCommand;
+import com.unmeshc.ourthoughts.converters.CommentToCommentDto;
 import com.unmeshc.ourthoughts.converters.PostCommandToPost;
-import com.unmeshc.ourthoughts.converters.PostToPostCommand;
+import com.unmeshc.ourthoughts.converters.PostToPostDetailsDto;
 import com.unmeshc.ourthoughts.domain.Post;
 import com.unmeshc.ourthoughts.domain.User;
+import com.unmeshc.ourthoughts.dtos.CommentDto;
+import com.unmeshc.ourthoughts.dtos.PostDetailsDto;
 import com.unmeshc.ourthoughts.exceptions.NotFoundException;
 import com.unmeshc.ourthoughts.repositories.CommentRepository;
 import com.unmeshc.ourthoughts.repositories.PostRepository;
@@ -28,22 +29,22 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final PostCommandToPost postCommandToPost;
     private final ImageService imageService;
-    private final PostToPostCommand postToPostCommand;
     private final CommentRepository commentRepository;
-    private final CommentToCommentCommand commentToCommentCommand;
+    private final PostToPostDetailsDto postToPostDetailsDto;
+    private final CommentToCommentDto commentToCommentDto;
 
     public PostServiceImpl(PostRepository postRepository,
                            PostCommandToPost postCommandToPost,
                            ImageService imageService,
-                           PostToPostCommand postToPostCommand,
                            CommentRepository commentRepository,
-                           CommentToCommentCommand commentToCommentCommand) {
+                           PostToPostDetailsDto postToPostDetailsDto,
+                           CommentToCommentDto commentToCommentDto) {
         this.postRepository = postRepository;
         this.postCommandToPost = postCommandToPost;
         this.imageService = imageService;
-        this.postToPostCommand = postToPostCommand;
         this.commentRepository = commentRepository;
-        this.commentToCommentCommand = commentToCommentCommand;
+        this.postToPostDetailsDto = postToPostDetailsDto;
+        this.commentToCommentDto = commentToCommentDto;
     }
 
     @Override
@@ -66,26 +67,26 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostCommand getPostDetailsById(long postId) {
+    public PostDetailsDto getPostDetailsById(long postId) {
         Post foundPost = postRepository.findById(postId).orElse(null);
         if (foundPost == null) {
             throw new NotFoundException("Post not found with id - " + postId);
         }
 
-        PostCommand postCommand = postToPostCommand.convert(foundPost);
-        postCommand.setWriterName(foundPost.getUser().getFirstName() + " "
+        PostDetailsDto postDetailsDto = postToPostDetailsDto.convert(foundPost);
+        postDetailsDto.setWriterName(foundPost.getUser().getFirstName() + " "
                 + foundPost.getUser().getLastName());
 
         // get comments for this post
-        List<CommentCommand> commentCommands = new ArrayList<>();
+        List<CommentDto> commentDtos = new ArrayList<>();
         commentRepository.findByPostOrderByAddingDateTime(foundPost).forEach(comment -> {
-            CommentCommand commentCommand = commentToCommentCommand.convert(comment);
-            commentCommand.setUserId(comment.getUser().getId());
-            commentCommand.setPostId(comment.getPost().getId());
-            commentCommands.add(commentCommand);
+            CommentDto commentDto = commentToCommentDto.convert(comment);
+            commentDto.setUserId(comment.getUser().getId());
+            commentDtos.add(commentDto);
         });
-        postCommand.setCommentCommands(commentCommands);
 
-        return postCommand;
+        postDetailsDto.setCommentDtos(commentDtos);
+
+        return postDetailsDto;
     }
 }

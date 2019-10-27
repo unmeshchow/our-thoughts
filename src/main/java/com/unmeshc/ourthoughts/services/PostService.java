@@ -3,6 +3,7 @@ package com.unmeshc.ourthoughts.services;
 import com.unmeshc.ourthoughts.commands.PostCommand;
 import com.unmeshc.ourthoughts.domain.Post;
 import com.unmeshc.ourthoughts.domain.User;
+import com.unmeshc.ourthoughts.dtos.PostDetailsDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -17,5 +18,5 @@ public interface PostService {
 
     Page<Post> getPostsLikeTitle(String searchValue, Pageable pageable);
 
-    PostCommand getPostDetailsById(long postId);
+    PostDetailsDto getPostDetailsById(long postId);
 }

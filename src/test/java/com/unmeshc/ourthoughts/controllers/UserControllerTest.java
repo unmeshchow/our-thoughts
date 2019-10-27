@@ -1,30 +1,7 @@
 package com.unmeshc.ourthoughts.controllers;
 
-import com.unmeshc.ourthoughts.commands.UserCommand;
-import com.unmeshc.ourthoughts.configurations.SecurityUtils;
-import com.unmeshc.ourthoughts.converters.UserToUserCommand;
-import com.unmeshc.ourthoughts.domain.User;
-import com.unmeshc.ourthoughts.services.ImageService;
-import com.unmeshc.ourthoughts.services.UserService;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.io.InputStream;
-
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 public class UserControllerTest {
-
+/*
     @Mock
     private UserService userService;
 
@@ -132,5 +109,5 @@ public class UserControllerTest {
         verify(securityUtils).getEmailFromSecurityContext();
         verify(imageService).convertIntoByteArray(bytes);
         verifyZeroInteractions(userToUserCommand);
-    }
+    }*/
 }

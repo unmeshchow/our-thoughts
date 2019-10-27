@@ -1,11 +1,11 @@
 package com.unmeshc.ourthoughts.controllers;
 
-import com.unmeshc.ourthoughts.commands.PostCommand;
-import com.unmeshc.ourthoughts.commands.UserCommand;
-import com.unmeshc.ourthoughts.converters.PostToPostCommand;
-import com.unmeshc.ourthoughts.converters.UserToUserCommand;
+import com.unmeshc.ourthoughts.converters.PostToPostDto;
+import com.unmeshc.ourthoughts.converters.UserToUserDto;
 import com.unmeshc.ourthoughts.domain.Post;
 import com.unmeshc.ourthoughts.domain.User;
+import com.unmeshc.ourthoughts.dtos.PostDto;
+import com.unmeshc.ourthoughts.dtos.UserDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.data.domain.Page;
@@ -25,47 +25,43 @@ import java.util.List;
 @Component
 public class ControllerUtils {
 
-    private final UserToUserCommand userToUserCommand;
-    private final PostToPostCommand postToPostCommand;
+    private final UserToUserDto userToUserDto;
+    private final PostToPostDto postToPostDto;
 
-    public ControllerUtils(UserToUserCommand userToUserCommand,
-                           PostToPostCommand postToPostCommand) {
-        this.userToUserCommand = userToUserCommand;
-        this.postToPostCommand = postToPostCommand;
+    public ControllerUtils(UserToUserDto userToUserDto,
+                           PostToPostDto postToPostDto) {
+        this.userToUserDto = userToUserDto;
+        this.postToPostDto = postToPostDto;
     }
 
-    public List<PostCommand> convertToPostCommandList(List<Post> posts) {
-        List<PostCommand> postCommands = new ArrayList<>();
+    public List<PostDto> convertToPostDtoList(List<Post> posts) {
+        List<PostDto> postDtos = new ArrayList<>();
         posts.forEach(post -> {
-            post.setCaption(null);
-            post.setPhoto(null);
-            PostCommand postCommand = postToPostCommand.convert(post);
-            postCommands.add(postCommand);
+            PostDto postDto = postToPostDto.convert(post);
+            postDtos.add(postDto);
         });
 
-        return postCommands;
+        return postDtos;
     }
 
-    public List<UserCommand> convertToUserCommandList(List<User> users) {
-        List<UserCommand> userCommands = new ArrayList<>();
+    public List<UserDto> convertToUserDtoList(List<User> users) {
+        List<UserDto> userDtos = new ArrayList<>();
         users.forEach(user -> {
-            user.setPassword(null);
-            user.setImage(null);
-            UserCommand userCommand = userToUserCommand.convert(user);
-            userCommands.add(userCommand);
+            UserDto userDto = userToUserDto.convert(user);
+            userDtos.add(userDto);
         });
 
-        return userCommands;
+        return userDtos;
     }
 
-    public List<PostCommand> adjustTitleAndBody(List<PostCommand> postCommands) {
+    public List<PostDto> adjustTitleAndBody(List<PostDto> postDtos) {
 
-        postCommands.forEach(post -> {
+        postDtos.forEach(post -> {
             post.setTitle(addSpacesOrEllipsis(post.getTitle(), 15));
             post.setBody(addSpacesOrEllipsis(post.getBody(), 50));
         });
 
-        return postCommands;
+        return postDtos;
     }
 
     public void copyBytesToResponse(HttpServletResponse response, byte[] bytes) {

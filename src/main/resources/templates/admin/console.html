@@ -14,7 +14,7 @@
 
             <section id="noUsers"
                      class="text-center mb-3"
-                     th:if="${#lists.isEmpty(users)}">
+                     th:if="${#lists.isEmpty(userDtos)}">
                 <span th:text="#{console.page.no.users}"
                       style="font-weight: bold">no users</span>
             </section>
@@ -22,7 +22,7 @@
             <!-- Users -->
             <section id="users"
                      class="mb-3"
-                     th:if="${!#lists.isEmpty(users)}">
+                     th:if="${!#lists.isEmpty(userDtos)}">
                 <div class="card">
                     <div class="card-body">
                         <table class="table">
@@ -36,7 +36,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="user : ${users}">
+                                <tr th:each="user : ${userDtos}">
                                     <td th:text="${user.firstName}">first</td>
                                     <td th:text="${user.lastName}">last</td>
                                     <td th:text="${user.email}">email</td>

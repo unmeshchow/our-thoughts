@@ -1,7 +1,7 @@
 package com.unmeshc.ourthoughts.converters;
 
-import com.unmeshc.ourthoughts.commands.CommentCommand;
 import com.unmeshc.ourthoughts.domain.Comment;
+import com.unmeshc.ourthoughts.dtos.CommentDto;
 import lombok.Synchronized;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.convert.converter.Converter;
@@ -12,17 +12,17 @@ import org.springframework.stereotype.Component;
  * Created by uc on 10/2/2019
  */
 @Component
-public class CommentToCommentCommand implements Converter<Comment, CommentCommand> {
+public class CommentToCommentDto implements Converter<Comment, CommentDto> {
 
     @Synchronized
     @Nullable
     @Override
-    public CommentCommand convert(Comment source) {
+    public CommentDto convert(Comment source) {
         if (source == null) {
             return null;
         }
 
-        final CommentCommand target = CommentCommand.builder().build();
+        final CommentDto target = CommentDto.builder().build();
         BeanUtils.copyProperties(source, target);
 
         return target;

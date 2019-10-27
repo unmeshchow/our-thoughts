@@ -9,12 +9,14 @@
     <div class="container">
         <main class="mb-3 main-top-margin">
 
+            <!-- Heading -->
             <section id="heading" class="mb-3">
                 <h1 th:replace="fragments/headingFragment :: heading(#{index.page.heading})"></h1>
             </section>
 
             <hr>
 
+            <!-- Welcome Message -->
             <section id="welcome" class="mb-3">
                 <span sec:authorize="!isAuthenticated()
                                      or hasAuthority('CHANGE_PASSWORD_PRIVILEGE')
@@ -34,7 +36,7 @@
                 </span>
             </section>
 
-            <!-- Search -->
+            <!-- Search by Title Form-->
             <section id="searchByTitle" class="mb-5 mt-4">
                 <div class="card white" width="100%">
                     <div class="card-body p-0">
@@ -63,21 +65,22 @@
                 </div>
             </section>
 
+            <!-- No Posts -->
             <section id="noPosts"
                      class="mb-3 text-center"
-                     th:if="${#sets.isEmpty(posts)}">
+                     th:if="${#lists.isEmpty(postDtos)}">
                 <span th:text="#{index.page.no.posts}"
                       style="font-weight: bold">no posts</span>
             </section>
 
             <!-- Search Result -->
             <section id="result" class="mb-3"
-                     th:if="${!#sets.isEmpty(posts)}">
+                     th:if="${!#lists.isEmpty(postDtos)}">
                 <div class="row">
 
                     <!-- Individual Post -->
                     <div class="col-lg-3 col-md-4 col-sm-6"
-                         th:each="post : ${posts}">
+                         th:each="postDto : ${postDtos}">
 
                         <!-- Card -->
                         <div class="card mb-4">
@@ -85,7 +88,7 @@
                             <!-- Card image -->
                             <div class="view overlay">
                                 <img class="card-img-top"
-                                     th:src="@{/visitor/post/{postId}/photo(postId=${post.id})}"
+                                     th:src="@{/visitor/post/{postId}/photo(postId=${postDto.id})}"
                                      width="300"
                                      height="200">
                                 <a href="#!">
@@ -97,18 +100,18 @@
                             <div class="card-body">
                                 <!-- Title -->
                                 <h4 class="card-title"
-                                    th:text="${post.title}">Card title</h4>
+                                    th:text="${postDto.title}">Card title</h4>
 
                                 <!-- Text -->
                                 <p class="card-text"
-                                   th:text="${post.body}">
+                                   th:text="${postDto.body}">
                                     Some quick example
                                 </p>
 
                                 <!-- Button -->
                                 <a href="#" class="btn btn-indigo btn-sm"
                                    th:text="#{view.link.label}"
-                                   th:href="@{/visitor/post/{postId}/details(postId=${post.id})}">
+                                   th:href="@{/visitor/post/{postId}/details(postId=${postDto.id})}">
                                     Button
                                 </a>
                             </div>

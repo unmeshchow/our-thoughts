@@ -5,7 +5,6 @@ import com.unmeshc.ourthoughts.validators.ValidEmail;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
-import java.time.LocalDateTime;
 
 /**
  * Created by uc on 9/29/2019
@@ -17,8 +16,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @PasswordMatches
 public class UserCommand {
-
-    private Long id;
 
     @NotBlank
     private String firstName;
@@ -35,8 +32,4 @@ public class UserCommand {
 
     @NotBlank
     private String matchingPassword;
-
-    private Byte[] image;
-
-    private LocalDateTime registrationDateTime;
 }

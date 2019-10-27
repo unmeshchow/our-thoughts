@@ -1,10 +1,10 @@
 package com.unmeshc.ourthoughts.controllers;
 
 import com.unmeshc.ourthoughts.commands.PostCommand;
-import com.unmeshc.ourthoughts.commands.UserCommand;
 import com.unmeshc.ourthoughts.configurations.SecurityUtils;
-import com.unmeshc.ourthoughts.converters.UserToUserCommand;
+import com.unmeshc.ourthoughts.converters.UserToUserDto;
 import com.unmeshc.ourthoughts.domain.User;
+import com.unmeshc.ourthoughts.dtos.UserDto;
 import com.unmeshc.ourthoughts.services.ImageService;
 import com.unmeshc.ourthoughts.services.PostService;
 import com.unmeshc.ourthoughts.services.UserService;
@@ -33,27 +33,27 @@ public class UserController {
     static final String CREATE_POST_FORM = "user/createPostForm";
 
     private final UserService userService;
-    private final UserToUserCommand userToUserCommand;
     private final ImageService imageService;
     private final SecurityUtils securityUtils;
     private final PostService postService;
     private final ControllerUtils controllerUtils;
     private final PostPageTracker postPageTracker;
+    private final UserToUserDto userToUserDto;
 
     public UserController(UserService userService,
-                          UserToUserCommand userToUserCommand,
                           ImageService imageService,
                           SecurityUtils securityUtils,
                           PostService postService,
                           ControllerUtils controllerUtils,
-                          PostPageTracker postPageTracker) {
+                          PostPageTracker postPageTracker,
+                          UserToUserDto userToUserDto) {
         this.imageService = imageService;
         this.securityUtils = securityUtils;
         this.userService = userService;
-        this.userToUserCommand = userToUserCommand;
         this.postService = postService;
         this.controllerUtils = controllerUtils;
         this.postPageTracker = postPageTracker;
+        this.userToUserDto = userToUserDto;
     }
 
     @InitBinder
@@ -64,7 +64,6 @@ public class UserController {
     @ModelAttribute("user")
     public User loggedInUser() {
         String email = securityUtils.getEmailFromSecurityContext();
-
         return userService.getByEmail(email);
     }
 
@@ -95,8 +94,8 @@ public class UserController {
 
     @GetMapping("/profile")
     public String showProfile(@ModelAttribute("user") User user, Model model) {
-        UserCommand userCommand = userToUserCommand.convert(user);
-        model.addAttribute("userCommand", userCommand);
+        UserDto userDto = userToUserDto.convert(user);
+        model.addAttribute("userDto", userDto);
 
         return MY_PROFILE;
     }

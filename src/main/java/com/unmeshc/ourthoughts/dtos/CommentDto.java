@@ -1,4 +1,4 @@
-package com.unmeshc.ourthoughts.commands;
+package com.unmeshc.ourthoughts.dtos;
 
 import lombok.*;
 
@@ -13,15 +13,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @ToString
-public class CommentCommand {
-
-    private Long id;
+public class CommentDto {
 
     private String message;
-
-    private Long userId;
-
-    private Long postId;
-
     private LocalDateTime addingDateTime;
+    private Long userId;
 }

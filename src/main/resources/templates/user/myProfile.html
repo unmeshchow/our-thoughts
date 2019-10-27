@@ -21,13 +21,13 @@
 
                             <!-- Avatar -->
                             <div class="mx-auto">
-                                <img th:if="${userCommand.image == null}"
+                                <img th:if="${userDto.image == null}"
                                      th:src="@{/img/avatar.jpg}"
                                      src="../../static/img/avatar.jpg"
                                      class="rounded-circle" alt="woman avatar"
                                      width="300" height="300">
 
-                                <img th:if="${userCommand.image != null}"
+                                <img th:if="${userDto.image != null}"
                                      th:src="@{/user/get/image}"
                                      src="../../static/img/avatar.jpg"
                                      class="rounded-circle" alt="woman avatar"
@@ -46,17 +46,17 @@
                                     <tr>
                                         <td th:text="#{form.label.firstName} + ':'" class="text-right"
                                             style="font-weight: bold;">first name</td>
-                                        <td th:text="${userCommand.firstName}">first</td>
+                                        <td th:text="${userDto.firstName}">first</td>
                                     </tr>
                                     <tr>
                                         <td th:text="#{form.label.lastName} + ':'" class="text-right"
                                             style="font-weight: bold;">last name</td>
-                                        <td th:text="${userCommand.lastName}">last</td>
+                                        <td th:text="${userDto.lastName}">last</td>
                                     </tr>
                                     <tr>
                                         <td th:text="#{form.label.email} + ':'" class="text-right"
                                             style="font-weight: bold;">email</td>
-                                        <td th:text="${userCommand.email}">last</td>
+                                        <td th:text="${userDto.email}">last</td>
                                     </tr>
                                 </table>
                             </div>
