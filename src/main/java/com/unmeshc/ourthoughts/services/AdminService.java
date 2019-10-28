@@ -1,5 +1,6 @@
 package com.unmeshc.ourthoughts.services;
 
+import com.unmeshc.ourthoughts.domain.Comment;
 import com.unmeshc.ourthoughts.domain.Post;
 import com.unmeshc.ourthoughts.domain.User;
 import org.springframework.data.domain.Page;
@@ -22,4 +23,8 @@ public interface AdminService {
     Page<Post> getPostForUser(User user, Pageable pageable);
 
     User getUserById(long userId);
+
+    Post getPostById(long postId);
+
+    Page<Comment> getCommentForPost(Post post, Pageable pageable);
 }

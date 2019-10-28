@@ -1,10 +1,9 @@
 package com.unmeshc.ourthoughts.controllers;
 
+import com.unmeshc.ourthoughts.domain.Comment;
 import com.unmeshc.ourthoughts.domain.Post;
 import com.unmeshc.ourthoughts.domain.User;
-import com.unmeshc.ourthoughts.dtos.PostAdminDto;
-import com.unmeshc.ourthoughts.dtos.UserAdminDto;
-import com.unmeshc.ourthoughts.dtos.UserPostAdminDto;
+import com.unmeshc.ourthoughts.dtos.*;
 import com.unmeshc.ourthoughts.exceptions.NotFoundException;
 import com.unmeshc.ourthoughts.services.AdminService;
 import lombok.extern.slf4j.Slf4j;
@@ -30,19 +29,22 @@ import java.util.Optional;
 @RequestMapping("/admin")
 public class AdminController {
 
-    private final UserPageTracker userPageTracker;
+    private final UserPageAdminTracker userPageTracker;
     private final AdminService adminService;
     private final ControllerUtils controllerUtils;
     private final PostPageAdminTracker postPageAdminTracker;
+    private final CommentPageAdminTracker commentPageAdminTracker;
 
-    public AdminController(UserPageTracker userPageTracker,
+    public AdminController(UserPageAdminTracker userPageTracker,
                            AdminService adminService,
                            ControllerUtils controllerUtils,
-                           PostPageAdminTracker postPageAdminTracker) {
+                           PostPageAdminTracker postPageAdminTracker,
+                           CommentPageAdminTracker commentPageAdminTracker) {
         this.userPageTracker = userPageTracker;
         this.adminService = adminService;
         this.controllerUtils = controllerUtils;
         this.postPageAdminTracker = postPageAdminTracker;
+        this.commentPageAdminTracker = commentPageAdminTracker;
     }
 
     @GetMapping("/console.html")
@@ -85,6 +87,10 @@ public class AdminController {
             throw new NotFoundException("User not found with id - " + userId);
         }
 
+        if (postPageAdminTracker.getUserId() != userId) {
+            postPageAdminTracker.reset();
+        }
+
         int currentPage = page.orElse(postPageAdminTracker.getCurrentPage());
         int pageSize = size.orElse(2);
 
@@ -93,6 +99,7 @@ public class AdminController {
 
         Page<Post> postPage = adminService.getPostForUser(user, pageable);
         postPageAdminTracker.setCurrentPage(postPage.getNumber() + 1);
+        postPageAdminTracker.setUserId(userId);
 
         List<PostAdminDto> postAdminDtos =
                 controllerUtils.convertToPostAdminDtoList(postPage.getContent());
@@ -104,6 +111,43 @@ public class AdminController {
         model.addAttribute("pageNumbers", postPageAdminTracker.getPageNumbersForPagination(postPage));
 
         return "admin/userPosts";
+    }
+
+    @GetMapping("/post/{postId}/comment")
+    public String showPostComments(@RequestParam("page") Optional<Integer> page,
+                                   @RequestParam("size") Optional<Integer> size,
+                                   @PathVariable long postId,
+                                   Model model) {
+
+        Post post = adminService.getPostById(postId);
+        if (post == null) {
+            throw new NotFoundException("Post not found with id - " + postId);
+        }
+
+        if (commentPageAdminTracker.getPostId() != postId) {
+            commentPageAdminTracker.reset();
+        }
+
+        int currentPage = page.orElse(commentPageAdminTracker.getCurrentPage());
+        int pageSize = size.orElse(2);
+
+        Pageable pageable = PageRequest.of((currentPage - 1), pageSize,
+                Sort.by("addingDateTime").descending()); // zero based page
+
+        Page<Comment> commentPage = adminService.getCommentForPost(post, pageable);
+        commentPageAdminTracker.setCurrentPage(commentPage.getNumber() + 1);
+        commentPageAdminTracker.setPostId(postId);
+
+        List<CommentAdminDto> commentAdminDtos =
+                controllerUtils.convertToCommentAdminDtoList(commentPage.getContent());
+        PostCommentAdminDto postCommentAdminDto = PostCommentAdminDto.builder().id(postId)
+                .title(post.getTitle()).commentAdminDtos(commentAdminDtos).build();
+
+        model.addAttribute("postCommentAdminDto", postCommentAdminDto);
+        model.addAttribute("currentPage", commentPageAdminTracker.getCurrentPage());
+        model.addAttribute("pageNumbers", commentPageAdminTracker.getPageNumbersForPagination(commentPage));
+
+        return "admin/postComments";
     }
 
 }

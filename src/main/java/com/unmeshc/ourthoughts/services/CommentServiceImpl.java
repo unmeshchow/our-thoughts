@@ -4,6 +4,8 @@ import com.unmeshc.ourthoughts.domain.Comment;
 import com.unmeshc.ourthoughts.domain.Post;
 import com.unmeshc.ourthoughts.domain.User;
 import com.unmeshc.ourthoughts.repositories.CommentRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -22,5 +24,10 @@ public class CommentServiceImpl implements CommentService {
     public void saveCommentOfUserForPost(String userComment, User user, Post post) {
         Comment comment = Comment.builder().message(userComment).user(user).post(post).build();
         commentRepository.save(comment);
+    }
+
+    @Override
+    public Page<Comment> getCommentForPost(Post post, Pageable pageable) {
+        return commentRepository.findByPost(post, pageable);
     }
 }

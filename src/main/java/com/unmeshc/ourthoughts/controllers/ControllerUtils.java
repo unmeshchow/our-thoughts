@@ -1,10 +1,13 @@
 package com.unmeshc.ourthoughts.controllers;
 
+import com.unmeshc.ourthoughts.converters.CommentToCommentAdminDto;
 import com.unmeshc.ourthoughts.converters.PostToPostAdminDto;
 import com.unmeshc.ourthoughts.converters.PostToPostSearchDto;
 import com.unmeshc.ourthoughts.converters.UserToUserAdminDto;
+import com.unmeshc.ourthoughts.domain.Comment;
 import com.unmeshc.ourthoughts.domain.Post;
 import com.unmeshc.ourthoughts.domain.User;
+import com.unmeshc.ourthoughts.dtos.CommentAdminDto;
 import com.unmeshc.ourthoughts.dtos.PostAdminDto;
 import com.unmeshc.ourthoughts.dtos.PostSearchDto;
 import com.unmeshc.ourthoughts.dtos.UserAdminDto;
@@ -30,13 +33,26 @@ public class ControllerUtils {
     private final UserToUserAdminDto userToAdminUserDto;
     private final PostToPostSearchDto postToPostSearchDto;
     private final PostToPostAdminDto postToPostAdminDto;
+    private final CommentToCommentAdminDto commentToCommentAdminDto;
 
     public ControllerUtils(UserToUserAdminDto userToAdminUserDto,
                            PostToPostSearchDto postToPostSearchDto,
-                           PostToPostAdminDto postToPostAdminDto) {
+                           PostToPostAdminDto postToPostAdminDto,
+                           CommentToCommentAdminDto commentToCommentAdminDto) {
         this.userToAdminUserDto = userToAdminUserDto;
         this.postToPostSearchDto = postToPostSearchDto;
         this.postToPostAdminDto = postToPostAdminDto;
+        this.commentToCommentAdminDto = commentToCommentAdminDto;
+    }
+
+    public List<CommentAdminDto> convertToCommentAdminDtoList(List<Comment> comments) {
+        List<CommentAdminDto> commentAdminDtos = new ArrayList<>();
+        comments.forEach(comment -> {
+            CommentAdminDto commentAdminDto = commentToCommentAdminDto.convert(comment);
+            commentAdminDtos.add(commentAdminDto);
+        });
+
+        return commentAdminDtos;
     }
 
     public List<PostAdminDto> convertToPostAdminDtoList(List<Post> posts) {
@@ -155,6 +171,4 @@ public class ControllerUtils {
 
         return text.substring(0, length - 3) + "...";
     }
-
-
 }

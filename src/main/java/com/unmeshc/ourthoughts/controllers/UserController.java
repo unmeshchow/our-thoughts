@@ -36,7 +36,7 @@ public class UserController {
     private final SecurityUtils securityUtils;
     private final PostService postService;
     private final ControllerUtils controllerUtils;
-    private final PostPageTracker postPageTracker;
+    private final PostPageSearchTracker postPageTracker;
     private final UserToUserProfileDto userToUserProfileDto;
 
     public UserController(UserService userService,
@@ -44,7 +44,7 @@ public class UserController {
                           SecurityUtils securityUtils,
                           PostService postService,
                           ControllerUtils controllerUtils,
-                          PostPageTracker postPageTracker,
+                          PostPageSearchTracker postPageTracker,
                           UserToUserProfileDto userToUserProfileDto) {
         this.imageService = imageService;
         this.securityUtils = securityUtils;

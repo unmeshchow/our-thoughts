@@ -21,20 +21,27 @@ import java.util.stream.IntStream;
 @Setter
 @Component
 @Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class UserPageTracker implements PageTracker {
+public class CommentPageAdminTracker implements PageTracker {
 
-    private final ControllerUtils controllerUtils;
-
-    public UserPageTracker(ControllerUtils controllerUtils) {
-        this.controllerUtils = controllerUtils;
-    }
-
+    private long postId = 0;
     private int currentPage = 1; // one based page
     private int startPage = 1;
     private int endPage = 4; // maximum number of pagination links at a time
 
+    private final ControllerUtils controllerUtils;
+
+    public CommentPageAdminTracker(ControllerUtils controllerUtils) {
+        this.controllerUtils = controllerUtils;
+    }
+
     Set<Integer> getPageNumbersForPagination(Page<?> postPage) {
         controllerUtils.adjustPagination(postPage, this);
         return IntStream.rangeClosed(startPage, endPage).boxed().collect(Collectors.toSet());
+    }
+
+    void reset() {
+        currentPage = 1;
+        startPage = 1;
+        endPage = 4;
     }
 }

@@ -1,6 +1,6 @@
 package com.unmeshc.ourthoughts.services;
 
-import com.unmeshc.ourthoughts.converters.PostToPostAdminDto;
+import com.unmeshc.ourthoughts.domain.Comment;
 import com.unmeshc.ourthoughts.domain.Post;
 import com.unmeshc.ourthoughts.domain.Role;
 import com.unmeshc.ourthoughts.domain.User;
@@ -25,18 +25,18 @@ public class AdminServiceImpl implements AdminService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final PostService postService;
-    private final PostToPostAdminDto postToPostAdminDto;
+    private final CommentService commentService;
 
     public AdminServiceImpl(UserService userService,
                             RoleRepository roleRepository,
                             PasswordEncoder passwordEncoder,
                             PostService postService,
-                            PostToPostAdminDto postToPostAdminDto) {
+                            CommentService commentService) {
         this.userService = userService;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.postService = postService;
-        this.postToPostAdminDto = postToPostAdminDto;
+        this.commentService = commentService;
     }
 
     @Override
@@ -75,5 +75,15 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public User getUserById(long userId) {
         return userService.getById(userId);
+    }
+
+    @Override
+    public Post getPostById(long postId) {
+        return postService.getById(postId);
+    }
+
+    @Override
+    public Page<Comment> getCommentForPost(Post post, Pageable pageable) {
+        return commentService.getCommentForPost(post, pageable);
     }
 }

@@ -35,7 +35,7 @@ public class PostController {
     private final UserService userService;
     private final PostService postService;
     private final CommentService commentService;
-    private final PostPageTracker postPageTracker;
+    private final PostPageSearchTracker postPageTracker;
     private final ControllerUtils controllerUtils;
     private final ImageService imageService;
 
@@ -43,7 +43,7 @@ public class PostController {
                           UserService userService,
                           PostService postService,
                           CommentService commentService,
-                          PostPageTracker postPageTracker,
+                          PostPageSearchTracker postPageTracker,
                           ControllerUtils controllerUtils,
                           ImageService imageService) {
         this.securityUtils = securityUtils;

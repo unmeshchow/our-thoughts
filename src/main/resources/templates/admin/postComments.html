@@ -1,51 +1,48 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/headFragment :: head(#{user.posts.page.title})"></head>
+<head th:replace="fragments/headFragment :: head(#{post.comments.page.title})"></head>
 <body>
     <header th:replace="fragments/headerFragment :: header"></header>
 
     <div class="container">
         <main class="mb-3 main-top-margin">
             <section id="heading" class="mb-3">
-                <h1 th:replace="fragments/headingFragment :: heading(#{user.posts.page.heading})"></h1>
+                <h1 th:replace="fragments/headingFragment :: heading(#{post.comments.page.heading})"></h1>
             </section>
 
             <hr>
 
             <section id="user" class="mb-3 text-center">
-                <h3 th:text="#{user.posts.page.caption(${userPostAdminDto.firstName})}"></h3>
+                <h3 th:text="#{post.comments.page.caption(${postCommentAdminDto.title})}"></h3>
             </section>
 
             <!-- No Posts -->
             <section id="noPosts"
                      class="mb-3 text-center"
-                     th:if="${#lists.isEmpty(userPostAdminDto.postAdminDtos)}">
+                     th:if="${#lists.isEmpty(postCommentAdminDto.commentAdminDtos)}">
                 <span th:text="#{no.posts}"
                       style="font-weight: bold">no posts</span>
             </section>
 
             <section id="posts"
                      class="mb-3"
-                     th:if="${!#lists.isEmpty(userPostAdminDto.postAdminDtos)}">
+                     th:if="${!#lists.isEmpty(postCommentAdminDto.commentAdminDtos)}">
                 <div class="card">
                     <div class="card-body">
                         <table class="table">
                             <thead class="green white-text">
-                                <tr>
-                                    <th th:text="#{user.posts.page.post.table.heading.createdDate}">date</th>
-                                    <th th:text="#{user.posts.page.post.table.heading.title}">title</th>
-                                    <th th:text="#{table.heading.view}">view</th>
-                                    <th th:text="#{table.heading.delete}">delete</th>
-                                </tr>
+                            <tr>
+                                <th th:text="#{post.comments.page.table.heading.addingDate}">date</th>
+                                <th th:text="#{post.comments.page.table.heading.comment}">title</th>
+                                <th th:text="#{table.heading.delete}">delete</th>
+                            </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="postAdminDto : ${userPostAdminDto.postAdminDtos}">
-                                    <td th:text="${#temporals.format(postAdminDto.creationDateTime, 'dd/MM/yyyy')}">date</td>
-                                    <td th:text="${postAdminDto.title}">title</td>
-                                    <td><a th:href="@{/admin/post/{postId}/comment(postId=${postAdminDto.id})}"
-                                           th:text="#{table.heading.view}">view</a></td>
-                                    <td>delete</td>
-                                </tr>
+                            <tr th:each="commentAdminDto : ${postCommentAdminDto.commentAdminDtos}">
+                                <td th:text="${#temporals.format(commentAdminDto.addingDateTime, 'dd/MM/yyyy')}">date</td>
+                                <td th:text="${commentAdminDto.message}">comment</td>
+                                <td>delete</td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -54,7 +51,7 @@
 
             <!-- Pagination -->
             <section id="pagination" class="mb-3"
-                     th:if="${!#lists.isEmpty(userPostAdminDto.postAdminDtos)}">
+                     th:if="${!#lists.isEmpty(postCommentAdminDto.commentAdminDtos)}">
                 <nav aria-label="Page navigation example">
                     <ul class="pagination pg-blue">
                         <li class="page-item"
@@ -62,7 +59,7 @@
                             th:classappend="${currentPage  == i} ? active : ''">
                             <a th:text="${i}"
                                class="page-link"
-                               th:href="@{/admin/user/{userId}/post(userId=${userPostAdminDto.id}, page=${i})}">1</a>
+                               th:href="@{/admin/post/{postId}/comment(postId=${postCommentAdminDto.id}, page=${i})}">1</a>
                         </li>
                     </ul>
                 </nav>
