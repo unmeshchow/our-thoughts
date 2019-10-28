@@ -86,4 +86,9 @@ public class AdminServiceImpl implements AdminService {
     public Page<Comment> getCommentForPost(Post post, Pageable pageable) {
         return commentService.getCommentForPost(post, pageable);
     }
+
+    @Override
+    public void deleteCommentById(long commentId) {
+        commentService.deleteById(commentId);
+    }
 }

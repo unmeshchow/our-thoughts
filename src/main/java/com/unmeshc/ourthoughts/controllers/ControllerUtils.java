@@ -119,11 +119,11 @@ public class ControllerUtils {
                 isNotWithin300KB(multipartFile);
     }
 
-    public void adjustPagination(Page<?> postPage, PageTracker pageTracker) {
+    public void adjustPagination(Page<?> currentPage, PageTracker pageTracker) {
 
         // Calculate start and end page for the dynamic pagination
-        if (postPage.getTotalPages() < pageTracker.getEndPage()) {
-            pageTracker.setEndPage(postPage.getTotalPages());
+        if (currentPage.getTotalPages() < pageTracker.getEndPage()) {
+            pageTracker.setEndPage(currentPage.getTotalPages());
 
         } else if (pageTracker.getStartPage() != 1 &&
                   (pageTracker.getCurrentPage() == pageTracker.getStartPage() ||
@@ -132,7 +132,7 @@ public class ControllerUtils {
             pageTracker.setStartPage(pageTracker.getStartPage() - 1);
             pageTracker.setEndPage(pageTracker.getEndPage() - 1);
 
-        } else if (pageTracker.getEndPage() != postPage.getTotalPages() &&
+        } else if (pageTracker.getEndPage() != currentPage.getTotalPages() &&
                   (pageTracker.getCurrentPage() == pageTracker.getEndPage() ||
                           (pageTracker.getCurrentPage() == (pageTracker.getEndPage() -1)))) {
 

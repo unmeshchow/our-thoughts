@@ -116,6 +116,7 @@ public class AdminController {
     @GetMapping("/post/{postId}/comment")
     public String showPostComments(@RequestParam("page") Optional<Integer> page,
                                    @RequestParam("size") Optional<Integer> size,
+                                   @RequestParam(value = "delete", defaultValue = "no") String delete,
                                    @PathVariable long postId,
                                    Model model) {
 
@@ -135,6 +136,18 @@ public class AdminController {
                 Sort.by("addingDateTime").descending()); // zero based page
 
         Page<Comment> commentPage = adminService.getCommentForPost(post, pageable);
+
+        // Fix the last page problem - this method is called after deletion
+        if (delete.equalsIgnoreCase("yes") &&
+                   commentPage.getContent().isEmpty() &&
+                   currentPage > 1) {
+
+            currentPage -= 1;
+            pageable = PageRequest.of((currentPage - 1), pageSize,
+                    Sort.by("addingDateTime").descending());
+            commentPage = adminService.getCommentForPost(post, pageable);
+        }
+
         commentPageAdminTracker.setCurrentPage(commentPage.getNumber() + 1);
         commentPageAdminTracker.setPostId(postId);
 
@@ -148,6 +161,13 @@ public class AdminController {
         model.addAttribute("pageNumbers", commentPageAdminTracker.getPageNumbersForPagination(commentPage));
 
         return "admin/postComments";
+    }
+
+    @GetMapping("/post/{postId}/comment/{commentId}/delete")
+    public String deleteComment(@PathVariable long postId,
+                                @PathVariable long commentId) {
+        adminService.deleteCommentById(commentId);
+        return "redirect:/admin/post/" + postId + "/comment?delete=yes";
     }
 
 }

@@ -41,7 +41,11 @@
                             <tr th:each="commentAdminDto : ${postCommentAdminDto.commentAdminDtos}">
                                 <td th:text="${#temporals.format(commentAdminDto.addingDateTime, 'dd/MM/yyyy')}">date</td>
                                 <td th:text="${commentAdminDto.message}">comment</td>
-                                <td>delete</td>
+                                <td><a th:text="#{table.heading.delete}"
+                                       th:href="@{/admin/post/{postId}/comment/{commentId}/delete
+                                       (postId=${postCommentAdminDto.id}, commentId=${commentAdminDto.id})}">
+                                    delete</a>
+                                </td>
                             </tr>
                             </tbody>
                         </table>

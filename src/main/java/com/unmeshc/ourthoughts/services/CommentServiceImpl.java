@@ -30,4 +30,9 @@ public class CommentServiceImpl implements CommentService {
     public Page<Comment> getCommentForPost(Post post, Pageable pageable) {
         return commentRepository.findByPost(post, pageable);
     }
+
+    @Override
+    public void deleteById(long commentId) {
+        commentRepository.deleteById(commentId);
+    }
 }
