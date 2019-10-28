@@ -49,12 +49,13 @@ public class AdminController {
 
     @GetMapping("/console.html")
     public String adminConsole() {
-        return "redirect:/admin/all/users";
+        return "redirect:/admin/all/user";
     }
 
-    @GetMapping("/all/users")
+    @GetMapping("/all/user")
     public String allUsers(@RequestParam("page") Optional<Integer> page,
                            @RequestParam("size") Optional<Integer> size,
+                           @RequestParam(value = "delete", defaultValue = "no") String delete,
                            Model model) {
 
         int currentPage = page.orElse(userPageTracker.getCurrentPage());
@@ -64,6 +65,18 @@ public class AdminController {
                 Sort.by("lastName").ascending().and(Sort.by("firstName").descending())); // zero based page
 
         Page<User> userPage = adminService.getAllUsers(pageable);
+
+        // Fix the last page problem - this method is called after deletion
+        if (delete.equalsIgnoreCase("yes") &&
+                userPage.getContent().isEmpty() &&
+                currentPage > 1) {
+
+            currentPage -= 1;
+            pageable = PageRequest.of((currentPage - 1), pageSize,
+                    Sort.by("lastName").ascending().and(Sort.by("firstName").descending())); // zero based page
+            userPage = adminService.getAllUsers(pageable);
+        }
+
         userPageTracker.setCurrentPage(userPage.getNumber() + 1);
 
         List<UserAdminDto> userAdminDtos =
@@ -76,9 +89,16 @@ public class AdminController {
         return "admin/console";
     }
 
+    @GetMapping("/all/user/{userId}/delete")
+    public String deleteUser(@PathVariable long userId) {
+        adminService.deleteUserWithPosts(userId);
+        return "redirect:/admin/all/user?delete=yes";
+    }
+
     @GetMapping("/user/{userId}/post")
     public String showUserPosts(@RequestParam("page") Optional<Integer> page,
                                 @RequestParam("size") Optional<Integer> size,
+                                @RequestParam(value = "delete", defaultValue = "no") String delete,
                                 @PathVariable long userId,
                                 Model model) {
 
@@ -98,6 +118,18 @@ public class AdminController {
                 Sort.by("creationDateTime").descending()); // zero based page
 
         Page<Post> postPage = adminService.getPostForUser(user, pageable);
+
+        // Fix the last page problem - this method is called after deletion
+        if (delete.equalsIgnoreCase("yes") &&
+                postPage.getContent().isEmpty() &&
+                currentPage > 1) {
+
+            currentPage -= 1;
+            pageable = PageRequest.of((currentPage - 1), pageSize,
+                    Sort.by("creationDateTime").descending()); // zero based page
+            postPage = adminService.getPostForUser(user, pageable);
+        }
+
         postPageAdminTracker.setCurrentPage(postPage.getNumber() + 1);
         postPageAdminTracker.setUserId(userId);
 
@@ -111,6 +143,13 @@ public class AdminController {
         model.addAttribute("pageNumbers", postPageAdminTracker.getPageNumbersForPagination(postPage));
 
         return "admin/userPosts";
+    }
+
+    @GetMapping("/user/{userId}/post/{postId}/delete")
+    public String deletePost(@PathVariable long userId,
+                             @PathVariable long postId) {
+        adminService.deletePostWithComments(postId);
+        return "redirect:/admin/user/" + userId + "/post?delete=yes";
     }
 
     @GetMapping("/post/{postId}/comment")

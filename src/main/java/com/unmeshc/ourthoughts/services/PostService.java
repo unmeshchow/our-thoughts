@@ -7,6 +7,8 @@ import com.unmeshc.ourthoughts.dtos.PostDetailsDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 /**
  * Created by uc on 10/22/2019
  */
@@ -21,4 +23,8 @@ public interface PostService {
     PostDetailsDto getPostDetailsById(long postId);
 
     Page<Post> getPostForUser(User user, Pageable pageable);
+
+    void deletePost(Post post);
+
+    List<Post> getByUser(User user);
 }

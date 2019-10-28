@@ -44,4 +44,9 @@ public class UserServiceImpl implements UserService {
     public Page<User> getAllUsers(String email, Pageable pageable) {
         return userRepository.findAllUser(email, pageable);
     }
+
+    @Override
+    public void deleteUser(User user) {
+        userRepository.delete(user);
+    }
 }

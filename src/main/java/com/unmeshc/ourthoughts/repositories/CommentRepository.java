@@ -16,4 +16,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findByPostOrderByAddingDateTime(Post post);
 
     Page<Comment> findByPost(Post post, Pageable pageable);
+
+    Iterable<Comment> findByPost(Post post);
 }

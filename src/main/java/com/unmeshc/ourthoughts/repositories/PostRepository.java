@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 /**
  * Created by uc on 10/22/2019
  */
@@ -14,4 +16,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findByTitleLikeIgnoreCase(String title, Pageable pageable);
 
     Page<Post> findByUser(User user, Pageable pageable);
+
+    List<Post> findByUser(User user);
 }

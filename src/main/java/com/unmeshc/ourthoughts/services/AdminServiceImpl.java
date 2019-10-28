@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -90,5 +91,20 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void deleteCommentById(long commentId) {
         commentService.deleteById(commentId);
+    }
+
+    @Override
+    @Transactional
+    public void deletePostWithComments(long postId) {
+        Post post = postService.getById(postId);
+        commentService.deleteByPost(post);
+        postService.deletePost(post);
+    }
+
+    @Override
+    public void deleteUserWithPosts(long userId) {
+        User user = userService.getById(userId);
+        postService.getByUser(user).forEach(post -> deletePostWithComments(post.getId()));
+        userService.deleteUser(user);
     }
 }

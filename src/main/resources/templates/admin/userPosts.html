@@ -44,7 +44,9 @@
                                     <td th:text="${postAdminDto.title}">title</td>
                                     <td><a th:href="@{/admin/post/{postId}/comment(postId=${postAdminDto.id})}"
                                            th:text="#{table.heading.view}">view</a></td>
-                                    <td>delete</td>
+                                    <td><a th:text="#{table.heading.delete}"
+                                           th:href="@{/admin/user/{userId}/post/{postId}/delete
+                                           (userId=${userPostAdminDto.id}, postId=${postAdminDto.id})}">delete</a></td>
                                 </tr>
                             </tbody>
                         </table>

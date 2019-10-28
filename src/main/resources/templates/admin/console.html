@@ -42,7 +42,8 @@
                                     <td th:text="${userAdminDto.lastName}">last</td>
                                     <td><a th:href="@{/admin/user/{userId}/post(userId=${userAdminDto.id})}"
                                            th:text="#{table.heading.view}">view</a></td>
-                                    <td>delete</td>
+                                    <td><a th:text="#{table.heading.delete}"
+                                           th:href="@{/admin/all/user/{userId}/delete(userId=${userAdminDto.id})}">delete</a></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -60,7 +61,7 @@
                             th:classappend="${currentPage  == i} ? active : ''">
                             <a th:text="${i}"
                                class="page-link"
-                               th:href="@{/admin/all/users(page=${i})}">1</a>
+                               th:href="@{/admin/all/user(page=${i})}">1</a>
                         </li>
                     </ul>
                 </nav>

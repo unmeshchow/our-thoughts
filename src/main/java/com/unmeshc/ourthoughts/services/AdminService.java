@@ -29,4 +29,8 @@ public interface AdminService {
     Page<Comment> getCommentForPost(Post post, Pageable pageable);
 
     void deleteCommentById(long commentId);
+
+    void deletePostWithComments(long postId);
+
+    void deleteUserWithPosts(long userId);
 }

@@ -18,4 +18,6 @@ public interface UserService {
     User getById(long userId);
 
     Page<User> getAllUsers(String email, Pageable pageable);
+
+    void deleteUser(User user);
 }

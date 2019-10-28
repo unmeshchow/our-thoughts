@@ -95,4 +95,14 @@ public class PostServiceImpl implements PostService {
     public Page<Post> getPostForUser(User user, Pageable pageable) {
         return postRepository.findByUser(user, pageable);
     }
+
+    @Override
+    public void deletePost(Post post) {
+        postRepository.delete(post);
+    }
+
+    @Override
+    public List<Post> getByUser(User user) {
+        return postRepository.findByUser(user);
+    }
 }
