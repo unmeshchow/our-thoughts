@@ -1,6 +1,7 @@
 package com.unmeshc.ourthoughts.controllers;
 
 import com.unmeshc.ourthoughts.configurations.SecurityUtils;
+import com.unmeshc.ourthoughts.controllers.pagination.PostPageSearchTracker;
 import com.unmeshc.ourthoughts.domain.Post;
 import com.unmeshc.ourthoughts.domain.User;
 import com.unmeshc.ourthoughts.dtos.PostSearchDto;

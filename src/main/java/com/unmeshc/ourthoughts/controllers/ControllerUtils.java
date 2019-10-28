@@ -13,7 +13,6 @@ import com.unmeshc.ourthoughts.dtos.PostSearchDto;
 import com.unmeshc.ourthoughts.dtos.UserAdminDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -117,28 +116,6 @@ public class ControllerUtils {
         return isNull(multipartFile) ||
                 isNotJpegType(multipartFile) ||
                 isNotWithin300KB(multipartFile);
-    }
-
-    public void adjustPagination(Page<?> currentPage, PageTracker pageTracker) {
-
-        // Calculate start and end page for the dynamic pagination
-        if (currentPage.getTotalPages() < pageTracker.getEndPage()) {
-            pageTracker.setEndPage(currentPage.getTotalPages());
-
-        } else if (pageTracker.getStartPage() != 1 &&
-                  (pageTracker.getCurrentPage() == pageTracker.getStartPage() ||
-                          pageTracker.getCurrentPage() == (pageTracker.getStartPage() + 1))) {
-
-            pageTracker.setStartPage(pageTracker.getStartPage() - 1);
-            pageTracker.setEndPage(pageTracker.getEndPage() - 1);
-
-        } else if (pageTracker.getEndPage() != currentPage.getTotalPages() &&
-                  (pageTracker.getCurrentPage() == pageTracker.getEndPage() ||
-                          (pageTracker.getCurrentPage() == (pageTracker.getEndPage() -1)))) {
-
-            pageTracker.setStartPage(pageTracker.getStartPage() + 1);
-            pageTracker.setEndPage(pageTracker.getEndPage() + 1);
-        }
     }
 
     private boolean isNull(MultipartFile multipartFile) {

@@ -2,6 +2,7 @@ package com.unmeshc.ourthoughts.controllers;
 
 import com.unmeshc.ourthoughts.commands.PostCommand;
 import com.unmeshc.ourthoughts.configurations.SecurityUtils;
+import com.unmeshc.ourthoughts.controllers.pagination.PostPageSearchTracker;
 import com.unmeshc.ourthoughts.converters.UserToUserProfileDto;
 import com.unmeshc.ourthoughts.domain.User;
 import com.unmeshc.ourthoughts.services.ImageService;

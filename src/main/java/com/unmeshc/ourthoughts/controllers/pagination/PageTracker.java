@@ -1,4 +1,4 @@
-package com.unmeshc.ourthoughts.controllers;
+package com.unmeshc.ourthoughts.controllers.pagination;
 
 /**
  * Created by uc on 10/26/2019
