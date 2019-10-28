@@ -46,6 +46,13 @@ public class AdminController {
         this.commentPageAdminTracker = commentPageAdminTracker;
     }
 
+    @GetMapping("/reset/password")
+    public String resetPassword() {
+        adminService.resetAdminPassword();
+        return "redirect:/login";
+    }
+
+
     @PostMapping("/change/password")
     public String changePassword(@RequestParam(value = "newPassword") String newPassword,
                                  HttpServletRequest request) throws ServletException {

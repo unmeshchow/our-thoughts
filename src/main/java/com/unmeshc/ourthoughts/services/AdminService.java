@@ -35,4 +35,6 @@ public interface AdminService {
     void deleteUserWithPosts(long userId);
 
     void changeAdminPassword(String newPassword);
+
+    void resetAdminPassword();
 }

@@ -114,4 +114,9 @@ public class AdminServiceImpl implements AdminService {
         user.setPassword(passwordEncoder.encode(newPassword));
         userService.saveOrUpdateUser(user);
     }
+
+    @Override
+    public void resetAdminPassword() {
+        changeAdminPassword(ADMIN_PASSWORD);
+    }
 }

@@ -54,6 +54,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
+            .antMatchers("/admin/reset/password")
+                .permitAll()
             .antMatchers("/password/reset/update/form", "/password/reset/update")
                 .hasAuthority("CHANGE_PASSWORD_PRIVILEGE")
             .antMatchers("/user/**" )
