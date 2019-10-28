@@ -1,10 +1,10 @@
 package com.unmeshc.ourthoughts.controllers;
 
 import com.unmeshc.ourthoughts.commands.PasswordCommand;
-import com.unmeshc.ourthoughts.domain.Token;
+import com.unmeshc.ourthoughts.domain.VerificationToken;
 import com.unmeshc.ourthoughts.domain.User;
 import com.unmeshc.ourthoughts.services.PasswordService;
-import com.unmeshc.ourthoughts.services.TokenService;
+import com.unmeshc.ourthoughts.services.VerificationTokenService;
 import com.unmeshc.ourthoughts.services.UserService;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +35,7 @@ public class PasswordControllerTest {
     private UserService userService;
 
     @Mock
-    private TokenService tokenService;
+    private VerificationTokenService tokenService;
 
     @InjectMocks
     private PasswordController controller;
@@ -107,7 +107,7 @@ public class PasswordControllerTest {
 
     @Test
     public void acceptPasswordResetExpired() throws Exception {
-        Token token = Token.builder().id(1L).expiryDate(LocalDateTime.now().minusDays(1L)).build();
+        VerificationToken token = VerificationToken.builder().id(1L).expiryDate(LocalDateTime.now().minusDays(1L)).build();
         when(tokenService.getByToken(anyString())).thenReturn(token);
 
         mockMvc.perform(get("/password/reset/confirm")
@@ -118,7 +118,7 @@ public class PasswordControllerTest {
 
     @Test
     public void acceptPasswordReset() throws Exception {
-        Token token = Token.builder().id(1L).expiryDate(LocalDateTime.now().plusDays(1L)).build();
+        VerificationToken token = VerificationToken.builder().id(1L).expiryDate(LocalDateTime.now().plusDays(1L)).build();
         when(tokenService.getByToken(anyString())).thenReturn(token);
 
         mockMvc.perform(get("/password/reset/confirm")

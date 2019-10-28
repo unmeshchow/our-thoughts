@@ -1,10 +1,8 @@
 package com.unmeshc.ourthoughts.controllers;
 
 import com.unmeshc.ourthoughts.commands.UserCommand;
-import com.unmeshc.ourthoughts.domain.Token;
+import com.unmeshc.ourthoughts.domain.VerificationToken;
 import com.unmeshc.ourthoughts.services.RegistrationService;
-import com.unmeshc.ourthoughts.services.TokenService;
-import com.unmeshc.ourthoughts.services.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,16 +28,10 @@ public class RegistrationController {
     static final String REDIRECT_REGISTRATION_CONFIRM_BAD = "redirect:/registration/confirm/bad";
     static final String CONFIRM_BAD = "register/badToken";
 
-    private final UserService userService;
     private final RegistrationService registrationService;
-    private final TokenService tokenService;
 
-    public RegistrationController(UserService userService,
-                                  RegistrationService registrationService,
-                                  TokenService tokenService) {
-        this.userService = userService;
+    public RegistrationController(RegistrationService registrationService) {
         this.registrationService = registrationService;
-        this.tokenService = tokenService;
     }
 
     @InitBinder
@@ -62,7 +54,7 @@ public class RegistrationController {
             return REGISTRATION_FORM;
         }
 
-        if (userService.isEmailExists(userCommand.getEmail())) {
+        if (registrationService.isUserEmailExists(userCommand.getEmail())) {
             result.rejectValue("email","EmailExists");
             return REGISTRATION_FORM;
         }
@@ -79,7 +71,7 @@ public class RegistrationController {
 
     @GetMapping("/confirm")
     public String activeRegistration(@RequestParam("token") String token) {
-        Token foundToken = tokenService.getByToken(token);
+        VerificationToken foundToken = registrationService.getVerificationTokenByToken(token);
 
         if (foundToken == null || foundToken.isExpired()) {
             return REDIRECT_REGISTRATION_CONFIRM_BAD;

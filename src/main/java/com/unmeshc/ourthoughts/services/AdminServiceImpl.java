@@ -54,7 +54,7 @@ public class AdminServiceImpl implements AdminService {
         User adminUser = User.builder().email(ADMIN_EMAIL).active(true).roles(roles).
                 password(passwordEncoder.encode(ADMIN_PASSWORD)).build();
 
-        userService.saveOrUpdateUser(adminUser);
+        userService.saveOrUpdate(adminUser);
     }
 
     @Override
@@ -65,12 +65,12 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public Page<User> getAllUsers(Pageable pageable) {
 
-        return userService.getAllUsers(ADMIN_EMAIL, pageable);
+        return userService.getAll(ADMIN_EMAIL, pageable);
     }
 
     @Override
-    public Page<Post> getPostForUser(User user, Pageable pageable) {
-        return postService.getPostForUser(user, pageable);
+    public Page<Post> getPostsForUser(User user, Pageable pageable) {
+        return postService.getPostsByUser(user, pageable);
     }
 
     @Override
@@ -84,8 +84,8 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Page<Comment> getCommentForPost(Post post, Pageable pageable) {
-        return commentService.getCommentForPost(post, pageable);
+    public Page<Comment> getCommentsForPost(Post post, Pageable pageable) {
+        return commentService.getCommentsForPost(post, pageable);
     }
 
     @Override
@@ -104,15 +104,15 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void deleteUserWithPosts(long userId) {
         User user = userService.getById(userId);
-        postService.getByUser(user).forEach(post -> deletePostWithComments(post.getId()));
-        userService.deleteUser(user);
+        postService.getPostsByUser(user).forEach(post -> deletePostWithComments(post.getId()));
+        userService.delete(user);
     }
 
     @Override
     public void changeAdminPassword(String newPassword) {
         User user = userService.getByEmail(ADMIN_EMAIL);
         user.setPassword(passwordEncoder.encode(newPassword));
-        userService.saveOrUpdateUser(user);
+        userService.saveOrUpdate(user);
     }
 
     @Override

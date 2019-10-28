@@ -1,12 +1,11 @@
 package com.unmeshc.ourthoughts.controllers;
 
 import com.unmeshc.ourthoughts.configurations.SecurityUtils;
-import com.unmeshc.ourthoughts.controllers.pagination.PostPageSearchTracker;
+import com.unmeshc.ourthoughts.controllers.pagination.SearchPostPageTracker;
 import com.unmeshc.ourthoughts.domain.Post;
 import com.unmeshc.ourthoughts.domain.User;
 import com.unmeshc.ourthoughts.dtos.PostSearchDto;
 import com.unmeshc.ourthoughts.services.CommentService;
-import com.unmeshc.ourthoughts.services.ImageService;
 import com.unmeshc.ourthoughts.services.PostService;
 import com.unmeshc.ourthoughts.services.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -32,28 +31,25 @@ import java.util.Optional;
 @Controller
 public class PostController {
 
-    private final SecurityUtils securityUtils;
-    private final UserService userService;
     private final PostService postService;
+    private final UserService userService;
     private final CommentService commentService;
-    private final PostPageSearchTracker postPageTracker;
     private final ControllerUtils controllerUtils;
-    private final ImageService imageService;
+    private final SecurityUtils securityUtils;
+    private final SearchPostPageTracker searchPostPageTracker;
 
-    public PostController(SecurityUtils securityUtils,
+    public PostController(PostService postService,
                           UserService userService,
-                          PostService postService,
                           CommentService commentService,
-                          PostPageSearchTracker postPageTracker,
                           ControllerUtils controllerUtils,
-                          ImageService imageService) {
-        this.securityUtils = securityUtils;
-        this.userService = userService;
+                          SecurityUtils securityUtils,
+                          SearchPostPageTracker searchPostPageTracker) {
         this.postService = postService;
+        this.userService = userService;
         this.commentService = commentService;
-        this.postPageTracker = postPageTracker;
         this.controllerUtils = controllerUtils;
-        this.imageService = imageService;
+        this.securityUtils = securityUtils;
+        this.searchPostPageTracker = searchPostPageTracker;
     }
 
     @GetMapping("/visitor/post/search")
@@ -62,27 +58,27 @@ public class PostController {
                          @RequestParam("search") Optional<String> search,
                          Model model) {
 
-        String searchValue = search.orElse(postPageTracker.getSearchValue());
-        if (!searchValue.equalsIgnoreCase(postPageTracker.getSearchValue())) {
-            postPageTracker.reset();
+        String searchValue = search.orElse(searchPostPageTracker.getSearchValue());
+        if (!searchValue.equalsIgnoreCase(searchPostPageTracker.getSearchValue())) {
+            searchPostPageTracker.reset();
         }
 
-        int currentPage = page.orElse(postPageTracker.getCurrentPage());
+        int currentPage = page.orElse(searchPostPageTracker.getCurrentPage());
         int pageSize = size.orElse(2);
 
         Pageable pageable = PageRequest.of((currentPage - 1), pageSize,
                 Sort.by("creationDateTime").descending()); // zero based page
 
         Page<Post> postPage = postService.getPostsLikeTitle(searchValue, pageable);
-        postPageTracker.setCurrentPage(postPage.getNumber() + 1);
-        postPageTracker.setSearchValue(searchValue);
+        searchPostPageTracker.setCurrentPage(postPage.getNumber() + 1);
+        searchPostPageTracker.setSearchValue(searchValue);
 
         List<PostSearchDto> postSearchDtos =
                 controllerUtils.convertToPostSearchDtoList(postPage.getContent());
 
         model.addAttribute("postSearchDtos", controllerUtils.adjustTitleAndBody(postSearchDtos));
-        model.addAttribute("currentPage", postPageTracker.getCurrentPage());
-        model.addAttribute("pageNumbers", postPageTracker.getPageNumbersForPagination(postPage));
+        model.addAttribute("currentPage", searchPostPageTracker.getCurrentPage());
+        model.addAttribute("pageNumbers", searchPostPageTracker.getPageNumbersForPagination(postPage));
 
         return "index";
     }
@@ -102,7 +98,7 @@ public class PostController {
             return;
         }
 
-        byte[] bytes = imageService.convertIntoByteArray(post.getPhoto());
+        byte[] bytes = controllerUtils.convertIntoByteArray(post.getPhoto());
         controllerUtils.copyBytesToResponse(response, bytes);
     }
 
@@ -114,7 +110,7 @@ public class PostController {
             return;
         }
 
-        byte[] bytes = imageService.convertIntoByteArray(user.getImage());
+        byte[] bytes = controllerUtils.convertIntoByteArray(user.getImage());
         controllerUtils.copyBytesToResponse(response, bytes);
     }
 

@@ -20,13 +20,13 @@ public interface AdminService {
 
     Page<User> getAllUsers(Pageable pageable);
 
-    Page<Post> getPostForUser(User user, Pageable pageable);
+    Page<Post> getPostsForUser(User user, Pageable pageable);
 
     User getUserById(long userId);
 
     Post getPostById(long postId);
 
-    Page<Comment> getCommentForPost(Post post, Pageable pageable);
+    Page<Comment> getCommentsForPost(Post post, Pageable pageable);
 
     void deleteCommentById(long commentId);
 

@@ -22,9 +22,9 @@ public interface PostService {
 
     PostDetailsDto getPostDetailsById(long postId);
 
-    Page<Post> getPostForUser(User user, Pageable pageable);
+    Page<Post> getPostsByUser(User user, Pageable pageable);
 
     void deletePost(Post post);
 
-    List<Post> getByUser(User user);
+    List<Post> getPostsByUser(User user);
 }

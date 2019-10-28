@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User saveOrUpdateUser(User user) {
+    public User saveOrUpdate(User user) {
         return userRepository.save(user);
     }
 
@@ -41,12 +41,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<User> getAllUsers(String email, Pageable pageable) {
+    public Page<User> getAll(String email, Pageable pageable) {
         return userRepository.findAllUser(email, pageable);
     }
 
     @Override
-    public void deleteUser(User user) {
+    public void delete(User user) {
         userRepository.delete(user);
     }
 }

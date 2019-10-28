@@ -1,6 +1,7 @@
 package com.unmeshc.ourthoughts.services;
 
 import com.unmeshc.ourthoughts.commands.PasswordCommand;
+import com.unmeshc.ourthoughts.domain.VerificationToken;
 import com.unmeshc.ourthoughts.domain.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,13 +16,16 @@ public class PasswordServiceImpl implements PasswordService {
 
     private final EmailService emailService;
     private final UserService userService;
+    private final VerificationTokenService tokenService;
     private final PasswordEncoder passwordEncoder;
 
     public PasswordServiceImpl(EmailService emailService,
                                UserService userService,
+                               VerificationTokenService tokenService,
                                PasswordEncoder passwordEncoder) {
         this.emailService = emailService;
         this.userService = userService;
+        this.tokenService = tokenService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -33,6 +37,16 @@ public class PasswordServiceImpl implements PasswordService {
     @Override
     public void updatePassword(User user, PasswordCommand passwordCommand) {
         user.setPassword(passwordEncoder.encode(passwordCommand.getPassword()));
-        userService.saveOrUpdateUser(user);
+        userService.saveOrUpdate(user);
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        return userService.getByEmail(email);
+    }
+
+    @Override
+    public VerificationToken getVerificationTokenByToken(String token) {
+        return tokenService.getByToken(token);
     }
 }

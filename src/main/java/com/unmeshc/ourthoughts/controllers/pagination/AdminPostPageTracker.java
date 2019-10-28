@@ -21,7 +21,7 @@ import java.util.stream.IntStream;
 @Setter
 @Component
 @Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class PostPageAdminTracker implements PageTracker {
+public class AdminPostPageTracker implements PageTracker {
 
     private long userId = 0;
     private int currentPage = 1; // one based page
@@ -30,7 +30,7 @@ public class PostPageAdminTracker implements PageTracker {
 
     private final PaginationUtils paginationUtils;
 
-    public PostPageAdminTracker(PaginationUtils paginationUtils) {
+    public AdminPostPageTracker(PaginationUtils paginationUtils) {
         this.paginationUtils = paginationUtils;
     }
 

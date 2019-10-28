@@ -94,6 +94,37 @@ public class ControllerUtils {
         return postSearchDtos;
     }
 
+    public Byte[] convertIntoByteArray(MultipartFile imageFile) {
+        try {
+            Byte[] bytes = new Byte[imageFile.getBytes().length];
+            int i =0;
+            for (byte b : imageFile.getBytes()) {
+                bytes[i++] = b;
+            }
+
+            return bytes;
+        } catch (Exception exc) {
+            log.error("Error occurred during converting image into Byte[]", exc);
+            throw new RuntimeException("Error occurred in converting image, try again.");
+        }
+    }
+
+    public byte[] convertIntoByteArray(Byte[] bytes) {
+        try {
+            byte[] theBytes = new byte[bytes.length];
+            int i = 0;
+
+            for (Byte b : bytes) {
+                theBytes[i++] = b.byteValue();
+            }
+
+            return theBytes;
+        } catch (Exception exc) {
+            log.error("Error occurred during converting into byte[]", exc);
+            throw new RuntimeException("Error occurred in converting to byte, try again.");
+        }
+    }
+
     public void copyBytesToResponse(HttpServletResponse response, byte[] bytes) {
         response.setContentType("image/jpeg");
         InputStream inputStream = new ByteArrayInputStream((bytes));

@@ -1,14 +1,14 @@
 package com.unmeshc.ourthoughts.services;
 
-import com.unmeshc.ourthoughts.domain.Token;
+import com.unmeshc.ourthoughts.domain.VerificationToken;
 import com.unmeshc.ourthoughts.domain.User;
 
 /**
  * Created by uc on 10/19/2019
  */
-public interface TokenService {
+public interface VerificationTokenService {
 
-    Token getByToken(String token);
+    VerificationToken getByToken(String token);
 
     void createTokenForUser(User user, String token);
 }

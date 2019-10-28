@@ -1,11 +1,11 @@
 package com.unmeshc.ourthoughts.controllers;
 
 import com.unmeshc.ourthoughts.commands.UserCommand;
-import com.unmeshc.ourthoughts.domain.Token;
+import com.unmeshc.ourthoughts.domain.VerificationToken;
 import com.unmeshc.ourthoughts.domain.User;
 import com.unmeshc.ourthoughts.exceptions.EmailNotSentException;
 import com.unmeshc.ourthoughts.services.RegistrationService;
-import com.unmeshc.ourthoughts.services.TokenService;
+import com.unmeshc.ourthoughts.services.VerificationTokenService;
 import com.unmeshc.ourthoughts.services.UserService;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +35,7 @@ public class RegistrationControllerTest {
     private RegistrationService registrationService;
 
     @Mock
-    private TokenService tokenService;
+    private VerificationTokenService tokenService;
 
     @InjectMocks
     private RegistrationController controller;
@@ -204,7 +204,7 @@ public class RegistrationControllerTest {
 
     @Test
     public void activateRegistrationExpiredToken() throws Exception {
-        Token token = Token.builder().id(1L).expiryDate(LocalDateTime.now().minusDays(1L)).build();
+        VerificationToken token = VerificationToken.builder().id(1L).expiryDate(LocalDateTime.now().minusDays(1L)).build();
         when(tokenService.getByToken(anyString())).thenReturn(token);
 
         mockMvc.perform(get("/registration/confirm")
@@ -219,7 +219,7 @@ public class RegistrationControllerTest {
 
     @Test
     public void activateRegistration() throws Exception {
-        Token token = Token.builder().id(1L).expiryDate(LocalDateTime.now().plusDays(1L))
+        VerificationToken token = VerificationToken.builder().id(1L).expiryDate(LocalDateTime.now().plusDays(1L))
                 .user(User.builder().build()).build();
         when(tokenService.getByToken(anyString())).thenReturn(token);
 

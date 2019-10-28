@@ -16,7 +16,7 @@ import java.util.Objects;
 @Builder
 @Entity
 @Table(name = "tokens")
-public class Token {
+public class VerificationToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -42,7 +42,7 @@ public class Token {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Token token1 = (Token) o;
+        VerificationToken token1 = (VerificationToken) o;
         return Objects.equals(token, token1.token);
     }
 

@@ -26,4 +26,6 @@ public class PostCommand {
 
     @NotBlank
     private String caption;
+
+    private Byte[] postPhoto;
 }

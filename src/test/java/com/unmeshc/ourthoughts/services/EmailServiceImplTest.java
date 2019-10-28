@@ -31,7 +31,7 @@ public class EmailServiceImplTest {
     private MessageSource messageSource;
 
     @Mock
-    private TokenService tokenService;
+    private VerificationTokenService tokenService;
 
     @InjectMocks
     private EmailServiceImpl service;

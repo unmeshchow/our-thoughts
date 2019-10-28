@@ -2,10 +2,9 @@ package com.unmeshc.ourthoughts.controllers;
 
 import com.unmeshc.ourthoughts.commands.PostCommand;
 import com.unmeshc.ourthoughts.configurations.SecurityUtils;
-import com.unmeshc.ourthoughts.controllers.pagination.PostPageSearchTracker;
+import com.unmeshc.ourthoughts.controllers.pagination.SearchPostPageTracker;
 import com.unmeshc.ourthoughts.converters.UserToUserProfileDto;
 import com.unmeshc.ourthoughts.domain.User;
-import com.unmeshc.ourthoughts.services.ImageService;
 import com.unmeshc.ourthoughts.services.PostService;
 import com.unmeshc.ourthoughts.services.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -33,21 +32,18 @@ public class UserController {
     static final String CREATE_POST_FORM = "user/createPostForm";
 
     private final UserService userService;
-    private final ImageService imageService;
     private final SecurityUtils securityUtils;
     private final PostService postService;
     private final ControllerUtils controllerUtils;
-    private final PostPageSearchTracker postPageTracker;
+    private final SearchPostPageTracker postPageTracker;
     private final UserToUserProfileDto userToUserProfileDto;
 
     public UserController(UserService userService,
-                          ImageService imageService,
                           SecurityUtils securityUtils,
                           PostService postService,
                           ControllerUtils controllerUtils,
-                          PostPageSearchTracker postPageTracker,
+                          SearchPostPageTracker postPageTracker,
                           UserToUserProfileDto userToUserProfileDto) {
-        this.imageService = imageService;
         this.securityUtils = securityUtils;
         this.userService = userService;
         this.postService = postService;
@@ -86,6 +82,7 @@ public class UserController {
             return CREATE_POST_FORM;
         }
 
+        postCommand.setPostPhoto(controllerUtils.convertIntoByteArray(postCommand.getPhoto()));
         postService.savePostForUser(user, postCommand);
         postPageTracker.newPost();
 
@@ -115,16 +112,16 @@ public class UserController {
             model.addAttribute("error", false);
         }
 
-        Byte[] bytes = imageService.convertIntoByteArray(imageFile);
+        Byte[] bytes = controllerUtils.convertIntoByteArray(imageFile);
         user.setImage(bytes);
-        userService.saveOrUpdateUser(user);
+        userService.saveOrUpdate(user);
 
         return REDIRECT_USER_PROFILE;
     }
 
     @GetMapping("/get/image")
     public void obtainImage(@ModelAttribute("user") User user, HttpServletResponse response) {
-        byte[] bytes = imageService.convertIntoByteArray(user.getImage());
+        byte[] bytes = controllerUtils.convertIntoByteArray(user.getImage());
         controllerUtils.copyBytesToResponse(response, bytes);
     }
 }

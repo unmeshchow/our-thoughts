@@ -45,7 +45,7 @@ public class UserServiceImplTest {
         User user = User.builder().email("unmesh@gmail.com").build();
         when(userRepository.save(user)).thenReturn(User.builder().id(1L).build());
 
-        service.saveOrUpdateUser(user);
+        service.saveOrUpdate(user);
         verify(userRepository).save(user);
     }
 

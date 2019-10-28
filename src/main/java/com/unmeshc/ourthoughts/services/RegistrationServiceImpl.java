@@ -3,6 +3,7 @@ package com.unmeshc.ourthoughts.services;
 import com.unmeshc.ourthoughts.commands.UserCommand;
 import com.unmeshc.ourthoughts.converters.UserCommandToUser;
 import com.unmeshc.ourthoughts.domain.Role;
+import com.unmeshc.ourthoughts.domain.VerificationToken;
 import com.unmeshc.ourthoughts.domain.User;
 import com.unmeshc.ourthoughts.repositories.RoleRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -23,17 +24,20 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     private final UserService userService;
     private final EmailService emailService;
+    private final VerificationTokenService tokenService;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
     private final UserCommandToUser userCommandToUser;
 
     public RegistrationServiceImpl(UserService userService,
                                    EmailService emailService,
+                                   VerificationTokenService tokenService,
                                    PasswordEncoder passwordEncoder,
                                    RoleRepository roleRepository,
                                    UserCommandToUser userCommandToUser) {
         this.userService = userService;
         this.emailService = emailService;
+        this.tokenService = tokenService;
         this.passwordEncoder = passwordEncoder;
         this.roleRepository = roleRepository;
         this.userCommandToUser = userCommandToUser;
@@ -42,7 +46,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Override
     public User activateUser(User user) {
         user.setActive(true);
-        return userService.saveOrUpdateUser(user);
+        return userService.saveOrUpdate(user);
     }
 
     @Override
@@ -62,9 +66,19 @@ public class RegistrationServiceImpl implements RegistrationService {
         user.setActive(false);
         user.setRoles(roles);
 
-        User savedUser = userService.saveOrUpdateUser(user);
+        User savedUser = userService.saveOrUpdate(user);
         emailService.sendAccountActivationLink(savedUser, request);
 
         return savedUser;
+    }
+
+    @Override
+    public boolean isUserEmailExists(String email) {
+        return userService.isEmailExists(email);
+    }
+
+    @Override
+    public VerificationToken getVerificationTokenByToken(String token) {
+        return tokenService.getByToken(token);
     }
 }

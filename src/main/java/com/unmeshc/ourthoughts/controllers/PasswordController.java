@@ -1,12 +1,10 @@
 package com.unmeshc.ourthoughts.controllers;
 
 import com.unmeshc.ourthoughts.commands.PasswordCommand;
-import com.unmeshc.ourthoughts.domain.Token;
+import com.unmeshc.ourthoughts.domain.VerificationToken;
 import com.unmeshc.ourthoughts.domain.User;
 import com.unmeshc.ourthoughts.exceptions.NotFoundException;
 import com.unmeshc.ourthoughts.services.PasswordService;
-import com.unmeshc.ourthoughts.services.TokenService;
-import com.unmeshc.ourthoughts.services.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -42,15 +40,9 @@ public class PasswordController {
     static final String REDIRECT_LOGIN = "redirect:/login";
 
     private final PasswordService passwordService;
-    private final UserService userService;
-    private final TokenService tokenService;
 
-    public PasswordController(PasswordService passwordService,
-                              UserService userService,
-                              TokenService tokenService) {
+    public PasswordController(PasswordService passwordService) {
         this.passwordService = passwordService;
-        this.userService = userService;
-        this.tokenService = tokenService;
     }
 
     @GetMapping("/reset/form")
@@ -62,7 +54,7 @@ public class PasswordController {
     public String processPasswordReset(@RequestParam("email") String email,
                                        HttpServletRequest request) {
 
-        User user = userService.getByEmail(email);
+        User user = passwordService.getUserByEmail(email);
         if (user == null || !user.getActive()) {
             throw new NotFoundException("User not found with email: " + email);
         }
@@ -79,7 +71,7 @@ public class PasswordController {
 
     @GetMapping("/reset/confirm")
     public String acceptPasswordReset(@RequestParam("token") String token) {
-        Token foundToken = tokenService.getByToken(token);
+        VerificationToken foundToken = passwordService.getVerificationTokenByToken(token);
         if (foundToken == null || foundToken.isExpired()) {
             return REDIRECT_PASSWORD_RESET_CONFIRM_BAD;
         }

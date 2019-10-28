@@ -55,6 +55,6 @@ public class PasswordServiceImplTest {
 
         user.setPassword("unmesh");
 
-        verify(userService).saveOrUpdateUser(user);
+        verify(userService).saveOrUpdate(user);
     }
 }

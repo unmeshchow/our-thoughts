@@ -1,8 +1,8 @@
 package com.unmeshc.ourthoughts.services;
 
-import com.unmeshc.ourthoughts.domain.Token;
+import com.unmeshc.ourthoughts.domain.VerificationToken;
 import com.unmeshc.ourthoughts.domain.User;
-import com.unmeshc.ourthoughts.repositories.TokenRepository;
+import com.unmeshc.ourthoughts.repositories.VerificationTokenRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -19,10 +19,10 @@ import static org.mockito.Mockito.when;
 public class TokenServiceImplTest {
 
     @Mock
-    private TokenRepository tokenRepository;
+    private VerificationTokenRepository tokenRepository;
 
     @InjectMocks
-    private TokenServiceImpl service;
+    private VerificationTokenServiceImpl service;
 
     @Before
     public void setUp() {
@@ -32,9 +32,9 @@ public class TokenServiceImplTest {
     @Test
     public void getByToken() {
         when(tokenRepository.findByToken(anyString())).thenReturn(
-                Optional.of(Token.builder().id(1L).build()));
+                Optional.of(VerificationToken.builder().id(1L).build()));
 
-        Token token = service.getByToken("erd4567h#dg8");
+        VerificationToken token = service.getByToken("erd4567h#dg8");
 
         assertThat(token).isNotNull();
         verify(tokenRepository).findByToken("erd4567h#dg8");
@@ -44,7 +44,7 @@ public class TokenServiceImplTest {
     public void getByTokenNull() {
         when(tokenRepository.findByToken(anyString())).thenReturn(Optional.empty());
 
-        Token token = service.getByToken("erd4567h#dg8");
+        VerificationToken token = service.getByToken("erd4567h#dg8");
 
         assertThat(token).isNull();
         verify(tokenRepository).findByToken("erd4567h#dg8");
@@ -54,7 +54,7 @@ public class TokenServiceImplTest {
     public void createTokenForUser() {
         User user = User.builder().id(1L).email("unmesh@gmail.com").build();
         String token = "33dg4ffg";
-        Token verificationToken = Token.builder().id(1L).user(user).token(token).build();
+        VerificationToken verificationToken = VerificationToken.builder().id(1L).user(user).token(token).build();
 
         service.createTokenForUser(user, token);
 

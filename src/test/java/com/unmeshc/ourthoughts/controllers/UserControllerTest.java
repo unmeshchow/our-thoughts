@@ -38,14 +38,14 @@ public class UserControllerTest {
         User user = User.builder().id(1L).email("unmesh@gmail.com").build();
         when(userToUserCommand.convert(any())).thenReturn(UserCommand.builder().build());
         when(securityUtils.getEmailFromSecurityContext()).thenReturn("unmesh@gmail.com");
-        when(userService.getByEmail(anyString())).thenReturn(user);
+        when(userService.getUserByEmail(anyString())).thenReturn(user);
 
         mockMvc.perform(get("/user/profile"))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("userCommand"))
                 .andExpect(view().name(UserController.MY_PROFILE));
 
-        verify(userService).getByEmail(anyString());
+        verify(userService).getUserByEmail(anyString());
         verify(securityUtils).getEmailFromSecurityContext();
         verify(userToUserCommand).convert(any());
         verifyZeroInteractions(imageService);
@@ -55,13 +55,13 @@ public class UserControllerTest {
     public void showChangeImageForm() throws Exception {
         User user = User.builder().id(1L).email("unmesh@gmail.com").build();
         when(securityUtils.getEmailFromSecurityContext()).thenReturn("unmesh@gmail.com");
-        when(userService.getByEmail(anyString())).thenReturn(user);
+        when(userService.getUserByEmail(anyString())).thenReturn(user);
 
         mockMvc.perform(get("/user/change/image/form"))
                 .andExpect(status().isOk())
                 .andExpect(view().name(UserController.UPLOAD_IMAGE));
 
-        verify(userService).getByEmail(anyString());
+        verify(userService).getUserByEmail(anyString());
         verify(securityUtils).getEmailFromSecurityContext();
         verifyZeroInteractions(userToUserCommand);
         verifyZeroInteractions(imageService);
@@ -77,7 +77,7 @@ public class UserControllerTest {
 
         User user = User.builder().id(1L).email("unmesh@gmail.com").build();
         when(securityUtils.getEmailFromSecurityContext()).thenReturn("unmesh@gmail.com");
-        when(userService.getByEmail(anyString())).thenReturn(user);
+        when(userService.getUserByEmail(anyString())).thenReturn(user);
         when(imageService.convertIntoByteArray(multipartFile)).thenReturn(bytes);
 
         mockMvc.perform(multipart("/user/change/image").file(multipartFile))
@@ -86,10 +86,10 @@ public class UserControllerTest {
 
         user.setImage(bytes);
 
-        verify(userService).getByEmail(anyString());
+        verify(userService).getUserByEmail(anyString());
         verify(securityUtils).getEmailFromSecurityContext();
         verify(imageService).convertIntoByteArray(multipartFile);
-        verify(userService).saveOrUpdateUser(user);
+        verify(userService).saveOrUpdate(user);
         verifyZeroInteractions(userToUserCommand);
     }
 
@@ -99,13 +99,13 @@ public class UserControllerTest {
         byte[] imageBytes = new byte[10];
         User user = User.builder().id(1L).email("unmesh@gmail.com").image(bytes).build();
         when(securityUtils.getEmailFromSecurityContext()).thenReturn("unmesh@gmail.com");
-        when(userService.getByEmail(anyString())).thenReturn(user);
+        when(userService.getUserByEmail(anyString())).thenReturn(user);
         when(imageService.convertIntoByteArray(bytes)).thenReturn(imageBytes);
 
         mockMvc.perform(get("/user/get/image"))
                 .andExpect(status().isOk());
 
-        verify(userService).getByEmail(anyString());
+        verify(userService).getUserByEmail(anyString());
         verify(securityUtils).getEmailFromSecurityContext();
         verify(imageService).convertIntoByteArray(bytes);
         verifyZeroInteractions(userToUserCommand);

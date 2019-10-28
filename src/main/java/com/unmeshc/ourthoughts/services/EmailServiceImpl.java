@@ -25,12 +25,12 @@ public class EmailServiceImpl implements EmailService {
     private final JavaMailSender mailSender;
     private final ITemplateEngine templateEngine;
     private final MessageSource messageSource;
-    private final TokenService tokenService;
+    private final VerificationTokenService tokenService;
 
     public EmailServiceImpl(JavaMailSender mailSender,
                             ITemplateEngine templateEngine,
                             MessageSource messageSource,
-                            TokenService tokenService) {
+                            VerificationTokenService tokenService) {
         this.mailSender = mailSender;
         this.templateEngine = templateEngine;
         this.messageSource = messageSource;

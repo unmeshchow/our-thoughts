@@ -28,20 +28,17 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final PostCommandToPost postCommandToPost;
-    private final ImageService imageService;
     private final CommentRepository commentRepository;
     private final PostToPostDetailsDto postToPostDetailsDto;
     private final CommentToCommentPostDetailsDto commentToPostDetailsCommentDto;
 
     public PostServiceImpl(PostRepository postRepository,
                            PostCommandToPost postCommandToPost,
-                           ImageService imageService,
                            CommentRepository commentRepository,
                            PostToPostDetailsDto postToPostDetailsDto,
                            CommentToCommentPostDetailsDto commentToPostDetailsCommentDto) {
         this.postRepository = postRepository;
         this.postCommandToPost = postCommandToPost;
-        this.imageService = imageService;
         this.commentRepository = commentRepository;
         this.postToPostDetailsDto = postToPostDetailsDto;
         this.commentToPostDetailsCommentDto = commentToPostDetailsCommentDto;
@@ -50,7 +47,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public void savePostForUser(User user, PostCommand postCommand) {
         Post post = postCommandToPost.convert(postCommand);
-        post.setPhoto(imageService.convertIntoByteArray(postCommand.getPhoto()));
+        post.setPhoto(postCommand.getPostPhoto());
         post.setUser(user);
 
         postRepository.save(post);
@@ -92,7 +89,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<Post> getPostForUser(User user, Pageable pageable) {
+    public Page<Post> getPostsByUser(User user, Pageable pageable) {
         return postRepository.findByUser(user, pageable);
     }
 
@@ -102,7 +99,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> getByUser(User user) {
+    public List<Post> getPostsByUser(User user) {
         return postRepository.findByUser(user);
     }
 }

@@ -52,11 +52,11 @@ public class RegistrationServiceImplTest {
     @Test
     public void activateUser() {
         User user = User.builder().email("unmesh@gmail.com").active(true).build();
-        when(userService.saveOrUpdateUser(any())).thenReturn(User.builder().build());
+        when(userService.saveOrUpdate(any())).thenReturn(User.builder().build());
 
         service.activateUser(User.builder().email("unmesh@gmail.com").build());
 
-        verify(userService).saveOrUpdateUser(user);
+        verify(userService).saveOrUpdate(user);
     }
 
     @Test(expected = RuntimeException.class)
@@ -77,7 +77,7 @@ public class RegistrationServiceImplTest {
                 User.builder().password("unmesh").build());
         when(passwordEncoder.encode(anyString())).thenReturn("unmesh");
         when(roleRepository.findByName(anyString())).thenReturn(Optional.of(role));
-        when(userService.saveOrUpdateUser(user)).thenReturn(user);
+        when(userService.saveOrUpdate(user)).thenReturn(user);
 
         User savedUser = service.saveAndVerifyUser(UserCommand.builder().build(), request);
 
@@ -85,7 +85,7 @@ public class RegistrationServiceImplTest {
         verify(userCommandToUser).convert(any(UserCommand.class));
         verify(passwordEncoder).encode(anyString());
         verify(roleRepository).findByName(anyString());
-        verify(userService).saveOrUpdateUser(user);
+        verify(userService).saveOrUpdate(user);
         verify(emailService).sendAccountActivationLink(user, request);
     }
 }

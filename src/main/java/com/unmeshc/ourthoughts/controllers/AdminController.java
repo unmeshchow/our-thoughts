@@ -1,8 +1,8 @@
 package com.unmeshc.ourthoughts.controllers;
 
-import com.unmeshc.ourthoughts.controllers.pagination.CommentPageAdminTracker;
-import com.unmeshc.ourthoughts.controllers.pagination.PostPageAdminTracker;
-import com.unmeshc.ourthoughts.controllers.pagination.UserPageAdminTracker;
+import com.unmeshc.ourthoughts.controllers.pagination.AdminCommentPageTracker;
+import com.unmeshc.ourthoughts.controllers.pagination.AdminPostPageTracker;
+import com.unmeshc.ourthoughts.controllers.pagination.AdminUserPageTracker;
 import com.unmeshc.ourthoughts.domain.Comment;
 import com.unmeshc.ourthoughts.domain.Post;
 import com.unmeshc.ourthoughts.domain.User;
@@ -31,22 +31,22 @@ import java.util.Optional;
 @RequestMapping("/admin")
 public class AdminController {
 
-    private final UserPageAdminTracker userPageTracker;
     private final AdminService adminService;
     private final ControllerUtils controllerUtils;
-    private final PostPageAdminTracker postPageAdminTracker;
-    private final CommentPageAdminTracker commentPageAdminTracker;
+    private final AdminPostPageTracker adminPostPageTracker;
+    private final AdminCommentPageTracker adminCommentPageTracker;
+    private final AdminUserPageTracker adminUserPageTracker;
 
-    public AdminController(UserPageAdminTracker userPageTracker,
+    public AdminController(AdminUserPageTracker adminUserPageTracker,
                            AdminService adminService,
                            ControllerUtils controllerUtils,
-                           PostPageAdminTracker postPageAdminTracker,
-                           CommentPageAdminTracker commentPageAdminTracker) {
-        this.userPageTracker = userPageTracker;
+                           AdminPostPageTracker adminPostPageTracker,
+                           AdminCommentPageTracker adminCommentPageTracker) {
+        this.adminUserPageTracker = adminUserPageTracker;
         this.adminService = adminService;
         this.controllerUtils = controllerUtils;
-        this.postPageAdminTracker = postPageAdminTracker;
-        this.commentPageAdminTracker = commentPageAdminTracker;
+        this.adminPostPageTracker = adminPostPageTracker;
+        this.adminCommentPageTracker = adminCommentPageTracker;
     }
 
     @GetMapping("/reset/password")
@@ -75,7 +75,7 @@ public class AdminController {
                            @RequestParam(value = "delete", defaultValue = "no") String delete,
                            Model model) {
 
-        int currentPage = page.orElse(userPageTracker.getCurrentPage());
+        int currentPage = page.orElse(adminUserPageTracker.getCurrentPage());
         int pageSize = size.orElse(2);
 
         Pageable pageable = PageRequest.of((currentPage - 1), pageSize,
@@ -83,7 +83,7 @@ public class AdminController {
 
         Page<User> userPage = adminService.getAllUsers(pageable);
 
-        // Fix the last page problem - this method is called after deletion
+        // Fix the last page problem since the last page can be deleted
         if (delete.equalsIgnoreCase("yes") &&
                 userPage.getContent().isEmpty() &&
                 currentPage > 1) {
@@ -94,14 +94,14 @@ public class AdminController {
             userPage = adminService.getAllUsers(pageable);
         }
 
-        userPageTracker.setCurrentPage(userPage.getNumber() + 1);
+        adminUserPageTracker.setCurrentPage(userPage.getNumber() + 1);
 
         List<UserAdminDto> userAdminDtos =
                 controllerUtils.convertToAdminUserDtoList(userPage.getContent());
 
         model.addAttribute("userAdminDtos", userAdminDtos);
-        model.addAttribute("currentPage", userPageTracker.getCurrentPage());
-        model.addAttribute("pageNumbers", userPageTracker.getPageNumbersForPagination(userPage));
+        model.addAttribute("currentPage", adminUserPageTracker.getCurrentPage());
+        model.addAttribute("pageNumbers", adminUserPageTracker.getPageNumbersForPagination(userPage));
 
         return "admin/console";
     }
@@ -124,19 +124,19 @@ public class AdminController {
             throw new NotFoundException("User not found with id - " + userId);
         }
 
-        if (postPageAdminTracker.getUserId() != userId) {
-            postPageAdminTracker.reset();
+        if (adminPostPageTracker.getUserId() != userId) {
+            adminPostPageTracker.reset();
         }
 
-        int currentPage = page.orElse(postPageAdminTracker.getCurrentPage());
+        int currentPage = page.orElse(adminPostPageTracker.getCurrentPage());
         int pageSize = size.orElse(2);
 
         Pageable pageable = PageRequest.of((currentPage - 1), pageSize,
                 Sort.by("creationDateTime").descending()); // zero based page
 
-        Page<Post> postPage = adminService.getPostForUser(user, pageable);
+        Page<Post> postPage = adminService.getPostsForUser(user, pageable);
 
-        // Fix the last page problem - this method is called after deletion
+        // Fix the last page problem since the last page can be deleted
         if (delete.equalsIgnoreCase("yes") &&
                 postPage.getContent().isEmpty() &&
                 currentPage > 1) {
@@ -144,11 +144,11 @@ public class AdminController {
             currentPage -= 1;
             pageable = PageRequest.of((currentPage - 1), pageSize,
                     Sort.by("creationDateTime").descending()); // zero based page
-            postPage = adminService.getPostForUser(user, pageable);
+            postPage = adminService.getPostsForUser(user, pageable);
         }
 
-        postPageAdminTracker.setCurrentPage(postPage.getNumber() + 1);
-        postPageAdminTracker.setUserId(userId);
+        adminPostPageTracker.setCurrentPage(postPage.getNumber() + 1);
+        adminPostPageTracker.setUserId(userId);
 
         List<PostAdminDto> postAdminDtos =
                 controllerUtils.convertToPostAdminDtoList(postPage.getContent());
@@ -156,8 +156,8 @@ public class AdminController {
                 firstName(user.getFirstName()).postAdminDtos(postAdminDtos).build();
 
         model.addAttribute("userPostAdminDto", userPostAdminDto);
-        model.addAttribute("currentPage", postPageAdminTracker.getCurrentPage());
-        model.addAttribute("pageNumbers", postPageAdminTracker.getPageNumbersForPagination(postPage));
+        model.addAttribute("currentPage", adminPostPageTracker.getCurrentPage());
+        model.addAttribute("pageNumbers", adminPostPageTracker.getPageNumbersForPagination(postPage));
 
         return "admin/userPosts";
     }
@@ -181,19 +181,19 @@ public class AdminController {
             throw new NotFoundException("Post not found with id - " + postId);
         }
 
-        if (commentPageAdminTracker.getPostId() != postId) {
-            commentPageAdminTracker.reset();
+        if (adminCommentPageTracker.getPostId() != postId) {
+            adminCommentPageTracker.reset();
         }
 
-        int currentPage = page.orElse(commentPageAdminTracker.getCurrentPage());
+        int currentPage = page.orElse(adminCommentPageTracker.getCurrentPage());
         int pageSize = size.orElse(2);
 
         Pageable pageable = PageRequest.of((currentPage - 1), pageSize,
                 Sort.by("addingDateTime").descending()); // zero based page
 
-        Page<Comment> commentPage = adminService.getCommentForPost(post, pageable);
+        Page<Comment> commentPage = adminService.getCommentsForPost(post, pageable);
 
-        // Fix the last page problem - this method is called after deletion
+        // Fix the last page problem since the last page can be deleted
         if (delete.equalsIgnoreCase("yes") &&
                    commentPage.getContent().isEmpty() &&
                    currentPage > 1) {
@@ -201,11 +201,11 @@ public class AdminController {
             currentPage -= 1;
             pageable = PageRequest.of((currentPage - 1), pageSize,
                     Sort.by("addingDateTime").descending());
-            commentPage = adminService.getCommentForPost(post, pageable);
+            commentPage = adminService.getCommentsForPost(post, pageable);
         }
 
-        commentPageAdminTracker.setCurrentPage(commentPage.getNumber() + 1);
-        commentPageAdminTracker.setPostId(postId);
+        adminCommentPageTracker.setCurrentPage(commentPage.getNumber() + 1);
+        adminCommentPageTracker.setPostId(postId);
 
         List<CommentAdminDto> commentAdminDtos =
                 controllerUtils.convertToCommentAdminDtoList(commentPage.getContent());
@@ -213,8 +213,8 @@ public class AdminController {
                 .title(post.getTitle()).commentAdminDtos(commentAdminDtos).build();
 
         model.addAttribute("postCommentAdminDto", postCommentAdminDto);
-        model.addAttribute("currentPage", commentPageAdminTracker.getCurrentPage());
-        model.addAttribute("pageNumbers", commentPageAdminTracker.getPageNumbersForPagination(commentPage));
+        model.addAttribute("currentPage", adminCommentPageTracker.getCurrentPage());
+        model.addAttribute("pageNumbers", adminCommentPageTracker.getPageNumbersForPagination(commentPage));
 
         return "admin/postComments";
     }

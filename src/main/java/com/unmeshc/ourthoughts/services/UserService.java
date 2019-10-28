@@ -11,13 +11,13 @@ public interface UserService {
 
     boolean isEmailExists(String email);
 
-    User saveOrUpdateUser(User user);
+    User saveOrUpdate(User user);
 
     User getByEmail(String email);
 
     User getById(long userId);
 
-    Page<User> getAllUsers(String email, Pageable pageable);
+    Page<User> getAll(String email, Pageable pageable);
 
-    void deleteUser(User user);
+    void delete(User user);
 }
