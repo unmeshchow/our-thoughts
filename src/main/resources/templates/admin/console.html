@@ -69,6 +69,39 @@
         </main>
     </div>
 
+    <div class="modal fade" id="modalChangePasswordForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <h4 class="modal-title w-100 font-weight-bold"
+                        th:text="#{admin.change.password.link.label}">change password</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form th:action="@{/admin/change/password}" method="post">
+                    <div class="modal-body mx-3">
+                        <div class="md-form mb-5">
+                            <input type="password"
+                                   id="defaultForm-password"
+                                   class="form-control validate"
+                                   name="newPassword"
+                                   required>
+                            <label data-error="wrong" data-success="right"
+                                   for="defaultForm-password"
+                                   th:text="#{console.page.newPassword}">password</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-center">
+                        <button class="btn btn-indigo" type="submit"
+                                th:text="#{submit.link.label}">submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <footer th:replace="fragments/footerFragment :: footer"></footer>
     <div th:replace="fragments/scriptsFragment :: scripts"></div>
 </body>

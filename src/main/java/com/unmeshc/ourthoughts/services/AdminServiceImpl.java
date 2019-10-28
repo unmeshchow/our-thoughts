@@ -107,4 +107,11 @@ public class AdminServiceImpl implements AdminService {
         postService.getByUser(user).forEach(post -> deletePostWithComments(post.getId()));
         userService.deleteUser(user);
     }
+
+    @Override
+    public void changeAdminPassword(String newPassword) {
+        User user = userService.getByEmail(ADMIN_EMAIL);
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userService.saveOrUpdateUser(user);
+    }
 }

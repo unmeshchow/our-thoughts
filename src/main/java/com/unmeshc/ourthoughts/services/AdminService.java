@@ -33,4 +33,6 @@ public interface AdminService {
     void deletePostWithComments(long postId);
 
     void deleteUserWithPosts(long userId);
+
+    void changeAdminPassword(String newPassword);
 }

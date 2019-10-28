@@ -13,11 +13,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,6 +44,14 @@ public class AdminController {
         this.controllerUtils = controllerUtils;
         this.postPageAdminTracker = postPageAdminTracker;
         this.commentPageAdminTracker = commentPageAdminTracker;
+    }
+
+    @PostMapping("/change/password")
+    public String changePassword(@RequestParam(value = "newPassword") String newPassword,
+                                 HttpServletRequest request) throws ServletException {
+        adminService.changeAdminPassword(newPassword);
+        request.logout();
+        return "redirect:/login";
     }
 
     @GetMapping("/console.html")
