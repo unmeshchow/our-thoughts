@@ -82,7 +82,7 @@ public class AdminController {
                            @RequestParam(value = "delete", defaultValue = "no") String delete,
                            Model model) {
 
-        int currentPage = page.orElse(adminUserPageTracker.getCurrentPage());
+        int currentPage = page.orElseGet(() -> adminUserPageTracker.getCurrentPage());
         int pageSize = size.orElse(2);
 
         Pageable pageable = PageRequest.of((currentPage - 1), pageSize,
@@ -135,7 +135,7 @@ public class AdminController {
             adminPostPageTracker.reset();
         }
 
-        int currentPage = page.orElse(adminPostPageTracker.getCurrentPage());
+        int currentPage = page.orElseGet(() ->adminPostPageTracker.getCurrentPage());
         int pageSize = size.orElse(2);
 
         Pageable pageable = PageRequest.of((currentPage - 1), pageSize,
@@ -192,7 +192,7 @@ public class AdminController {
             adminCommentPageTracker.reset();
         }
 
-        int currentPage = page.orElse(adminCommentPageTracker.getCurrentPage());
+        int currentPage = page.orElseGet(() ->adminCommentPageTracker.getCurrentPage());
         int pageSize = size.orElse(2);
 
         Pageable pageable = PageRequest.of((currentPage - 1), pageSize,
