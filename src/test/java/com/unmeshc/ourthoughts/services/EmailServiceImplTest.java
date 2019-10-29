@@ -124,7 +124,7 @@ public class EmailServiceImplTest {
         when(messageSource.getMessage(any(), any(), any())).thenReturn("Subject");
         when(templateEngine.process(anyString(), any())).thenReturn("Body");
 
-        service.sendAccountActivationLink(user, request);
+        service.sendAccountActivationLinkForUser(user, request);
 
         verify(mailSender).send(message);
     }
@@ -142,7 +142,7 @@ public class EmailServiceImplTest {
         when(messageSource.getMessage(any(), any(), any())).thenReturn("Subject");
         when(templateEngine.process(anyString(), any())).thenReturn("Body");
 
-        service.sendPasswordResetLink(user, request);
+        service.sendPasswordResetLinkForUser(user, request);
 
         verify(mailSender).send(message);
     }

@@ -51,7 +51,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     @Transactional
-    public User saveAndVerifyUser(UserCommand userCommand, HttpServletRequest request) {
+    public User saveUserAndVerifyEmail(UserCommand userCommand, HttpServletRequest request) {
         Role role = roleRepository.findByName("USER").orElse(null);
 
         if (role == null) {
@@ -67,7 +67,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         user.setRoles(roles);
 
         User savedUser = userService.saveOrUpdate(user);
-        emailService.sendAccountActivationLink(savedUser, request);
+        emailService.sendAccountActivationLinkForUser(savedUser, request);
 
         return savedUser;
     }

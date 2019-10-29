@@ -31,6 +31,13 @@ import java.util.Optional;
 @RequestMapping("/admin")
 public class AdminController {
 
+    static final String REDIRECT_LOGIN = "redirect:/login";
+    static final String REDIRECT_ADMIN_ALL_USER = "redirect:/admin/all/user";
+    static final String CONSOLE = "admin/console";
+    static final String REDIRECT_ADMIN_ALL_USER_DELETE = "redirect:/admin/all/user?delete=yes";
+    static final String USER_POSTS = "admin/userPosts";
+    static final String POST_COMMENTS = "admin/postComments";
+
     private final AdminService adminService;
     private final ControllerUtils controllerUtils;
     private final AdminPostPageTracker adminPostPageTracker;
@@ -52,7 +59,7 @@ public class AdminController {
     @GetMapping("/reset/password")
     public String resetPassword() {
         adminService.resetAdminPassword();
-        return "redirect:/login";
+        return REDIRECT_LOGIN;
     }
 
 
@@ -61,12 +68,12 @@ public class AdminController {
                                  HttpServletRequest request) throws ServletException {
         adminService.changeAdminPassword(newPassword);
         request.logout();
-        return "redirect:/login";
+        return REDIRECT_LOGIN;
     }
 
     @GetMapping("/console.html")
     public String adminConsole() {
-        return "redirect:/admin/all/user";
+        return REDIRECT_ADMIN_ALL_USER;
     }
 
     @GetMapping("/all/user")
@@ -103,13 +110,13 @@ public class AdminController {
         model.addAttribute("currentPage", adminUserPageTracker.getCurrentPage());
         model.addAttribute("pageNumbers", adminUserPageTracker.getPageNumbersForPagination(userPage));
 
-        return "admin/console";
+        return CONSOLE;
     }
 
     @GetMapping("/all/user/{userId}/delete")
     public String deleteUser(@PathVariable long userId) {
-        adminService.deleteUserWithPosts(userId);
-        return "redirect:/admin/all/user?delete=yes";
+        adminService.deleteUserWithPostsById(userId);
+        return REDIRECT_ADMIN_ALL_USER_DELETE;
     }
 
     @GetMapping("/user/{userId}/post")
@@ -134,7 +141,7 @@ public class AdminController {
         Pageable pageable = PageRequest.of((currentPage - 1), pageSize,
                 Sort.by("creationDateTime").descending()); // zero based page
 
-        Page<Post> postPage = adminService.getPostsForUser(user, pageable);
+        Page<Post> postPage = adminService.getPostsByUser(user, pageable);
 
         // Fix the last page problem since the last page can be deleted
         if (delete.equalsIgnoreCase("yes") &&
@@ -144,7 +151,7 @@ public class AdminController {
             currentPage -= 1;
             pageable = PageRequest.of((currentPage - 1), pageSize,
                     Sort.by("creationDateTime").descending()); // zero based page
-            postPage = adminService.getPostsForUser(user, pageable);
+            postPage = adminService.getPostsByUser(user, pageable);
         }
 
         adminPostPageTracker.setCurrentPage(postPage.getNumber() + 1);
@@ -159,13 +166,13 @@ public class AdminController {
         model.addAttribute("currentPage", adminPostPageTracker.getCurrentPage());
         model.addAttribute("pageNumbers", adminPostPageTracker.getPageNumbersForPagination(postPage));
 
-        return "admin/userPosts";
+        return USER_POSTS;
     }
 
     @GetMapping("/user/{userId}/post/{postId}/delete")
     public String deletePost(@PathVariable long userId,
                              @PathVariable long postId) {
-        adminService.deletePostWithComments(postId);
+        adminService.deletePostWithCommentsById(postId);
         return "redirect:/admin/user/" + userId + "/post?delete=yes";
     }
 
@@ -191,7 +198,7 @@ public class AdminController {
         Pageable pageable = PageRequest.of((currentPage - 1), pageSize,
                 Sort.by("addingDateTime").descending()); // zero based page
 
-        Page<Comment> commentPage = adminService.getCommentsForPost(post, pageable);
+        Page<Comment> commentPage = adminService.getCommentsByPost(post, pageable);
 
         // Fix the last page problem since the last page can be deleted
         if (delete.equalsIgnoreCase("yes") &&
@@ -201,7 +208,7 @@ public class AdminController {
             currentPage -= 1;
             pageable = PageRequest.of((currentPage - 1), pageSize,
                     Sort.by("addingDateTime").descending());
-            commentPage = adminService.getCommentsForPost(post, pageable);
+            commentPage = adminService.getCommentsByPost(post, pageable);
         }
 
         adminCommentPageTracker.setCurrentPage(commentPage.getNumber() + 1);
@@ -216,7 +223,7 @@ public class AdminController {
         model.addAttribute("currentPage", adminCommentPageTracker.getCurrentPage());
         model.addAttribute("pageNumbers", adminCommentPageTracker.getPageNumbersForPagination(commentPage));
 
-        return "admin/postComments";
+        return POST_COMMENTS;
     }
 
     @GetMapping("/post/{postId}/comment/{commentId}/delete")

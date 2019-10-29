@@ -59,7 +59,7 @@ public class RegistrationController {
             return REGISTRATION_FORM;
         }
 
-        registrationService.saveAndVerifyUser(userCommand, request);
+        registrationService.saveUserAndVerifyEmail(userCommand, request);
 
         return REDIRECT_REGISTRATION_SUCCESS;
     }

@@ -13,7 +13,7 @@ public interface RegistrationService {
 
     User activateUser(User user);
 
-    User saveAndVerifyUser(UserCommand userCommand, HttpServletRequest request);
+    User saveUserAndVerifyEmail(UserCommand userCommand, HttpServletRequest request);
 
     boolean isUserEmailExists(String email);
 

@@ -62,7 +62,7 @@ public class RegistrationServiceImplTest {
     @Test(expected = RuntimeException.class)
     public void saveAndVerifyUserException() {
         when(roleRepository.findByName(anyString())).thenReturn(Optional.empty());
-        service.saveAndVerifyUser(any(UserCommand.class), any(HttpServletRequest.class));
+        service.saveUserAndVerifyEmail(any(UserCommand.class), any(HttpServletRequest.class));
     }
 
     @Test
@@ -79,13 +79,13 @@ public class RegistrationServiceImplTest {
         when(roleRepository.findByName(anyString())).thenReturn(Optional.of(role));
         when(userService.saveOrUpdate(user)).thenReturn(user);
 
-        User savedUser = service.saveAndVerifyUser(UserCommand.builder().build(), request);
+        User savedUser = service.saveUserAndVerifyEmail(UserCommand.builder().build(), request);
 
         assertThat(savedUser).isNotNull();
         verify(userCommandToUser).convert(any(UserCommand.class));
         verify(passwordEncoder).encode(anyString());
         verify(roleRepository).findByName(anyString());
         verify(userService).saveOrUpdate(user);
-        verify(emailService).sendAccountActivationLink(user, request);
+        verify(emailService).sendAccountActivationLinkForUser(user, request);
     }
 }

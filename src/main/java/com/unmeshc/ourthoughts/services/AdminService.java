@@ -20,19 +20,19 @@ public interface AdminService {
 
     Page<User> getAllUsers(Pageable pageable);
 
-    Page<Post> getPostsForUser(User user, Pageable pageable);
+    Page<Post> getPostsByUser(User user, Pageable pageable);
 
     User getUserById(long userId);
 
     Post getPostById(long postId);
 
-    Page<Comment> getCommentsForPost(Post post, Pageable pageable);
+    Page<Comment> getCommentsByPost(Post post, Pageable pageable);
 
     void deleteCommentById(long commentId);
 
-    void deletePostWithComments(long postId);
+    void deletePostWithCommentsById(long postId);
 
-    void deleteUserWithPosts(long userId);
+    void deleteUserWithPostsById(long userId);
 
     void changeAdminPassword(String newPassword);
 

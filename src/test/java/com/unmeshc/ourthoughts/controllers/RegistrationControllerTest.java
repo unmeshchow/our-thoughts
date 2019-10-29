@@ -147,7 +147,7 @@ public class RegistrationControllerTest {
     @Test(expected = NestedServletException.class)
     public void saveRegistrationDataThrowException() throws Exception {
         when(userService.isEmailExists(anyString())).thenReturn(false);
-        when(registrationService.saveAndVerifyUser(any(), any()))
+        when(registrationService.saveUserAndVerifyEmail(any(), any()))
                 .thenThrow(EmailNotSentException.class);
 
         mockMvc.perform(post("/registration/save")
@@ -172,7 +172,7 @@ public class RegistrationControllerTest {
                 .andExpect(view().name(RegistrationController.REDIRECT_REGISTRATION_SUCCESS));
 
         verify(userService).isEmailExists("unmeshchow@gmail.com");
-        verify(registrationService).saveAndVerifyUser(any(UserCommand.class),
+        verify(registrationService).saveUserAndVerifyEmail(any(UserCommand.class),
                 any(HttpServletRequest.class)); // TODO
         verifyZeroInteractions(tokenService);
     }

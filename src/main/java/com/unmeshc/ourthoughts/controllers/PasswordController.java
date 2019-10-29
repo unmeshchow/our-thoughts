@@ -59,7 +59,7 @@ public class PasswordController {
             throw new NotFoundException("User not found with email: " + email);
         }
 
-        passwordService.verifyResetPassword(user, request);
+        passwordService.verifyResetPasswordForUser(user, request);
 
         return REDIRECT_PASSWORD_RESET_SUCCESS;
     }
@@ -103,7 +103,7 @@ public class PasswordController {
         }
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        passwordService.updatePassword(user, passwordCommand);
+        passwordService.updatePasswordForUser(user, passwordCommand);
 
         return REDIRECT_LOGIN;
     }

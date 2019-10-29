@@ -38,7 +38,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendAccountActivationLink(User user, HttpServletRequest request) {
+    public void sendAccountActivationLinkForUser(User user, HttpServletRequest request) {
         String token = getRandomToken();
         createUserToken(user, token);
 
@@ -57,7 +57,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendPasswordResetLink(User user, HttpServletRequest request) {
+    public void sendPasswordResetLinkForUser(User user, HttpServletRequest request) {
         String token = getRandomToken();
         createUserToken(user, token);
 

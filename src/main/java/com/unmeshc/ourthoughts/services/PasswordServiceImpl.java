@@ -30,12 +30,12 @@ public class PasswordServiceImpl implements PasswordService {
     }
 
     @Override
-    public void verifyResetPassword(User user, HttpServletRequest request) {
-        emailService.sendPasswordResetLink(user, request);
+    public void verifyResetPasswordForUser(User user, HttpServletRequest request) {
+        emailService.sendPasswordResetLinkForUser(user, request);
     }
 
     @Override
-    public void updatePassword(User user, PasswordCommand passwordCommand) {
+    public void updatePasswordForUser(User user, PasswordCommand passwordCommand) {
         user.setPassword(passwordEncoder.encode(passwordCommand.getPassword()));
         userService.saveOrUpdate(user);
     }

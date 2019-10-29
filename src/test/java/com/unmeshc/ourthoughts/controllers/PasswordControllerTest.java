@@ -66,7 +66,7 @@ public class PasswordControllerTest {
                 .andExpect(view().name(PasswordController.REDIRECT_PASSWORD_RESET_SUCCESS));
 
         ArgumentCaptor<User> userAC = ArgumentCaptor.forClass(User.class);
-        verify(passwordService).verifyResetPassword(userAC.capture(), any());
+        verify(passwordService).verifyResetPasswordForUser(userAC.capture(), any());
         User usedUser = userAC.getValue();
         assertThat(usedUser.getActive()).isEqualTo(user.getActive());
     }
@@ -184,7 +184,7 @@ public class PasswordControllerTest {
                 .andExpect(view().name(PasswordController.REDIRECT_LOGIN));
 
         ArgumentCaptor<PasswordCommand> passwordCommandAC = ArgumentCaptor.forClass(PasswordCommand.class);
-        verify(passwordService).updatePassword(any(), passwordCommandAC.capture());
+        verify(passwordService).updatePasswordForUser(any(), passwordCommandAC.capture());
         PasswordCommand passwordCommand = passwordCommandAC.getValue();
         assertThat(passwordCommand.getPassword()).isEqualTo("unmesh");
         assertThat(passwordCommand.getMatchingPassword()).isEqualTo("unmesh");

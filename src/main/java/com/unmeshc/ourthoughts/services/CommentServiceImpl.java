@@ -27,7 +27,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Page<Comment> getCommentsForPost(Post post, Pageable pageable) {
+    public Page<Comment> getCommentsByPost(Post post, Pageable pageable) {
         return commentRepository.findByPost(post, pageable);
     }
 

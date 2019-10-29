@@ -13,7 +13,7 @@ public interface CommentService {
 
     void saveCommentOfUserForPost(String userComment, User user, Post post);
 
-    Page<Comment> getCommentsForPost(Post post, Pageable pageable);
+    Page<Comment> getCommentsByPost(Post post, Pageable pageable);
 
     void deleteById(long commentId);
 

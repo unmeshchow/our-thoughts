@@ -40,9 +40,9 @@ public class PasswordServiceImplTest {
         User user = User.builder().build();
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 
-        service.verifyResetPassword(user, request);
+        service.verifyResetPasswordForUser(user, request);
 
-        verify(emailService).sendPasswordResetLink(user, request);
+        verify(emailService).sendPasswordResetLinkForUser(user, request);
     }
 
     @Test
@@ -51,7 +51,7 @@ public class PasswordServiceImplTest {
         PasswordCommand passwordCommand = PasswordCommand.builder().password("unmesh").build();
         when(passwordEncoder.encode(anyString())).thenReturn("unmesh");
 
-        service.updatePassword(user, passwordCommand);
+        service.updatePasswordForUser(user, passwordCommand);
 
         user.setPassword("unmesh");
 

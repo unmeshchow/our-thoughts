@@ -11,9 +11,9 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface PasswordService {
 
-    void verifyResetPassword(User user, HttpServletRequest request);
+    void verifyResetPasswordForUser(User user, HttpServletRequest request);
 
-    void updatePassword(User user, PasswordCommand passwordCommand);
+    void updatePasswordForUser(User user, PasswordCommand passwordCommand);
 
     User getUserByEmail(String email);
 

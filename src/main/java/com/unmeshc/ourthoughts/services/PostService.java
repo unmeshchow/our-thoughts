@@ -24,7 +24,7 @@ public interface PostService {
 
     Page<Post> getPostsByUser(User user, Pageable pageable);
 
-    void deletePost(Post post);
+    void delete(Post post);
 
     List<Post> getPostsByUser(User user);
 }

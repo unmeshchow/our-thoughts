@@ -69,7 +69,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Page<Post> getPostsForUser(User user, Pageable pageable) {
+    public Page<Post> getPostsByUser(User user, Pageable pageable) {
         return postService.getPostsByUser(user, pageable);
     }
 
@@ -84,8 +84,8 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Page<Comment> getCommentsForPost(Post post, Pageable pageable) {
-        return commentService.getCommentsForPost(post, pageable);
+    public Page<Comment> getCommentsByPost(Post post, Pageable pageable) {
+        return commentService.getCommentsByPost(post, pageable);
     }
 
     @Override
@@ -95,16 +95,16 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     @Transactional
-    public void deletePostWithComments(long postId) {
+    public void deletePostWithCommentsById(long postId) {
         Post post = postService.getById(postId);
         commentService.deleteByPost(post);
-        postService.deletePost(post);
+        postService.delete(post);
     }
 
     @Override
-    public void deleteUserWithPosts(long userId) {
+    public void deleteUserWithPostsById(long userId) {
         User user = userService.getById(userId);
-        postService.getPostsByUser(user).forEach(post -> deletePostWithComments(post.getId()));
+        postService.getPostsByUser(user).forEach(post -> deletePostWithCommentsById(post.getId()));
         userService.delete(user);
     }
 
