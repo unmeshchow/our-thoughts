@@ -70,7 +70,7 @@ public class RegistrationController {
     }
 
     @GetMapping("/confirm")
-    public String activeRegistration(@RequestParam("token") String token) {
+    public String activateRegistration(@RequestParam("token") String token) {
         VerificationToken foundToken = registrationService.getVerificationTokenByToken(token);
 
         if (foundToken == null || foundToken.isExpired()) {

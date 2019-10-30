@@ -1,12 +1,10 @@
 package com.unmeshc.ourthoughts.controllers;
 
-import com.unmeshc.ourthoughts.configurations.SecurityUtils;
 import com.unmeshc.ourthoughts.controllers.pagination.SearchPostPageTracker;
 import com.unmeshc.ourthoughts.domain.Post;
 import com.unmeshc.ourthoughts.domain.User;
 import com.unmeshc.ourthoughts.dtos.PostDetailsDto;
 import com.unmeshc.ourthoughts.dtos.PostSearchDto;
-import com.unmeshc.ourthoughts.services.CommentService;
 import com.unmeshc.ourthoughts.services.PostService;
 import com.unmeshc.ourthoughts.services.UserService;
 import org.junit.Before;
@@ -40,13 +38,7 @@ public class PostControllerTest {
     private UserService userService;
 
     @Mock
-    private CommentService commentService;
-
-    @Mock
     private ControllerUtils controllerUtils;
-
-    @Mock
-    private SecurityUtils securityUtils;
 
     @Mock
     private SearchPostPageTracker searchPostPageTracker;

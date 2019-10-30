@@ -27,5 +27,5 @@ public class PostCommand {
     @NotBlank
     private String caption;
 
-    private Byte[] postPhoto;
+    private Byte[] postPhoto; // it will be obtained from photo (MultipartFile) property
 }

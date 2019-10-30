@@ -77,7 +77,7 @@
                 <!-- Add Comment -->
                 <div class="card mt-5">
                     <div class="card-body">
-                        <form th:action="@{/post/{postId}/comment/add(postId=${postDetails.id})}"
+                        <form th:action="@{/user/comment/post/{postId}/add(postId=${postDetails.id})}"
                               method="post">
                             <div class="md-form">
                                 <textarea id="comment"

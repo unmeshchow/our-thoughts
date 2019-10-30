@@ -1,14 +1,13 @@
 package com.unmeshc.ourthoughts.controllers;
 
 import com.unmeshc.ourthoughts.commands.UserCommand;
-import com.unmeshc.ourthoughts.domain.VerificationToken;
 import com.unmeshc.ourthoughts.domain.User;
+import com.unmeshc.ourthoughts.domain.VerificationToken;
 import com.unmeshc.ourthoughts.exceptions.EmailNotSentException;
 import com.unmeshc.ourthoughts.services.RegistrationService;
-import com.unmeshc.ourthoughts.services.VerificationTokenService;
-import com.unmeshc.ourthoughts.services.UserService;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -19,6 +18,7 @@ import org.springframework.web.util.NestedServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -29,13 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class RegistrationControllerTest {
 
     @Mock
-    private UserService userService;
-
-    @Mock
     private RegistrationService registrationService;
-
-    @Mock
-    private VerificationTokenService tokenService;
 
     @InjectMocks
     private RegistrationController controller;
@@ -55,9 +49,7 @@ public class RegistrationControllerTest {
                .andExpect(model().attributeExists("userCommand"))
                .andExpect(view().name(RegistrationController.REGISTRATION_FORM));
 
-        verifyZeroInteractions(userService);
         verifyZeroInteractions(registrationService);
-        verifyZeroInteractions(tokenService);
     }
 
     @Test
@@ -82,9 +74,7 @@ public class RegistrationControllerTest {
                         "matchingPassword"))
                 .andExpect(view().name(RegistrationController.REGISTRATION_FORM));
 
-        verifyZeroInteractions(userService);
         verifyZeroInteractions(registrationService);
-        verifyZeroInteractions(tokenService);
     }
 
     @Test
@@ -101,9 +91,7 @@ public class RegistrationControllerTest {
                         "email"))
                 .andExpect(view().name(RegistrationController.REGISTRATION_FORM));
 
-        verifyZeroInteractions(userService);
         verifyZeroInteractions(registrationService);
-        verifyZeroInteractions(tokenService);
     }
 
     @Test
@@ -118,14 +106,12 @@ public class RegistrationControllerTest {
                 .andExpect(model().errorCount(1))
                 .andExpect(view().name(RegistrationController.REGISTRATION_FORM));
 
-        verifyZeroInteractions(userService);
         verifyZeroInteractions(registrationService);
-        verifyZeroInteractions(tokenService);
     }
 
     @Test
     public void saveRegistrationDataEmailExists() throws Exception {
-        when(userService.isEmailExists(anyString())).thenReturn(true);
+        when(registrationService.isUserEmailExists(anyString())).thenReturn(true);
 
         mockMvc.perform(post("/registration/save")
                     .param("firstName", "Unmesh")
@@ -139,14 +125,12 @@ public class RegistrationControllerTest {
                         "email"))
                 .andExpect(view().name(RegistrationController.REGISTRATION_FORM));
 
-        verify(userService).isEmailExists("unmeshchow@gmail.com");
-        verifyZeroInteractions(registrationService);
-        verifyZeroInteractions(tokenService);
+        verify(registrationService).isUserEmailExists("unmeshchow@gmail.com");
     }
 
     @Test(expected = NestedServletException.class)
     public void saveRegistrationDataThrowException() throws Exception {
-        when(userService.isEmailExists(anyString())).thenReturn(false);
+        when(registrationService.isUserEmailExists(anyString())).thenReturn(false);
         when(registrationService.saveUserAndVerifyEmail(any(), any()))
                 .thenThrow(EmailNotSentException.class);
 
@@ -160,7 +144,7 @@ public class RegistrationControllerTest {
 
     @Test
     public void saveRegistrationData() throws Exception {
-        when(userService.isEmailExists(anyString())).thenReturn(false);
+        when(registrationService.isUserEmailExists(anyString())).thenReturn(false);
 
         mockMvc.perform(post("/registration/save")
                     .param("firstName", "Unmesh")
@@ -171,10 +155,15 @@ public class RegistrationControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name(RegistrationController.REDIRECT_REGISTRATION_SUCCESS));
 
-        verify(userService).isEmailExists("unmeshchow@gmail.com");
-        verify(registrationService).saveUserAndVerifyEmail(any(UserCommand.class),
-                any(HttpServletRequest.class)); // TODO
-        verifyZeroInteractions(tokenService);
+        verify(registrationService).isUserEmailExists("unmeshchow@gmail.com");
+        ArgumentCaptor<UserCommand> userCommandArgumentCaptor =
+                ArgumentCaptor.forClass(UserCommand.class);
+        verify(registrationService).saveUserAndVerifyEmail(userCommandArgumentCaptor.capture(),
+                any(HttpServletRequest.class));
+        UserCommand userCommand = userCommandArgumentCaptor.getValue();
+        assertThat(userCommand.getFirstName()).isEqualTo("Unmesh");
+        assertThat(userCommand.getLastName()).isEqualTo("Chowdhury");
+        assertThat(userCommand.getEmail()).isEqualTo("unmeshchow@gmail.com");
     }
 
     @Test
@@ -183,54 +172,47 @@ public class RegistrationControllerTest {
                .andExpect(status().isOk())
                .andExpect(view().name(RegistrationController.REGISTRATION_SUCCESS));
 
-        verifyZeroInteractions(userService);
         verifyZeroInteractions(registrationService);
-        verifyZeroInteractions(tokenService);
     }
 
     @Test
     public void activateRegistrationInvalidToken() throws Exception {
-        when(tokenService.getByToken(anyString())).thenReturn(null);
+        when(registrationService.getVerificationTokenByToken(anyString())).thenReturn(null);
 
         mockMvc.perform(get("/registration/confirm")
                    .param("token", "token"))
                .andExpect(status().is3xxRedirection())
                .andExpect(view().name(RegistrationController.REDIRECT_REGISTRATION_CONFIRM_BAD));
 
-        verify(tokenService).getByToken(anyString());
-        verifyZeroInteractions(userService);
-        verifyZeroInteractions(registrationService);
+        verify(registrationService).getVerificationTokenByToken("token");
     }
 
     @Test
     public void activateRegistrationExpiredToken() throws Exception {
         VerificationToken token = VerificationToken.builder().id(1L).expiryDate(LocalDateTime.now().minusDays(1L)).build();
-        when(tokenService.getByToken(anyString())).thenReturn(token);
+        when(registrationService.getVerificationTokenByToken(anyString())).thenReturn(token);
 
         mockMvc.perform(get("/registration/confirm")
                 .param("token", "token"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name(RegistrationController.REDIRECT_REGISTRATION_CONFIRM_BAD));
 
-        verify(tokenService).getByToken(anyString());
-        verifyZeroInteractions(userService);
-        verifyZeroInteractions(registrationService);
+        verify(registrationService).getVerificationTokenByToken(anyString());
     }
 
     @Test
     public void activateRegistration() throws Exception {
         VerificationToken token = VerificationToken.builder().id(1L).expiryDate(LocalDateTime.now().plusDays(1L))
                 .user(User.builder().build()).build();
-        when(tokenService.getByToken(anyString())).thenReturn(token);
+        when(registrationService.getVerificationTokenByToken(anyString())).thenReturn(token);
 
         mockMvc.perform(get("/registration/confirm")
                 .param("token", "token"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name(RegistrationController.REDIRECT_LOGIN));
 
-        verify(tokenService).getByToken(anyString());
-        verifyZeroInteractions(userService);
-        verify(registrationService).activateUser(any(User.class)); // TODO
+        verify(registrationService).getVerificationTokenByToken(anyString());
+        verify(registrationService).activateUser(any(User.class));
     }
 
     @Test
