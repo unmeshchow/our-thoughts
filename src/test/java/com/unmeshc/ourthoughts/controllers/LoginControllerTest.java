@@ -26,4 +26,11 @@ public class LoginControllerTest {
                .andExpect(status().isOk())
                .andExpect(view().name("register/login"));
     }
+
+    @Test
+    public void accessDenied() throws Exception {
+        mockMvc.perform(get("/access/denied"))
+               .andExpect(status().isOk())
+               .andExpect(view().name("error/accessDenied"));
+    }
 }

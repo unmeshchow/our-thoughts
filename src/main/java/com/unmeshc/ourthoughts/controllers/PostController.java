@@ -31,6 +31,9 @@ import java.util.Optional;
 @Controller
 public class PostController {
 
+    static final String INDEX = "index";
+    static final String POST_DETAILS = "post/postDetails";
+
     private final PostService postService;
     private final UserService userService;
     private final CommentService commentService;
@@ -58,12 +61,12 @@ public class PostController {
                          @RequestParam("search") Optional<String> search,
                          Model model) {
 
-        String searchValue = search.orElse(searchPostPageTracker.getSearchValue());
+        String searchValue = search.orElseGet(() -> searchPostPageTracker.getSearchValue());
         if (!searchValue.equalsIgnoreCase(searchPostPageTracker.getSearchValue())) {
             searchPostPageTracker.reset();
         }
 
-        int currentPage = page.orElse(searchPostPageTracker.getCurrentPage());
+        int currentPage = page.orElseGet(() -> searchPostPageTracker.getCurrentPage());
         int pageSize = size.orElse(2);
 
         Pageable pageable = PageRequest.of((currentPage - 1), pageSize,
@@ -80,14 +83,14 @@ public class PostController {
         model.addAttribute("currentPage", searchPostPageTracker.getCurrentPage());
         model.addAttribute("pageNumbers", searchPostPageTracker.getPageNumbersForPagination(postPage));
 
-        return "index";
+        return INDEX;
     }
 
     @GetMapping("/visitor/post/{postId}/details")
     public String viewPostDetails(@PathVariable long postId,
                                   Model model) {
         model.addAttribute("postDetails", postService.getPostDetailsById(postId));
-        return "post/postDetails";
+        return POST_DETAILS;
     }
 
     @GetMapping("/visitor/post/{postId}/photo")

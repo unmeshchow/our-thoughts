@@ -1,11 +1,9 @@
 package com.unmeshc.ourthoughts.controllers;
 
 import com.unmeshc.ourthoughts.commands.PasswordCommand;
-import com.unmeshc.ourthoughts.domain.VerificationToken;
 import com.unmeshc.ourthoughts.domain.User;
+import com.unmeshc.ourthoughts.domain.VerificationToken;
 import com.unmeshc.ourthoughts.services.PasswordService;
-import com.unmeshc.ourthoughts.services.VerificationTokenService;
-import com.unmeshc.ourthoughts.services.UserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.*;
@@ -16,11 +14,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.util.NestedServletException;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -30,12 +28,6 @@ public class PasswordControllerTest {
 
     @Mock
     private PasswordService passwordService;
-
-    @Mock
-    private UserService userService;
-
-    @Mock
-    private VerificationTokenService tokenService;
 
     @InjectMocks
     private PasswordController controller;
@@ -58,22 +50,21 @@ public class PasswordControllerTest {
     @Test
     public void processPasswordReset() throws Exception {
         User user = User.builder().id(1L).active(true).build();
-        when(userService.getByEmail(anyString())).thenReturn(user);
+        when(passwordService.getUserByEmail(anyString())).thenReturn(user);
 
         mockMvc.perform(get("/password/reset/send")
                    .param("email", "unmesh@gmail.com"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name(PasswordController.REDIRECT_PASSWORD_RESET_SUCCESS));
 
-        ArgumentCaptor<User> userAC = ArgumentCaptor.forClass(User.class);
-        verify(passwordService).verifyResetPasswordForUser(userAC.capture(), any());
-        User usedUser = userAC.getValue();
-        assertThat(usedUser.getActive()).isEqualTo(user.getActive());
+        verify(passwordService).getUserByEmail("unmesh@gmail.com");
+        verify(passwordService).verifyResetPasswordForUser(eq(user),
+                any(HttpServletRequest.class));
     }
 
     @Test(expected = NestedServletException.class)
     public void processPasswordResetNull() throws Exception {
-        when(userService.getByEmail(anyString())).thenReturn(null);
+        when(passwordService.getUserByEmail(anyString())).thenReturn(null);
 
         mockMvc.perform(get("/password/reset/send")
                 .param("email", "unmesh@gmail.com"));
@@ -82,7 +73,7 @@ public class PasswordControllerTest {
     @Test(expected = NestedServletException.class)
     public void processPasswordResetInactive() throws Exception {
         User user = User.builder().id(1L).active(false).build();
-        when(userService.getByEmail(anyString())).thenReturn(user);
+        when(passwordService.getUserByEmail(anyString())).thenReturn(user);
 
         mockMvc.perform(get("/password/reset/send")
                 .param("email", "unmesh@gmail.com"));
@@ -97,7 +88,7 @@ public class PasswordControllerTest {
 
     @Test
     public void acceptPasswordResetNull() throws Exception {
-        when(tokenService.getByToken(anyString())).thenReturn(null);
+        when(passwordService.getVerificationTokenByToken(anyString())).thenReturn(null);
 
         mockMvc.perform(get("/password/reset/confirm")
                    .param("token", "er457hy78"))
@@ -107,8 +98,9 @@ public class PasswordControllerTest {
 
     @Test
     public void acceptPasswordResetExpired() throws Exception {
-        VerificationToken token = VerificationToken.builder().id(1L).expiryDate(LocalDateTime.now().minusDays(1L)).build();
-        when(tokenService.getByToken(anyString())).thenReturn(token);
+        VerificationToken verificationToken = VerificationToken.builder().id(1L)
+                .expiryDate(LocalDateTime.now().minusDays(1L)).build();
+        when(passwordService.getVerificationTokenByToken(anyString())).thenReturn(verificationToken);
 
         mockMvc.perform(get("/password/reset/confirm")
                 .param("token", "er457hy78"))
@@ -118,13 +110,19 @@ public class PasswordControllerTest {
 
     @Test
     public void acceptPasswordReset() throws Exception {
-        VerificationToken token = VerificationToken.builder().id(1L).expiryDate(LocalDateTime.now().plusDays(1L)).build();
-        when(tokenService.getByToken(anyString())).thenReturn(token);
+        VerificationToken verificationToken = VerificationToken.builder().id(1L)
+                .expiryDate(LocalDateTime.now().plusDays(1L)).build();
+        when(passwordService.getVerificationTokenByToken(anyString()))
+                .thenReturn(verificationToken);
 
         mockMvc.perform(get("/password/reset/confirm")
                 .param("token", "er457hy78"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name(PasswordController.REDIRECT_PASSWORD_RESET_UPDATE_FORM));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        authentication.getAuthorities().forEach(
+                o -> "CHANGE_PASSWORD_PRIVILEGE".equalsIgnoreCase(o.getAuthority()));
     }
 
     @Test
@@ -184,7 +182,7 @@ public class PasswordControllerTest {
                 .andExpect(view().name(PasswordController.REDIRECT_LOGIN));
 
         ArgumentCaptor<PasswordCommand> passwordCommandAC = ArgumentCaptor.forClass(PasswordCommand.class);
-        verify(passwordService).updatePasswordForUser(any(), passwordCommandAC.capture());
+        verify(passwordService).updatePasswordForUser(eq(user), passwordCommandAC.capture());
         PasswordCommand passwordCommand = passwordCommandAC.getValue();
         assertThat(passwordCommand.getPassword()).isEqualTo("unmesh");
         assertThat(passwordCommand.getMatchingPassword()).isEqualTo("unmesh");
