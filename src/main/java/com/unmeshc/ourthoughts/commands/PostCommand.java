@@ -13,7 +13,6 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString
 public class PostCommand {
 
     @NotBlank

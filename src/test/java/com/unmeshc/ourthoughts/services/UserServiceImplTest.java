@@ -6,12 +6,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -41,7 +44,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void saveOrUpdateUser() {
+    public void saveOrUpdate() {
         User user = User.builder().email("unmesh@gmail.com").build();
         when(userRepository.save(user)).thenReturn(User.builder().id(1L).build());
 
@@ -68,5 +71,42 @@ public class UserServiceImplTest {
 
         assertThat(user).isNotNull();
         verify(userRepository).findByEmail("unmesh@gamil.com");
+    }
+
+    @Test
+    public void getByIdNull() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThat(service.getById(1L)).isNull();
+    }
+
+    @Test
+    public void getById() {
+        User user = User.builder().id(1L).build();
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+
+        User foundUser = service.getById(1L);
+
+        assertThat(foundUser).isEqualTo(user);
+        verify(userRepository).findById(1L);
+    }
+
+    @Test
+    public void delete() {
+        User user = User.builder().id(1L).build();
+        service.delete(user);
+        verify(userRepository).delete(user);
+    }
+
+    @Test
+    public void getAllExceptAdmin() {
+        Pageable pageable = Mockito.mock(Pageable.class);
+        Page<User> userPage = Mockito.mock(Page.class);
+        when(userRepository.findAllUserExceptAdmin(anyString(), any(Pageable.class)))
+                .thenReturn(userPage);
+
+        Page<User> foundUserPost = service.getAllExceptAdmin(AdminService.ADMIN_EMAIL, pageable);
+
+        assertThat(foundUserPost).isEqualTo(userPage);
+        verify(userRepository).findAllUserExceptAdmin(AdminService.ADMIN_EMAIL, pageable);
     }
 }

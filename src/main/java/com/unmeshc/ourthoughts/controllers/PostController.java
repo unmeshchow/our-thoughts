@@ -65,7 +65,7 @@ public class PostController {
         Pageable pageable = PageRequest.of((currentPage - 1), pageSize,
                 Sort.by("creationDateTime").descending()); // zero based page
 
-        Page<Post> postPage = postService.getPostsLikeTitle(searchValue, pageable);
+        Page<Post> postPage = postService.getPostsTitleLike(searchValue, pageable);
         searchPostPageTracker.setCurrentPage(postPage.getNumber() + 1);
         searchPostPageTracker.setSearchValue(searchValue);
 

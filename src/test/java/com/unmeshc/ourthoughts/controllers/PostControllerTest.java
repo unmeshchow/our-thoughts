@@ -60,7 +60,7 @@ public class PostControllerTest {
         Page<Post> postPage = Mockito.mock(Page.class);
         when(searchPostPageTracker.getSearchValue()).thenReturn("Uttam Kumar");
         when(searchPostPageTracker.getCurrentPage()).thenReturn(1);
-        when(postService.getPostsLikeTitle(anyString(), any(Pageable.class)))
+        when(postService.getPostsTitleLike(anyString(), any(Pageable.class)))
                 .thenReturn(postPage);
         when(controllerUtils.convertToPostSearchDtoList(postPage.getContent()))
                 .thenReturn(postAdminDtos);
@@ -74,7 +74,7 @@ public class PostControllerTest {
 
         ArgumentCaptor<Pageable> pageableArgumentCaptor =
                 ArgumentCaptor.forClass(Pageable.class);
-        verify(postService).getPostsLikeTitle(eq("Uttam Kumar"),
+        verify(postService).getPostsTitleLike(eq("Uttam Kumar"),
                 pageableArgumentCaptor.capture());
         Pageable pageable = pageableArgumentCaptor.getValue();
         assertThat(pageable.getPageNumber()).isEqualTo(0);
@@ -96,7 +96,7 @@ public class PostControllerTest {
         Page<Post> postPage = Mockito.mock(Page.class);
         when(searchPostPageTracker.getSearchValue()).thenReturn("");
         when(searchPostPageTracker.getCurrentPage()).thenReturn(1);
-        when(postService.getPostsLikeTitle(anyString(), any(Pageable.class)))
+        when(postService.getPostsTitleLike(anyString(), any(Pageable.class)))
                 .thenReturn(postPage);
         when(controllerUtils.convertToPostSearchDtoList(postPage.getContent()))
                 .thenReturn(postAdminDtos);
@@ -113,7 +113,7 @@ public class PostControllerTest {
 
         ArgumentCaptor<Pageable> pageableArgumentCaptor =
                 ArgumentCaptor.forClass(Pageable.class);
-        verify(postService).getPostsLikeTitle(eq("Madonna"),
+        verify(postService).getPostsTitleLike(eq("Madonna"),
                 pageableArgumentCaptor.capture());
         Pageable pageable = pageableArgumentCaptor.getValue();
         assertThat(pageable.getPageNumber()).isEqualTo(2);

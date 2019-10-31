@@ -4,6 +4,7 @@ import com.unmeshc.ourthoughts.commands.UserCommand;
 import com.unmeshc.ourthoughts.converters.UserCommandToUser;
 import com.unmeshc.ourthoughts.domain.Role;
 import com.unmeshc.ourthoughts.domain.User;
+import com.unmeshc.ourthoughts.domain.VerificationToken;
 import com.unmeshc.ourthoughts.repositories.RoleRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +32,9 @@ public class RegistrationServiceImplTest {
 
     @Mock
     private EmailService emailService;
+
+    @Mock
+    private VerificationTokenService verificationTokenService;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -87,5 +91,30 @@ public class RegistrationServiceImplTest {
         verify(roleRepository).findByName(anyString());
         verify(userService).saveOrUpdate(user);
         verify(emailService).sendAccountActivationLinkForUser(user, request);
+    }
+
+    @Test
+    public void isUserEmailExistsTrue() {
+        when(userService.isEmailExists(anyString())).thenReturn(true);
+        assertThat(service.isUserEmailExists("unmesh@gmail.com")).isTrue();
+        verify(userService).isEmailExists("unmesh@gmail.com");
+    }
+
+    @Test
+    public void isUserEmailExistsFalse() {
+        when(userService.isEmailExists(anyString())).thenReturn(false);
+        assertThat(service.isUserEmailExists("unmesh@gmail.com")).isFalse();
+        verify(userService).isEmailExists("unmesh@gmail.com");
+    }
+
+    @Test
+    public void getVerificationTokenByToken() {
+        String token = "token";
+        VerificationToken verificationToken = VerificationToken.builder().id(1L).build();
+        when(verificationTokenService.getByToken(anyString())).thenReturn(verificationToken);
+
+        VerificationToken foundVerificationToken = service.getVerificationTokenByToken(token);
+        assertThat(foundVerificationToken).isEqualTo(verificationToken);
+        verify(verificationTokenService).getByToken(token);
     }
 }

@@ -59,7 +59,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<Post> getPostsLikeTitle(String searchValue, Pageable pageable) {
+    public Page<Post> getPostsTitleLike(String searchValue, Pageable pageable) {
         return postRepository.findByTitleLikeIgnoreCase("%" + searchValue + "%", pageable);
     }
 

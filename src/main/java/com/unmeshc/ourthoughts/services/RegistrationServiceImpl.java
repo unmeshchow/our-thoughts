@@ -3,8 +3,8 @@ package com.unmeshc.ourthoughts.services;
 import com.unmeshc.ourthoughts.commands.UserCommand;
 import com.unmeshc.ourthoughts.converters.UserCommandToUser;
 import com.unmeshc.ourthoughts.domain.Role;
-import com.unmeshc.ourthoughts.domain.VerificationToken;
 import com.unmeshc.ourthoughts.domain.User;
+import com.unmeshc.ourthoughts.domain.VerificationToken;
 import com.unmeshc.ourthoughts.repositories.RoleRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,20 +24,20 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     private final UserService userService;
     private final EmailService emailService;
-    private final VerificationTokenService tokenService;
+    private final VerificationTokenService verificationTokenService;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
     private final UserCommandToUser userCommandToUser;
 
     public RegistrationServiceImpl(UserService userService,
                                    EmailService emailService,
-                                   VerificationTokenService tokenService,
+                                   VerificationTokenService verificationTokenService,
                                    PasswordEncoder passwordEncoder,
                                    RoleRepository roleRepository,
                                    UserCommandToUser userCommandToUser) {
         this.userService = userService;
         this.emailService = emailService;
-        this.tokenService = tokenService;
+        this.verificationTokenService = verificationTokenService;
         this.passwordEncoder = passwordEncoder;
         this.roleRepository = roleRepository;
         this.userCommandToUser = userCommandToUser;
@@ -79,6 +79,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     public VerificationToken getVerificationTokenByToken(String token) {
-        return tokenService.getByToken(token);
+        return verificationTokenService.getByToken(token);
     }
 }

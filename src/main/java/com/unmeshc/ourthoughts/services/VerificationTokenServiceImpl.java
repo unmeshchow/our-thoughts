@@ -1,7 +1,7 @@
 package com.unmeshc.ourthoughts.services;
 
-import com.unmeshc.ourthoughts.domain.VerificationToken;
 import com.unmeshc.ourthoughts.domain.User;
+import com.unmeshc.ourthoughts.domain.VerificationToken;
 import com.unmeshc.ourthoughts.repositories.VerificationTokenRepository;
 import org.springframework.stereotype.Service;
 
@@ -11,20 +11,21 @@ import org.springframework.stereotype.Service;
 @Service
 public class VerificationTokenServiceImpl implements VerificationTokenService {
 
-    private final VerificationTokenRepository tokenRepository;
+    private final VerificationTokenRepository verificationTokenRepository;
 
-    public VerificationTokenServiceImpl(VerificationTokenRepository tokenRepository) {
-        this.tokenRepository = tokenRepository;
+    public VerificationTokenServiceImpl(VerificationTokenRepository verificationTokenRepository) {
+        this.verificationTokenRepository = verificationTokenRepository;
     }
 
     @Override
     public VerificationToken getByToken(String token) {
-        return tokenRepository.findByToken(token).orElse(null);
+        return verificationTokenRepository.findByToken(token).orElse(null);
     }
 
     @Override
     public void createTokenForUser(User user, String token) {
-        VerificationToken verificationToken = VerificationToken.builder().token(token).user(user).build();
-        tokenRepository.save(verificationToken);
+        VerificationToken verificationToken =
+                VerificationToken.builder().token(token).user(user).build();
+        verificationTokenRepository.save(verificationToken);
     }
 }
