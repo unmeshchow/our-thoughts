@@ -41,12 +41,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<User> getAll(String email, Pageable pageable) {
-        return userRepository.findAllUser(email, pageable);
+    public void delete(User user) {
+        userRepository.delete(user);
     }
 
     @Override
-    public void delete(User user) {
-        userRepository.delete(user);
+    public Page<User> getAllExceptAdmin(String adminEmail, Pageable pageable) {
+        return userRepository.findAllUserExceptAdmin(adminEmail, pageable);
     }
 }

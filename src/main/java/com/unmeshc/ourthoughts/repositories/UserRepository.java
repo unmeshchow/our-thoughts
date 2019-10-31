@@ -19,5 +19,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
     @Query("select u from User u where u.email <> :email")
-    Page<User> findAllUser(@Param("email") String email, Pageable pageable);
+    Page<User> findAllUserExceptAdmin(@Param("email") String email, Pageable pageable);
 }

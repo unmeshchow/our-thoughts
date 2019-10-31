@@ -64,8 +64,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public Page<User> getAllUsers(Pageable pageable) {
-
-        return userService.getAll(ADMIN_EMAIL, pageable);
+        return userService.getAllExceptAdmin(ADMIN_EMAIL, pageable);
     }
 
     @Override
@@ -102,9 +101,11 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    @Transactional
     public void deleteUserWithPostsById(long userId) {
         User user = userService.getById(userId);
-        postService.getPostsByUser(user).forEach(post -> deletePostWithCommentsById(post.getId()));
+        postService.getPostsByUser(user).forEach(
+                post -> deletePostWithCommentsById(post.getId()));
         userService.delete(user);
     }
 

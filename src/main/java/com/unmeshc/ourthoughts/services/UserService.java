@@ -17,7 +17,7 @@ public interface UserService {
 
     User getById(long userId);
 
-    Page<User> getAll(String email, Pageable pageable);
-
     void delete(User user);
+
+    Page<User> getAllExceptAdmin(String adminEmail, Pageable pageable);
 }
