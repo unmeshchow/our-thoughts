@@ -142,5 +142,12 @@
 
     <footer th:replace="fragments/footerFragment :: footer"></footer>
     <div th:replace="fragments/scriptsFragment :: scripts"></div>
+
+    <script th:inline="javascript">
+        $(document).ready(function () {
+        //<input action="action" onclick="window.history.go(-1); return false;" type="button" value="Back" />
+
+        });
+    </script>
 </body>
 </html>
