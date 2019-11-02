@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/headFragment :: head(#{create.post.page.title})"></head>
+<head th:replace="fragments/headFragment :: head(#{createPost.title})"></head>
 <body>
     <header th:replace="fragments/headerFragment :: header"></header>
 
     <div class="container">
         <main class="mb-3 main-top-margin">
+
+            <!-- Page Heading -->
             <section id="heading" class="mb-3">
-                <h1 th:replace="fragments/headingFragment :: heading(#{create.post.page.heading})"></h1>
+                <h1 th:replace="fragments/headingFragment :: heading(#{newPost})"></h1>
             </section>
 
             <hr>
 
+            <!-- Thought -->
             <section id="thought" class="mb-3">
                 <div class="row d-flex justify-content-center">
                     <div class="col-lg-8 col-md-10 col-12">
                         <div class="card">
 
                             <h5 class="card-header indigo white-text text-center py-4">
-                                <strong th:text="#{create.post.page.form.heading}">
-                                    register</strong>
+                                <strong th:text="#{yourThought}">thought</strong>
                             </h5>
 
-                            <!--Card content-->
                             <div class="card-body px-lg-5 pt-0">
 
                                 <!-- Form -->
@@ -39,20 +40,20 @@
                                                class="form-control"
                                                th:field="*{title}">
                                         <label for="title"
-                                               th:text="#{create.post.page.form.title}">
+                                               th:text="#{title}">
                                             first name</label>
                                         <p th:each="error : ${#fields.errors('title')}"
                                            th:text="${error}" class="text-danger">error</p>
                                     </div>
 
-                                    <!--Message-->
+                                    <!-- Body -->
                                     <div class="md-form">
                                         <textarea id="body"
                                                   class="form-control md-textarea"
                                                   rows="10"
                                                   th:field="*{body}"></textarea>
                                         <label for="body"
-                                               th:text="#{create.post.page.form.body}">
+                                               th:text="#{bodyHtml}">
                                             Message</label>
                                         <p th:each="error : ${#fields.errors('body')}"
                                            th:text="${error}" class="text-danger">error</p>
@@ -68,7 +69,7 @@
                                         <label class="custom-file-label"
                                                for="postImage"
                                                style="color: #999"
-                                               th:text="#{create.post.page.form.image}">
+                                               th:text="#{imageCaption}">
                                             image</label>
                                         <p th:each="error : ${#fields.errors('photo')}"
                                            th:text="${error}" class="text-danger">error</p>
@@ -81,23 +82,20 @@
                                                   rows="1"
                                                   th:field="*{caption}"></textarea>
                                         <label for="caption"
-                                               th:text="#{create.post.page.form.caption}">
+                                               th:text="#{caption}">
                                             caption</label>
                                         <p th:each="error : ${#fields.errors('caption')}"
                                            th:text="${error}" class="text-danger">error</p>
                                     </div>
 
-                                    <!-- Sign up button -->
+                                    <!-- Submit Button -->
                                     <button class="btn btn-outline-indigo btn-block my-4 waves-effect z-depth-0"
                                                      type="submit"
-                                                     th:text="#{submit.link.label}">sign in
+                                                     th:text="#{submit}">submit
                                 </button>
 
                                 </form>
-                                <!-- Form -->
-
                             </div>
-
                         </div>
                     </div>
                 </div>

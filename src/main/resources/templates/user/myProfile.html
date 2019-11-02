@@ -1,25 +1,28 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/headFragment :: head(#{my.profile.page.title})"></head>
+<head th:replace="fragments/headFragment :: head(#{myProfile.title})"></head>
 <body>
     <header th:replace="fragments/headerFragment :: header"></header>
 
     <div class="container">
         <main class="mb-3 main-top-margin">
+
+            <!-- Page Heading -->
             <section id="heading" class="mb-3">
-                <h1 th:replace="fragments/headingFragment :: heading(#{my.profile.page.heading})"></h1>
+                <h1 th:replace="fragments/headingFragment :: heading(#{userProfile})"></h1>
             </section>
 
             <hr>
 
+            <!-- Profile -->
             <section id="profile" class="mb-3">
 
                 <div class="row d-flex justify-content-center">
                     <div class="col-lg-8 col-md-10 col-12">
-                        <!-- Card -->
+
                         <div class="card">
 
-                            <!-- Avatar -->
+                            <!-- Image -->
                             <div class="mx-auto">
                                 <img th:if="${userProfileDto.image == null}"
                                      th:src="@{/img/avatar.jpg}"
@@ -34,7 +37,6 @@
                                      width="200" height="200">
                             </div>
 
-                            <!-- Content -->
                             <div class="card-body">
 
                                 <!-- Change Image Button -->
@@ -48,30 +50,29 @@
                                 <!-- User Data -->
                                 <table style="width: 400px" class="table table-borderless mx-auto">
                                     <tr>
-                                        <td th:text="#{form.label.firstName} + ':'" class="text-right"
+                                        <td th:text="#{firstName} + ':'" class="text-right"
                                             style="font-weight: bold;">first name</td>
                                         <td th:text="${userProfileDto.firstName}">first</td>
                                     </tr>
                                     <tr>
-                                        <td th:text="#{form.label.lastName} + ':'" class="text-right"
+                                        <td th:text="#{lastName} + ':'" class="text-right"
                                             style="font-weight: bold;">last name</td>
                                         <td th:text="${userProfileDto.lastName}">last</td>
                                     </tr>
                                     <tr>
-                                        <td th:text="#{form.label.email} + ':'" class="text-right"
+                                        <td th:text="#{email} + ':'" class="text-right"
                                             style="font-weight: bold;">email</td>
                                         <td th:text="${userProfileDto.email}">email</td>
                                     </tr>
                                     <tr>
-                                        <td th:text="#{my.profile.page.registrationDate} + ':'" class="text-right"
+                                        <td th:text="#{registrationDate} + ':'" class="text-right"
                                             style="font-weight: bold;">date</td>
-                                        <td th:text="${#temporals.format(userProfileDto.registrationDateTime, 'dd/MM/yyyy')}">last</td>
+                                        <td th:text="${#temporals.format(userProfileDto.registrationDateTime,
+                                            'dd/MM/yyyy')}">last</td>
                                     </tr>
                                 </table>
                             </div>
-
                         </div>
-                        <!-- Card -->
                     </div>
                 </div>
             </section>

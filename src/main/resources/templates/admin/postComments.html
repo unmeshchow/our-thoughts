@@ -1,30 +1,34 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/headFragment :: head(#{post.comments.page.title})"></head>
+<head th:replace="fragments/headFragment :: head(#{postComments.title})"></head>
 <body>
     <header th:replace="fragments/headerFragment :: header"></header>
 
     <div class="container">
         <main class="mb-3 main-top-margin">
+
+            <!-- Page Heading -->
             <section id="heading" class="mb-3">
-                <h1 th:replace="fragments/headingFragment :: heading(#{post.comments.page.heading})"></h1>
+                <h1 th:replace="fragments/headingFragment :: heading(#{postComments})"></h1>
             </section>
 
             <hr>
 
-            <section id="user" class="mb-3 text-center">
-                <h3 th:text="#{post.comments.page.caption(${postCommentAdminDto.title})}"></h3>
+            <!-- Page Sub Heading -->
+            <section id="subHeading" class="mb-3 text-center">
+                <h3 th:text="#{postComments.caption(${postCommentAdminDto.title})}"></h3>
             </section>
 
             <!-- No Posts -->
             <section id="noPosts"
                      class="mb-3 text-center"
                      th:if="${#lists.isEmpty(postCommentAdminDto.commentAdminDtos)}">
-                <span th:text="#{no.posts}"
+                <span th:text="#{noPosts}"
                       style="font-weight: bold">no posts</span>
             </section>
 
-            <section id="posts"
+            <!-- Comments -->
+            <section id="comments"
                      class="mb-3"
                      th:if="${!#lists.isEmpty(postCommentAdminDto.commentAdminDtos)}">
                 <div class="card">
@@ -32,16 +36,17 @@
                         <table class="table">
                             <thead class="green white-text">
                             <tr>
-                                <th th:text="#{post.comments.page.table.heading.addingDate}">date</th>
-                                <th th:text="#{post.comments.page.table.heading.comment}">title</th>
-                                <th th:text="#{table.heading.delete}">delete</th>
+                                <th th:text="#{addedDate}">date</th>
+                                <th th:text="#{comment}">comment</th>
+                                <th th:text="#{delete}">delete</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr th:each="commentAdminDto : ${postCommentAdminDto.commentAdminDtos}">
-                                <td th:text="${#temporals.format(commentAdminDto.addingDateTime, 'dd/MM/yyyy')}">date</td>
+                                <td th:text="${#temporals.format(commentAdminDto.addingDateTime,
+                                    'dd/MM/yyyy')}">date</td>
                                 <td th:text="${commentAdminDto.message}">comment</td>
-                                <td><a th:text="#{table.heading.delete}"
+                                <td><a th:text="#{delete}"
                                        th:href="@{/admin/post/{postId}/comment/{commentId}/delete
                                        (postId=${postCommentAdminDto.id}, commentId=${commentAdminDto.id})}">
                                     delete</a>
@@ -63,7 +68,8 @@
                             th:classappend="${currentPage  == i} ? active : ''">
                             <a th:text="${i}"
                                class="page-link"
-                               th:href="@{/admin/post/{postId}/comment(postId=${postCommentAdminDto.id}, page=${i})}">1</a>
+                               th:href="@{/admin/post/{postId}/comment
+                               (postId=${postCommentAdminDto.id}, page=${i})}">1</a>
                         </li>
                     </ul>
                 </nav>

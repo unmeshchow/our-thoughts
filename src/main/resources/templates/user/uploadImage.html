@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/headFragment :: head(#{upload.image.page.title})"></head>
+<head th:replace="fragments/headFragment :: head(#{uploadImage.title})"></head>
 <body>
     <header th:replace="fragments/headerFragment :: header"></header>
 
     <div class="container">
         <main class="mb-3 main-top-margin">
+
+            <!-- Page Heading -->
             <section id="heading" class="mb-3">
-                <h1 th:replace="fragments/headingFragment :: heading(#{upload.image.heading})"></h1>
+                <h1 th:replace="fragments/headingFragment :: heading(#{changeImage})"></h1>
             </section>
 
             <hr>
 
+            <!-- Change Image -->
             <section id="image">
                 <div class="row d-flex justify-content-center">
                     <div class="col-lg-6 col-md-8 col-10">
 
+                        <!-- Form -->
                         <form method="post" enctype="multipart/form-data"
                               th:action="@{/user/change/image}">
 
@@ -28,7 +32,9 @@
                             <div class="input-group">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text"
-                                          id="inputGroupFileAddon01">Upload</span>
+                                          id="inputGroupFileAddon01"
+                                          th:text="#{upload}">
+                                        Upload</span>
                                 </div>
                                 <div class="custom-file">
                                     <input type="file"
@@ -39,12 +45,13 @@
                                            name="myImage">
                                     <label class="custom-file-label"
                                            for="myImage"
-                                           th:text="#{choose.link.label}">choose file</label>
+                                           th:text="#{chooseFile}">choose file</label>
                                 </div>
                             </div>
 
+                            <!-- Submit Button -->
                             <button type="submit" class="btn btn-indigo btn-sm"
-                                    th:text="#{submit.link.label}">Submit</button>
+                                    th:text="#{submit}">submit</button>
                         </form>
                     </div>
                 </div>

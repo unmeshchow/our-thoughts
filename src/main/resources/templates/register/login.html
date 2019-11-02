@@ -1,29 +1,30 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/headFragment :: head(#{login.page.title})"></head>
+<head th:replace="fragments/headFragment :: head(#{login.title})"></head>
 <body>
     <header th:replace="fragments/headerFragment :: header"></header>
 
     <div class="container">
         <main class="mb-3 main-top-margin">
 
+            <!-- Page Heading -->
             <section id="welcome" class="mb-3">
-                <h1 th:replace="fragments/headingFragment :: heading(#{login.page.heading})"></h1>
+                <h1 th:replace="fragments/headingFragment :: heading(#{userLogin})"></h1>
             </section>
 
             <hr>
 
+            <!-- Login -->
             <section id="login" class="mb-3">
                 <div class="row d-flex justify-content-center">
                     <div class="col-lg-6 col-md-8 col-12">
-                        <!-- Material form login -->
+
                         <div class="card">
 
                             <h5 class="card-header indigo white-text text-center py-4">
-                                <strong th:text="#{login.page.form.heading}">sign in</strong>
+                                <strong th:text="#{yourCredentials}">credentials</strong>
                             </h5>
 
-                            <!--Card content-->
                             <div class="card-body px-lg-5 pt-0">
 
                                 <!-- Form -->
@@ -33,7 +34,7 @@
                                     <!-- Error -->
                                     <div th:if="${param.error }" class="mt-3 mb-4">
                                         <span class="alert alert-danger"
-                                              th:text="#{login.page.invalid.login}"></span>
+                                              th:text="#{invalidLogin}"></span>
                                     </div>
 
                                     <!-- Email -->
@@ -43,7 +44,7 @@
                                                class="form-control"
                                                name="email">
                                         <label for="email"
-                                               th:text="#{form.label.email}">email</label>
+                                               th:text="#{email}">email</label>
                                     </div>
 
                                     <!-- Password -->
@@ -53,51 +54,47 @@
                                                class="form-control"
                                                name="password">
                                         <label for="password"
-                                               th:text="#{form.label.password}">password</label>
+                                               th:text="#{password}">password</label>
                                     </div>
 
                                     <div class="d-flex justify-content-around">
-                                        <div>
-                                            <!-- Remember me -->
-                                            <div class="form-check">
-                                                <input type="checkbox"
-                                                       class="form-check-input"
-                                                       id="formRemember"
-                                                       name="remember-me">
-                                                <label class="form-check-label"
-                                                       for="formRemember"
-                                                       th:text="#{login.page.remember.me}">
-                                                    remember me</label>
-                                            </div>
+
+                                        <!-- Remember me -->
+                                        <div class="form-check">
+                                            <input type="checkbox"
+                                                   class="form-check-input"
+                                                   id="formRemember"
+                                                   name="remember-me">
+                                            <label class="form-check-label"
+                                                   for="formRemember"
+                                                   th:text="#{rememberMe}">
+                                                   remember me</label>
                                         </div>
+
+                                        <!-- Forgot password -->
                                         <div>
-                                            <!-- Forgot password -->
                                             <a th:href="@{/password/reset/form}"
-                                               th:text="#{login.page.forgot.password}">
-                                                forgot password?</a>
+                                               th:text="#{forgotPassword} + '?'">
+                                               forgot password?</a>
                                         </div>
                                     </div>
 
-                                    <!-- Sign in button -->
+                                    <!-- Login Button -->
                                     <button class="btn btn-outline-indigo btn-rounded btn-block
                                                    my-4 waves-effect z-depth-0"
                                             type="submit"
-                                            th:text="#{login.link.label}">sign in</button>
+                                            th:text="#{login}">sign in</button>
 
                                     <!-- Register -->
-                                    <p><span th:text="#{login.page.not.a.member}">
+                                    <p><span th:text="#{notAMember} + '?'">
                                         not a member?</span>
                                         <a th:href="@{/registration/form}"
-                                           th:text="#{registration.link.label}">register</a>
+                                           th:text="#{register}">register</a>
                                     </p>
 
                                 </form>
-                                <!-- Form -->
-
                             </div>
-
                         </div>
-                        <!-- Material form login -->
                     </div>
                 </div>
             </section>

@@ -1,21 +1,24 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/headFragment :: head(#{console.page.title})"></head>
+<head th:replace="fragments/headFragment :: head(#{console.title})"></head>
 <body>
     <header th:replace="fragments/headerFragment :: header"></header>
 
     <div class="container">
         <main class="mb-3 main-top-margin">
+
+            <!-- Page Heading -->
             <section id="heading" class="mb-3">
-                <h1 th:replace="fragments/headingFragment :: heading(#{console.page.heading})"></h1>
+                <h1 th:replace="fragments/headingFragment :: heading(#{allUsers})"></h1>
             </section>
 
             <hr>
 
+            <!-- No Users -->
             <section id="noUsers"
                      class="text-center mb-3"
                      th:if="${#lists.isEmpty(userAdminDtos)}">
-                <span th:text="#{console.page.no.users}"
+                <span th:text="#{noUsers}"
                       style="font-weight: bold">no users</span>
             </section>
 
@@ -28,22 +31,24 @@
                         <table class="table">
                             <thead class="green white-text">
                                 <tr>
-                                    <th th:text="#{console.page.user.table.heading.registrationDate}">date</th>
-                                    <th th:text="#{console.page.user.table.heading.firstName}">first name</th>
-                                    <th th:text="#{console.page.user.table.heading.lastName}">last name</th>
-                                    <th th:text="#{table.heading.view}">view</th>
-                                    <th th:text="#{table.heading.delete}">delete</th>
+                                    <th th:text="#{registrationDate}">date</th>
+                                    <th th:text="#{firstName}">first name</th>
+                                    <th th:text="#{lastName}">last name</th>
+                                    <th th:text="#{view}">view</th>
+                                    <th th:text="#{delete}">delete</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr th:each="userAdminDto : ${userAdminDtos}">
-                                    <td th:text="${#temporals.format(userAdminDto.registrationDateTime, 'dd/MM/yyyy')}">date</td>
+                                    <td th:text="${#temporals.format(userAdminDto.registrationDateTime,
+                                        'dd/MM/yyyy')}">date</td>
                                     <td th:text="${userAdminDto.firstName}">first</td>
                                     <td th:text="${userAdminDto.lastName}">last</td>
                                     <td><a th:href="@{/admin/user/{userId}/post(userId=${userAdminDto.id})}"
-                                           th:text="#{table.heading.view}">view</a></td>
-                                    <td><a th:text="#{table.heading.delete}"
-                                           th:href="@{/admin/all/user/{userId}/delete(userId=${userAdminDto.id})}">delete</a></td>
+                                           th:text="#{view}">view</a></td>
+                                    <td><a th:text="#{delete}"
+                                           th:href="@{/admin/all/user/{userId}/delete
+                                           (userId=${userAdminDto.id})}">delete</a></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -52,7 +57,8 @@
             </section>
 
             <!-- Pagination -->
-            <section id="pagination" class="mb-3"
+            <section id="pagination"
+                     class="mb-3"
                      th:if="${!#lists.isEmpty(userAdminDtos)}">
                 <nav aria-label="Page navigation example">
                     <ul class="pagination pg-blue">
@@ -69,13 +75,14 @@
         </main>
     </div>
 
+    <!-- Modal Change Password Form -->
     <div class="modal fade" id="modalChangePasswordForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
          aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header text-center">
                     <h4 class="modal-title w-100 font-weight-bold"
-                        th:text="#{admin.change.password.link.label}">change password</h4>
+                        th:text="#{changePassword}">change password</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -90,12 +97,12 @@
                                    required>
                             <label data-error="wrong" data-success="right"
                                    for="defaultForm-password"
-                                   th:text="#{console.page.newPassword}">password</label>
+                                   th:text="#{newPassword}">password</label>
                         </div>
                     </div>
                     <div class="modal-footer d-flex justify-content-center">
                         <button class="btn btn-indigo" type="submit"
-                                th:text="#{submit.link.label}">submit</button>
+                                th:text="#{submit}">submit</button>
                     </div>
                 </form>
             </div>

@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/headFragment :: head(#{bad.token.page.title})"></head>
+<head th:replace="fragments/headFragment :: head(#{badToken.title})"></head>
 <body>
     <header th:replace="fragments/headerFragment :: header"></header>
 
     <div class="container">
         <main class="mb-3 main-top-margin">
+
+            <!-- Page Heading -->
             <section id="heading" class="mb-3">
-                <h1 th:replace="fragments/headingFragment :: heading(#{bad.token.page.heading})"></h1>
+                <h1 th:replace="fragments/headingFragment :: heading(#{badToken})"></h1>
             </section>
 
             <hr>
 
+            <!-- Message -->
             <section id="message" class="mb-3">
-                <p th:text="#{bad.token.page.message}">bad token</p>
+                <p th:text="#{badToken.message}">bad token</p>
             </section>
         </main>
     </div>

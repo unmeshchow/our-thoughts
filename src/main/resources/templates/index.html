@@ -2,46 +2,48 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
-<head th:replace="fragments/headFragment :: head(#{index.page.title})"></head>
+<head th:replace="fragments/headFragment :: head(#{index.title})"></head>
 <body>
     <header th:replace="fragments/headerFragment :: header"></header>
 
     <div class="container">
         <main class="mb-3 main-top-margin">
 
-            <!-- Heading -->
+            <!-- Page Heading -->
             <section id="heading" class="mb-3">
-                <h1 th:replace="fragments/headingFragment :: heading(#{index.page.heading})"></h1>
+                <h1 th:replace="fragments/headingFragment :: heading(#{welcome})"></h1>
             </section>
 
             <hr>
 
-            <!-- Welcome Message -->
+            <!-- Message -->
             <section id="welcome" class="mb-3">
                 <span sec:authorize="!isAuthenticated()
                                      or hasAuthority('CHANGE_PASSWORD_PRIVILEGE')
                                      or hasAuthority('ADMIN')">
-                    <span th:text="#{index.page.welcome.message}">share your thoughts</span>
+                    <span th:text="#{index.welcome.message}">share your thoughts</span>
                     <a th:href="@{/login}"
-                       th:text="#{login.link.label}"
+                       th:text="#{login}"
                        style="font-weight: bold;">login</a>
                 </span>
                 <span sec:authorize="isAuthenticated()
                                      and !hasAuthority('CHANGE_PASSWORD_PRIVILEGE')
                                      and !hasAuthority('ADMIN')">
-                    <span th:text="#{index.page.new.post.message}">add your thoughts</span>
+                    <span th:text="#{index.new.post.message}">add your thoughts</span>
                     <a th:href="@{/user/create/post/form}"
-                       th:text="#{create.post.link.label}"
+                       th:text="#{newPost}"
                        style="font-size: large; font-weight: bold;">post</a>
                 </span>
             </section>
 
-            <!-- Search by Title Form-->
+            <!-- Search by Title -->
             <section id="searchByTitle" class="mb-5 mt-4">
                 <div class="card white" width="100%">
                     <div class="card-body p-0">
                         <div class="row d-flex justify-content-center">
                             <div class="col-lg-6 col-md-8 col-12">
+
+                                <!-- Form -->
                                 <form th:action="@{/visitor/post/search}" method="get">
 
                                     <div class="md-form input-group mb-3">
@@ -50,12 +52,12 @@
                                                class="form-control"
                                                name="search">
                                         <label for="search"
-                                               th:text="#{index.page.search.label}">email
+                                               th:text="#{searchByTitle}">search
                                         </label>
                                         <div class="input-group-append">
                                             <button class="btn btn-lg btn-indigo m-0 px-3"
                                                     type="submit"
-                                                    th:text="#{submit.link.label}">send</button>
+                                                    th:text="#{submit}">submit</button>
                                         </div>
                                     </div>
                                 </form>
@@ -69,7 +71,7 @@
             <section id="noPosts"
                      class="mb-3 text-center"
                      th:if="${#lists.isEmpty(postSearchDtos)}">
-                <span th:text="#{no.posts}"
+                <span th:text="#{noPosts}"
                       style="font-weight: bold">no posts</span>
             </section>
 
@@ -82,10 +84,9 @@
                     <div class="col-lg-3 col-md-4 col-sm-6"
                          th:each="postSearchDto : ${postSearchDtos}">
 
-                        <!-- Card -->
                         <div class="card mb-4">
 
-                            <!-- Card image -->
+                            <!-- Post Photo -->
                             <div class="view overlay">
                                 <img class="card-img-top"
                                      th:src="@{/visitor/post/{postId}/photo(postId=${postSearchDto.id})}"
@@ -96,13 +97,12 @@
                                 </a>
                             </div>
 
-                            <!-- Card content -->
                             <div class="card-body">
                                 <!-- Title -->
                                 <h4 class="card-title"
                                     th:text="${postSearchDto.title}">title</h4>
 
-                                <!-- Text -->
+                                <!-- Body -->
                                 <p class="card-text"
                                    th:text="${postSearchDto.body}">
                                     Some quick example
@@ -110,14 +110,13 @@
 
                                 <!-- Button -->
                                 <a href="#" class="btn btn-indigo btn-sm"
-                                   th:text="#{view.link.label}"
+                                   th:text="#{view}"
                                    th:href="@{/visitor/post/{postId}/details(postId=${postSearchDto.id})}">
                                     Button
                                 </a>
                             </div>
 
                         </div>
-                        <!-- Card -->
                     </div>
                 </div>
             </section>

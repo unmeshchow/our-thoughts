@@ -1,31 +1,35 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
-<head th:replace="fragments/headFragment :: head(#{post.details.page.title})"></head>
+<head th:replace="fragments/headFragment :: head(#{postDetails.title})"></head>
 <body>
     <header th:replace="fragments/headerFragment :: header"></header>
 
     <div class="container">
         <main class="mb-3 main-top-margin">
+
+            <!-- Page Heading -->
             <section id="heading" class="mb-3">
-                <h1 th:replace="fragments/headingFragment :: heading(#{post.details.page.heading})"></h1>
+                <h1 th:replace="fragments/headingFragment :: heading(#{thoughtDetails})"></h1>
             </section>
 
             <hr>
 
+            <!-- Thought -->
             <section id="thought" class="mb-3">
 
                 <div class="card mb-5">
                     <div class="card-body">
 
+                        <!-- Title -->
                         <div class="text-center mb-3">
                             <h2 th:text="${postDetails.title}">title</h2>
-                            <h5 th:text="#{post.details.page.written.by(${postDetails.writerName})}">
+                            <h5 th:text="#{postDetails.written.by(${postDetails.writerName})}">
                                 writer
                             </h5>
                         </div>
 
-                        <!-- Post Photo -->
+                        <!-- Photo -->
                         <div class="mb-3 d-flex justify-content-center">
                             <figure>
                                 <img class="img-fluid"
@@ -34,9 +38,9 @@
                             </figure>
                         </div>
 
-                        <!-- Post Body -->
+                        <!-- Body -->
                         <div class="mb-3">
-                            <p th:text="${postDetails.body}"
+                            <p th:utext="${postDetails.body}"
                                class="text-justify"
                                style="font-size: 1.5rem; line-height: 1.75">body</p>
                         </div>
@@ -47,7 +51,7 @@
                 <div id="noPosts"
                          class="mb-3 text-center"
                          th:if="${#lists.isEmpty(postDetails.postDetailsCommentDtos)}">
-                    <span th:text="#{no.comments}"
+                    <span th:text="#{noComments}"
                           style="font-weight: bold">no comments</span>
                 </div>
 
@@ -55,6 +59,7 @@
                 <div class="card mb-3"
                      th:if="${!#lists.isEmpty(postDetails.postDetailsCommentDtos)}"
                      th:each="comment : ${postDetails.postDetailsCommentDtos}">
+
                     <div class="card-body">
                         <div class="row">
                             <div class="col-lg-2 col-3 d-flex justify-content-center align-items-center">
@@ -63,6 +68,7 @@
                                      width="75"
                                      height="75">
                             </div>
+
                             <div class="col-lg-10 col-9">
                                 <p th:text="${comment.message}"
                                    style="font-size: 1.25rem; line-height: 1.75">message</p>
@@ -85,13 +91,13 @@
                                           rows="2"
                                           name="comment"></textarea>
                                 <label for="comment"
-                                       th:text="#{post.details.page.comment.label}">
+                                       th:text="#{yourComment}">
                                     caption</label>
                             </div>
                             <div sec:authorize="!isAuthenticated()
                                                 or hasAuthority('CHANGE_PASSWORD_PRIVILEGE')
                                                 or hasAuthority('ADMIN')">
-                                <span th:text="#{post.details.page.login.required.message}"
+                                <span th:text="#{postDetails.login.required.message}"
                                       class="text-info"
                                       style="font-weight: bold">login
                                 </span>
@@ -101,7 +107,7 @@
                                                 and hasAuthority('USER')">
                                 <button class="btn btn-lg btn-indigo m-0 px-3 btn-sm"
                                         type="submit"
-                                        th:text="#{post.details.page.comment.button.label}">
+                                        th:text="#{addComment}">
                                     add
                                 </button>
                             </div>

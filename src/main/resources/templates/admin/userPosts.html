@@ -1,29 +1,33 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/headFragment :: head(#{user.posts.page.title})"></head>
+<head th:replace="fragments/headFragment :: head(#{userPosts.title})"></head>
 <body>
     <header th:replace="fragments/headerFragment :: header"></header>
 
     <div class="container">
         <main class="mb-3 main-top-margin">
+
+            <!-- Page Heading -->
             <section id="heading" class="mb-3">
-                <h1 th:replace="fragments/headingFragment :: heading(#{user.posts.page.heading})"></h1>
+                <h1 th:replace="fragments/headingFragment :: heading(#{userPosts})"></h1>
             </section>
 
             <hr>
 
-            <section id="user" class="mb-3 text-center">
-                <h3 th:text="#{user.posts.page.caption(${userPostAdminDto.firstName})}"></h3>
+            <!-- Page Sub Heading -->
+            <section id="subHeading" class="mb-3 text-center">
+                <h3 th:text="#{userPosts.caption(${userPostAdminDto.firstName})}"></h3>
             </section>
 
             <!-- No Posts -->
             <section id="noPosts"
                      class="mb-3 text-center"
                      th:if="${#lists.isEmpty(userPostAdminDto.postAdminDtos)}">
-                <span th:text="#{no.posts}"
+                <span th:text="#{noPosts}"
                       style="font-weight: bold">no posts</span>
             </section>
 
+            <!-- Posts -->
             <section id="posts"
                      class="mb-3"
                      th:if="${!#lists.isEmpty(userPostAdminDto.postAdminDtos)}">
@@ -32,19 +36,20 @@
                         <table class="table">
                             <thead class="green white-text">
                                 <tr>
-                                    <th th:text="#{user.posts.page.post.table.heading.createdDate}">date</th>
-                                    <th th:text="#{user.posts.page.post.table.heading.title}">title</th>
-                                    <th th:text="#{table.heading.view}">view</th>
-                                    <th th:text="#{table.heading.delete}">delete</th>
+                                    <th th:text="#{createdDate}">date</th>
+                                    <th th:text="#{title}">title</th>
+                                    <th th:text="#{view}">view</th>
+                                    <th th:text="#{delete}">delete</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr th:each="postAdminDto : ${userPostAdminDto.postAdminDtos}">
-                                    <td th:text="${#temporals.format(postAdminDto.creationDateTime, 'dd/MM/yyyy')}">date</td>
+                                    <td th:text="${#temporals.format(postAdminDto.creationDateTime,
+                                        'dd/MM/yyyy')}">date</td>
                                     <td th:text="${postAdminDto.title}">title</td>
                                     <td><a th:href="@{/admin/post/{postId}/comment(postId=${postAdminDto.id})}"
-                                           th:text="#{table.heading.view}">view</a></td>
-                                    <td><a th:text="#{table.heading.delete}"
+                                           th:text="#{view}">view</a></td>
+                                    <td><a th:text="#{delete}"
                                            th:href="@{/admin/user/{userId}/post/{postId}/delete
                                            (userId=${userPostAdminDto.id}, postId=${postAdminDto.id})}">delete</a></td>
                                 </tr>

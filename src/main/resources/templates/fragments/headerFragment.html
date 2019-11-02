@@ -40,17 +40,13 @@
                                    or hasAuthority('CHANGE_PASSWORD_PRIVILEGE')">
                     <li class="nav-item">
                         <a class="nav-link" href="#"
-                           th:text="#{login.link.label}"
+                           th:text="#{login}"
                            th:href="@{/login}">login</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#"
-                           th:text="#{registration.link.label}"
+                           th:text="#{register}"
                            th:href="@{/registration/form}">register</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"
-                           th:text="#{contact.link.label}">contact</a>
                     </li>
                 </ul>
 
@@ -65,17 +61,13 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/user/profile}"
-                           th:text="#{profile.link.label}">Profile</a>
+                           th:text="#{profile}">profile</a>
                     </li>
                     <li class="nav-item">
                         <form method="post">
                             <a class="nav-link" th:href="@{/logout}"
-                               th:text="#{logout.link.label}">register</a>
+                               th:text="#{logout}">logout</a>
                         </form>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"
-                           th:text="#{contact.link.label}">contact</a>
                     </li>
                 </ul>
 
@@ -87,12 +79,12 @@
                     <li class="nav-item">
                         <form method="post">
                             <a class="nav-link" th:href="@{/logout}"
-                               th:text="#{logout.link.label}">register</a>
+                               th:text="#{logout}">logout</a>
                         </form>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#"
-                           th:text="#{admin.change.password.link.label}"
+                           th:text="#{changePassword}"
                            data-toggle="modal" data-target="#modalChangePasswordForm">change password</a>
                     </li>
                 </ul>
@@ -101,8 +93,6 @@
             <!-- Collapsible content -->
         </div>
     </nav>
-
-    <!--/.Navbar-->
 </header>
 </body>
 </html>
