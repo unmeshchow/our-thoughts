@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<script th:fragment="back" th:inline="javascript">
+    $(document).ready(function () {
+        $('button#close, button#back').bind('click', function () {
+            window.history.go(-1);
+        })
+    });
+</script>
+</body>
+</html>

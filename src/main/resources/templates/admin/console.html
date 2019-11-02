@@ -46,7 +46,8 @@
                                     <td th:text="${userAdminDto.lastName}">last</td>
                                     <td><a th:href="@{/admin/user/{userId}/post(userId=${userAdminDto.id})}"
                                            th:text="#{view}">view</a></td>
-                                    <td><a th:text="#{delete}"
+                                    <td><a id="delete"
+                                           th:text="#{delete}"
                                            th:href="@{/admin/all/user/{userId}/delete
                                            (userId=${userAdminDto.id})}">delete</a></td>
                                 </tr>
@@ -56,11 +57,11 @@
                 </div>
             </section>
 
-            <!-- Pagination -->
-            <section id="pagination"
+            <!-- Pagination and Back Button-->
+            <section id="paginationBack"
                      class="mb-3"
                      th:if="${!#lists.isEmpty(userAdminDtos)}">
-                <nav aria-label="Page navigation example">
+                <nav aria-label="Page navigation example" class="mr-auto">
                     <ul class="pagination pg-blue">
                         <li class="page-item"
                             th:each="i : ${pageNumbers}"
@@ -71,6 +72,9 @@
                         </li>
                     </ul>
                 </nav>
+                <div>
+                    <button id="close" class="btn btn-warning" th:text="#{back}">back</button>
+                </div>
             </section>
         </main>
     </div>
@@ -111,5 +115,7 @@
 
     <footer th:replace="fragments/footerFragment :: footer"></footer>
     <div th:replace="fragments/scriptsFragment :: scripts"></div>
+    <script th:replace="framents/confirmFragment :: confirm"></script>
+    <script th:replace="framents/backFragment :: back"></script>
 </body>
 </html>

@@ -46,7 +46,8 @@
                                 <td th:text="${#temporals.format(commentAdminDto.addingDateTime,
                                     'dd/MM/yyyy')}">date</td>
                                 <td th:text="${commentAdminDto.message}">comment</td>
-                                <td><a th:text="#{delete}"
+                                <td><a id="delete"
+                                       th:text="#{delete}"
                                        th:href="@{/admin/post/{postId}/comment/{commentId}/delete
                                        (postId=${postCommentAdminDto.id}, commentId=${commentAdminDto.id})}">
                                     delete</a>
@@ -58,10 +59,11 @@
                 </div>
             </section>
 
-            <!-- Pagination -->
-            <section id="pagination" class="mb-3"
+            <!-- Pagination and Back Button -->
+            <section id="paginationBack"
+                     class="mb-3"
                      th:if="${!#lists.isEmpty(postCommentAdminDto.commentAdminDtos)}">
-                <nav aria-label="Page navigation example">
+                <nav aria-label="Page navigation example" class="mr-auto">
                     <ul class="pagination pg-blue">
                         <li class="page-item"
                             th:each="i : ${pageNumbers}"
@@ -73,11 +75,16 @@
                         </li>
                     </ul>
                 </nav>
+                <div>
+                    <button id="close" class="btn btn-warning" th:text="#{back}">back</button>
+                </div>
             </section>
         </main>
     </div>
 
     <footer th:replace="fragments/footerFragment :: footer"></footer>
     <div th:replace="fragments/scriptsFragment :: scripts"></div>
+    <script th:replace="framents/confirmFragment :: confirm"></script>
+    <script th:replace="framents/backFragment :: back"></script>
 </body>
 </html>
