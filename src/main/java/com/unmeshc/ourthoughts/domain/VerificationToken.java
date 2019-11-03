@@ -42,12 +42,12 @@ public class VerificationToken {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        VerificationToken token1 = (VerificationToken) o;
-        return Objects.equals(token, token1.token);
+        VerificationToken that = (VerificationToken) o;
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(token);
+        return Objects.hash(id);
     }
 }
