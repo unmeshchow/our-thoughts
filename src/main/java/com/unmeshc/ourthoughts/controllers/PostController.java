@@ -75,6 +75,7 @@ public class PostController {
         model.addAttribute("postSearchDtos", controllerUtils.adjustTitleAndBody(postSearchDtos));
         model.addAttribute("currentPage", searchPostPageTracker.getCurrentPage());
         model.addAttribute("pageNumbers", searchPostPageTracker.getPageNumbersForPagination(postPage));
+        model.addAttribute("searchValue", searchPostPageTracker.getSearchValue());
 
         return INDEX;
     }
