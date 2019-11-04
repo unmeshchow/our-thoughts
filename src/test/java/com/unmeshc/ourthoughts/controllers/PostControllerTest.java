@@ -82,7 +82,7 @@ public class PostControllerTest {
         assertThat(pageable.getSort()).isNotNull();
         assertThat(pageable.getSort().getOrderFor("creationDateTime")).isNotNull();
 
-        verify(searchPostPageTracker, times(2)).getSearchValue();
+        verify(searchPostPageTracker, times(3)).getSearchValue();
         verify(searchPostPageTracker).setCurrentPage(anyInt());
         verify(searchPostPageTracker).setSearchValue("Uttam Kumar");
         verify(controllerUtils).convertToPostSearchDtoList(postPage.getContent());
@@ -122,7 +122,7 @@ public class PostControllerTest {
         assertThat(pageable.getSort().getOrderFor("creationDateTime")).isNotNull();
 
         verify(searchPostPageTracker).reset();
-        verify(searchPostPageTracker, times(1)).getSearchValue();
+        verify(searchPostPageTracker, times(2)).getSearchValue();
         verify(searchPostPageTracker).setCurrentPage(anyInt());
         verify(searchPostPageTracker).setSearchValue("Madonna");
         verify(controllerUtils).convertToPostSearchDtoList(postPage.getContent());
