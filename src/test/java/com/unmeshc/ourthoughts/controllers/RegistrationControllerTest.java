@@ -13,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.util.NestedServletException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -39,7 +38,8 @@ public class RegistrationControllerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(controller)
+                  .setControllerAdvice(new ControllerExceptionHandler()).build();
     }
 
     @Test
@@ -128,18 +128,19 @@ public class RegistrationControllerTest {
         verify(registrationService).isUserEmailExists("unmeshchow@gmail.com");
     }
 
-    @Test(expected = NestedServletException.class)
+    @Test
     public void saveRegistrationDataThrowException() throws Exception {
         when(registrationService.isUserEmailExists(anyString())).thenReturn(false);
         when(registrationService.saveUserAndVerifyEmail(any(), any()))
                 .thenThrow(EmailNotSentException.class);
 
         mockMvc.perform(post("/registration/save")
-                .param("firstName", "Unmesh")
-                .param("lastName", "Chowdhury")
-                .param("email", "unmeshchow@gmail.com")
-                .param("password", "password")
-                .param("matchingPassword", "password"));
+                   .param("firstName", "Unmesh")
+                    .param("lastName", "Chowdhury")
+                    .param("email", "unmeshchow@gmail.com")
+                    .param("password", "password")
+                    .param("matchingPassword", "password"))
+               .andExpect(status().is5xxServerError()) ;
     }
 
     @Test

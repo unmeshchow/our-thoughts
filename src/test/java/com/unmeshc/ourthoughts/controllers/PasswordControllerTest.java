@@ -12,7 +12,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.util.NestedServletException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -37,7 +36,8 @@ public class PasswordControllerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(controller)
+                  .setControllerAdvice(new ControllerExceptionHandler()).build();
     }
 
     @Test
@@ -62,21 +62,23 @@ public class PasswordControllerTest {
                 any(HttpServletRequest.class));
     }
 
-    @Test(expected = NestedServletException.class)
+    @Test
     public void processPasswordResetNull() throws Exception {
         when(passwordService.getUserByEmail(anyString())).thenReturn(null);
 
         mockMvc.perform(get("/password/reset/send")
-                .param("email", "unmesh@gmail.com"));
+                    .param("email", "unmesh@gmail.com"))
+               .andExpect(status().isNotFound());
     }
 
-    @Test(expected = NestedServletException.class)
+    @Test
     public void processPasswordResetInactive() throws Exception {
         User user = User.builder().id(1L).active(false).build();
         when(passwordService.getUserByEmail(anyString())).thenReturn(user);
 
         mockMvc.perform(get("/password/reset/send")
-                .param("email", "unmesh@gmail.com"));
+                    .param("email", "unmesh@gmail.com"))
+               .andExpect(status().isNotFound());
     }
 
     @Test

@@ -63,7 +63,7 @@
             <section id="paginationBack"
                      class="mb-3"
                      th:if="${!#lists.isEmpty(postCommentAdminDto.commentAdminDtos)}">
-                <nav aria-label="Page navigation example" class="mr-auto">
+                <nav aria-label="Page navigation example">
                     <ul class="pagination pg-blue">
                         <li class="page-item"
                             th:each="i : ${pageNumbers}"
@@ -74,10 +74,13 @@
                                (postId=${postCommentAdminDto.id}, page=${i})}">1</a>
                         </li>
                     </ul>
+                    <ul class="ml-auto">
+                        <button id="close"
+                                class="btn btn-warning btn-sm"
+                                th:if="${currentPage == 1}"
+                                th:text="#{back}">back</button>
+                    </ul>
                 </nav>
-                <div>
-                    <button id="close" class="btn btn-warning" th:text="#{back}">back</button>
-                </div>
             </section>
         </main>
     </div>

@@ -11,6 +11,4 @@ public interface VerificationTokenService {
     VerificationToken getByToken(String token);
 
     void createTokenForUser(User user, String token);
-
-    void deleteExpiredTokens();
 }

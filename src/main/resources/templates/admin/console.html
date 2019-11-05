@@ -72,9 +72,6 @@
                         </li>
                     </ul>
                 </nav>
-                <div>
-                    <button id="close" class="btn btn-warning" th:text="#{back}">back</button>
-                </div>
             </section>
         </main>
     </div>
@@ -104,8 +101,7 @@
                                    th:text="#{newPassword}">password</label>
                         </div>
                     </div>
-                    <div th:if="${currentPage > 1}"
-                         class="modal-footer d-flex justify-content-center">
+                    <div class="modal-footer d-flex justify-content-center">
                         <button class="btn btn-indigo" type="submit"
                                 th:text="#{submit}">submit</button>
                     </div>
@@ -117,6 +113,5 @@
     <footer th:replace="fragments/footerFragment :: footer"></footer>
     <div th:replace="fragments/scriptsFragment :: scripts"></div>
     <script th:replace="fragments/confirmFragment :: confirm"></script>
-    <script th:replace="fragments/backFragment :: back"></script>
 </body>
 </html>

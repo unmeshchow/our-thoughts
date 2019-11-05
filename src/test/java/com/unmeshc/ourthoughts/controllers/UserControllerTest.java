@@ -21,7 +21,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.NestedServletException;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
@@ -64,7 +63,8 @@ public class UserControllerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(controller)
+                  .setControllerAdvice(new ControllerExceptionHandler()).build();
     }
 
     @Test
@@ -241,7 +241,7 @@ public class UserControllerTest {
                 any(HttpServletResponse.class), eq(imageBytes));
     }
 
-    @Test(expected = NestedServletException.class)
+    @Test
     public void addCommentPostNotFoundException() throws Exception {
         User user = User.builder().id(1L).email("unmesh@gmail.com").build();
         when(securityUtils.getEmailFromSecurityContext()).thenReturn("unmesh@gmail.com");
@@ -249,7 +249,7 @@ public class UserControllerTest {
         when(postService.getById(anyLong())).thenReturn(null);
 
         mockMvc.perform(post("/user/comment/post/" + 1 + "/add"))
-               .andExpect(status().isOk());
+               .andExpect(status().isNotFound());
 
         verify(userService).getByEmail(anyString());
         verify(securityUtils).getEmailFromSecurityContext();

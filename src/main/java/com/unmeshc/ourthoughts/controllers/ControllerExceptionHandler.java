@@ -16,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 @ControllerAdvice
 public class ControllerExceptionHandler {
 
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(EmailNotSentException.class)
     public ModelAndView handleEmailException(Exception exc) {
         log.error("Handling email not sent exception");

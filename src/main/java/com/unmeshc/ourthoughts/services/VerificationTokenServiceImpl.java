@@ -5,9 +5,6 @@ import com.unmeshc.ourthoughts.domain.VerificationToken;
 import com.unmeshc.ourthoughts.repositories.VerificationTokenRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by uc on 10/19/2019
  */
@@ -30,20 +27,5 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
         VerificationToken verificationToken =
                 VerificationToken.builder().token(token).user(user).build();
         verificationTokenRepository.save(verificationToken);
-    }
-
-    @Override
-    public void deleteExpiredTokens() {
-        List<VerificationToken> verificationTokens = new ArrayList<>();
-
-        verificationTokenRepository.findAll().forEach(verificationToken -> {
-            if (verificationToken.isExpired()) {
-                verificationTokens.add(verificationToken);
-            }
-        });
-
-        if (!verificationTokens.isEmpty()) {
-            verificationTokenRepository.deleteAll(verificationTokens);
-        }
     }
 }

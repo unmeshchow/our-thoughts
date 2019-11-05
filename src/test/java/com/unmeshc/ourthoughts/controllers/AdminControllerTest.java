@@ -17,7 +17,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.util.NestedServletException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -56,7 +55,8 @@ public class AdminControllerTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(controller)
+                  .setControllerAdvice(new ControllerExceptionHandler()).build();
     }
 
     @Test
@@ -189,11 +189,12 @@ public class AdminControllerTest {
         verify(adminService).deleteUserWithPostsById(1);
     }
 
-    @Test(expected = NestedServletException.class)
+    @Test
     public void showUserPostsWithDefaultValuesNotFoundException() throws Exception {
         when(adminService.getUserById(anyInt())).thenReturn(null);
 
-        mockMvc.perform(get("/admin/user/" + 1 + "/post"));
+        mockMvc.perform(get("/admin/user/" + 1 + "/post"))
+               .andExpect(status().isNotFound());
     }
 
     @Test
@@ -303,11 +304,12 @@ public class AdminControllerTest {
         verify(adminService).deletePostWithCommentsById(1);
     }
 
-    @Test(expected = NestedServletException.class)
+    @Test
     public void showPostCommentsWithDefaultValuesNotFoundException() throws Exception {
         when(adminService.getPostById(anyLong())).thenReturn(null);
 
-        mockMvc.perform(get("/admin/post/" + 1 + "/comment"));
+        mockMvc.perform(get("/admin/post/" + 1 + "/comment"))
+               .andExpect(status().isNotFound());
     }
 
     @Test

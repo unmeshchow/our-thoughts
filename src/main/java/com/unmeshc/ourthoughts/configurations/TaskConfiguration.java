@@ -1,6 +1,6 @@
 package com.unmeshc.ourthoughts.configurations;
 
-import com.unmeshc.ourthoughts.services.VerificationTokenService;
+import com.unmeshc.ourthoughts.services.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -14,15 +14,16 @@ import org.springframework.scheduling.annotation.Scheduled;
 @EnableScheduling
 public class TaskConfiguration {
 
-    private final VerificationTokenService verificationTokenService;
+    private final TaskService taskService;
 
-    public TaskConfiguration(VerificationTokenService verificationTokenService) {
-        this.verificationTokenService = verificationTokenService;
+    public TaskConfiguration(TaskService taskService) {
+        this.taskService = taskService;
     }
 
     @Scheduled(cron = "0 0 12 * * *")
     public void deleteExpiredToken() {
-        log.debug("Expired verification tokens are deleting ...");
-        verificationTokenService.deleteExpiredTokens();
+        log.debug("Deleting expired tokens and inactive users ...");
+        taskService.deleteExpiredTokensAndInactiveUsers();
+        log.debug("Deletion has completed");
     }
 }

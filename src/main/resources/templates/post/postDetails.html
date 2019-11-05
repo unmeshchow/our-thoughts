@@ -102,10 +102,9 @@
                                       style="font-weight: bold">login
                                 </span>
                             </div>
-                            <div class="input-group-append"
-                                 sec:authorize="isAuthenticated()
+                            <div sec:authorize="isAuthenticated()
                                                 and hasAuthority('USER')">
-                                <button class="btn btn-lg btn-indigo m-0 px-3 btn-sm"
+                                <button class="btn btn-lg btn-indigo"
                                         type="submit"
                                         th:text="#{addComment}">
                                     add
@@ -114,15 +113,18 @@
                         </form>
                     </div>
                 </div>
-                <div class="float-right">
-                    <button id="close" class="btn btn-warning" th:text="#{close}">close</button>
+                <div class="float-right mt-3">
+                    <a class="btn btn-warning"
+                            th:text="#{close}"
+                            th:href="@{/index.html}">
+                        close</a>
                 </div>
+                <div class="clearfix"></div>
             </section>
         </main>
     </div>
 
     <footer th:replace="fragments/footerFragment :: footer"></footer>
     <div th:replace="fragments/scriptsFragment :: scripts"></div>
-    <script th:replace="fragments/backFragment :: back"></script>
 </body>
 </html>

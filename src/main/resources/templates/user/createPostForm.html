@@ -69,7 +69,7 @@
                                         <label class="custom-file-label"
                                                for="postImage"
                                                style="color: #999"
-                                               th:text="#{imageCaption}">
+                                               th:text="#{image}">
                                             image</label>
                                         <p th:each="error : ${#fields.errors('photo')}"
                                            th:text="${error}" class="text-danger">error</p>
@@ -82,7 +82,7 @@
                                                   rows="1"
                                                   th:field="*{caption}"></textarea>
                                         <label for="caption"
-                                               th:text="#{caption}">
+                                               th:text="#{imageCaption}">
                                             caption</label>
                                         <p th:each="error : ${#fields.errors('caption')}"
                                            th:text="${error}" class="text-danger">error</p>
