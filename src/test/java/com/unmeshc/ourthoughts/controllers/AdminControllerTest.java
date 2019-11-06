@@ -314,7 +314,8 @@ public class AdminControllerTest {
 
     @Test
     public void showPostCommentsWithDefaultValues() throws Exception {
-        Post post = Post.builder().id(1L).build();
+        User user = User.builder().id(1L).build();
+        Post post = Post.builder().id(1L).user(user).build();
         List<CommentAdminDto> commentAdminDtos = new ArrayList<>();
         Page<Comment> commentPage = Mockito.mock(Page.class);
         when(adminService.getPostById(anyLong())).thenReturn(post);
@@ -351,7 +352,8 @@ public class AdminControllerTest {
 
     @Test
     public void showPostCommentsWithValues() throws Exception {
-        Post post = Post.builder().id(1L).build();
+        User user = User.builder().id(1L).build();
+        Post post = Post.builder().id(1L).user(user).build();
         List<CommentAdminDto> commentAdminDtos = new ArrayList<>();
         Page<Comment> commentPage = Mockito.mock(Page.class);
         when(adminService.getPostById(anyLong())).thenReturn(post);
@@ -388,7 +390,8 @@ public class AdminControllerTest {
 
     @Test
     public void showPostCommentsWithLastPageProblem() throws Exception {
-        Post post = Post.builder().id(1L).build();
+        User user = User.builder().id(1L).build();
+        Post post = Post.builder().id(1L).user(user).build();
         List<CommentAdminDto> commentAdminDtos = new ArrayList<>();
         Page<Comment> commentPage = Mockito.mock(Page.class);
         when(commentPage.getContent()).thenReturn(new ArrayList<>());
