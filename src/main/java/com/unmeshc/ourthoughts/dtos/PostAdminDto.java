@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @ToString
 public class PostAdminDto {
 
-    private Long id;
+    private Long id; // post id
     private String title;
     private LocalDateTime creationDateTime;
 }

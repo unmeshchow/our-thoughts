@@ -216,8 +216,9 @@ public class AdminController {
 
         List<CommentAdminDto> commentAdminDtos =
                 controllerUtils.convertToCommentAdminDtoList(commentPage.getContent());
-        PostCommentAdminDto postCommentAdminDto = PostCommentAdminDto.builder().id(postId)
-                .title(post.getTitle()).commentAdminDtos(commentAdminDtos).build();
+        PostCommentAdminDto postCommentAdminDto = PostCommentAdminDto.builder()
+                .userId(post.getUser().getId()).id(postId).title(post.getTitle())
+                .commentAdminDtos(commentAdminDtos).build();
 
         model.addAttribute("postCommentAdminDto", postCommentAdminDto);
         model.addAttribute("currentPage", adminCommentPageTracker.getCurrentPage());

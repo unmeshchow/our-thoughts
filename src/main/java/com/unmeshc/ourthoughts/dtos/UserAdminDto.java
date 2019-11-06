@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @ToString
 public class UserAdminDto {
 
-    private Long id;
+    private Long id; // user id
     private String firstName;
     private String lastName;
     private LocalDateTime registrationDateTime;

@@ -74,20 +74,14 @@
                                th:href="@{/admin/user/{userId}/post(userId=${userPostAdminDto.id}, page=${i})}">1</a>
                         </li>
                     </ul>
-                    <ul class="ml-auto">
-                        <button id="close"
-                                class="btn btn-warning btn-sm"
-                                th:if="${currentPage == 1}"
-                                th:text="#{back}">back</button>
-                    </ul>
                 </nav>
             </section>
+            <div th:replace="fragments/closeFragment :: close('/admin/all/user')"></div>
         </main>
     </div>
 
     <footer th:replace="fragments/footerFragment :: footer"></footer>
     <div th:replace="fragments/scriptsFragment :: scripts"></div>
     <script th:replace="fragments/confirmFragment :: confirm"></script>
-    <script th:replace="fragments/backFragment :: back"></script>
 </body>
 </html>

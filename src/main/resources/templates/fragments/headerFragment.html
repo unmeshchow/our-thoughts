@@ -14,16 +14,22 @@
                th:href="@{/index.html}"
                sec:authorize="!isAuthenticated()
                               or hasAuthority('CHANGE_PASSWORD_PRIVILEGE')
-                              or hasAuthority('USER')"><span class="brand-shadow">
-                Monad Computer</span></a>
+                              or hasAuthority('USER')">
+                <span class="brand-shadow">
+                    <i class="fas fa-home fa-1x amber-text" style="padding-right: 2px;"></i>
+                    Monad Computer
+                </span></a>
 
             <!-- Admin Navbar brand -->
             <a class="navbar-brand" href="#"
                th:href="@{/admin/console.html}"
                sec:authorize="isAuthenticated()
                               and !hasAuthority('CHANGE_PASSWORD_PRIVILEGE')
-                              and hasAuthority('ADMIN')"><span class="brand-shadow">
-                Monad Computer</span></a>
+                              and hasAuthority('ADMIN')">
+                <span class="brand-shadow">
+                    <i class="fas fa-home fa-1x amber-text" style="padding-right: 2px;"></i>
+                    Monad Computer
+                </span></a>
 
             <!-- Collapse button -->
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
@@ -40,13 +46,21 @@
                                    or hasAuthority('CHANGE_PASSWORD_PRIVILEGE')">
                     <li class="nav-item">
                         <a class="nav-link" href="#"
-                           th:text="#{login}"
-                           th:href="@{/login}">login</a>
+                           th:href="@{/login}">
+                            <span>
+                                <i class="fas fa-sign-in-alt amber-text" style="padding-right: 2px;"></i>
+                                <span th:text="#{login}">login</span>
+                            </span>
+                        </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#"
-                           th:text="#{register}"
-                           th:href="@{/registration/form}">register</a>
+                           th:href="@{/registration/form}">
+                            <span>
+                                <i class="fas fa-registered amber-text" style="padding-right: 2px;"></i>
+                                <span th:text="#{register}">register</span>
+                            </span>
+                        </a>
                     </li>
                 </ul>
 
@@ -56,17 +70,29 @@
                                    and !hasAuthority('CHANGE_PASSWORD_PRIVILEGE')
                                    and hasAuthority('USER')">
                     <li class="nav-item">
-                        <span th:text="#{welcome.message(${session.fullName})}"
-                              class="nav-link">welcome</span>
+                        <span class="nav-link">
+                            <i class="fas fa-award amber-text" style="padding-right: 2px;"></i>
+                            <span th:text="#{welcome.message(${session.fullName})}">welcome</span>
+                        </span>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/user/profile}"
-                           th:text="#{profile}">profile</a>
+                        <a class="nav-link"
+                           th:href="@{/user/profile}">
+                            <span>
+                                <i class="fas fa-user-circle amber-text" style="padding-right: 2px;"></i>
+                                <span th:text="#{profile}">profile</span>
+                            </span>
+                        </a>
                     </li>
                     <li class="nav-item">
                         <form method="post">
-                            <a class="nav-link" th:href="@{/logout}"
-                               th:text="#{logout}">logout</a>
+                            <a class="nav-link"
+                               th:href="@{/logout}">
+                                <span>
+                                    <i class="fas fa-sign-out-alt amber-text" style="padding-right: 2px;"></i>
+                                    <span th:text="#{logout}">logout</span>
+                                </span>
+                            </a>
                         </form>
                     </li>
                 </ul>
@@ -78,14 +104,23 @@
                                    and hasAuthority('ADMIN')">
                     <li class="nav-item">
                         <form method="post">
-                            <a class="nav-link" th:href="@{/logout}"
-                               th:text="#{logout}">logout</a>
+                            <a class="nav-link"
+                               th:href="@{/logout}">
+                                <span>
+                                    <i class="fas fa-sign-out-alt amber-text" style="padding-right: 2px;"></i>
+                                    <span th:text="#{logout}">logout</span>
+                                </span>
+                            </a>
                         </form>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#"
-                           th:text="#{changePassword}"
-                           data-toggle="modal" data-target="#modalChangePasswordForm">change password</a>
+                           data-toggle="modal" data-target="#modalChangePasswordForm">
+                            <span>
+                                <i class="fas fa-key amber-text" style="padding-right: 2px;"></i>
+                                <span th:text="#{changePassword}">change password</span>
+                            </span>
+                        </a>
                     </li>
                 </ul>
 

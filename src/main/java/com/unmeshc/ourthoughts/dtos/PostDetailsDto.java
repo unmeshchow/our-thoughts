@@ -15,7 +15,7 @@ import java.util.List;
 @ToString
 public class PostDetailsDto {
 
-    private Long id;
+    private Long id; // post id
     private String title;
     private String body;
     private String caption;

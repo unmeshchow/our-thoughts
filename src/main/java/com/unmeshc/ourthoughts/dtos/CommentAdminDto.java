@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @ToString
 public class CommentAdminDto {
 
-    private Long id;
+    private Long id; // comment id
     private String message;
     private LocalDateTime addingDateTime;
 }

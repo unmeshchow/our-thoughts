@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="close(linkUrl)">
+    <div class="float-right mt-3">
+        <a class="btn btn-warning"
+           th:text="#{close}"
+           th:href="${linkUrl}">
+            close</a>
+    </div>
+    <div class="clearfix"></div>
+</div>
+</body>
+</html>

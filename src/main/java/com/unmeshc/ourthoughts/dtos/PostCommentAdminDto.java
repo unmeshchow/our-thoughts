@@ -15,7 +15,8 @@ import java.util.List;
 @ToString
 public class PostCommentAdminDto {
 
-    private Long id;
+    private Long userId;
+    private Long id; // post id
     private String title;
     private List<CommentAdminDto> commentAdminDtos;
 }

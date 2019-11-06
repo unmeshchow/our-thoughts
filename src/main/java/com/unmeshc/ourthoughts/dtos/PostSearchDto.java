@@ -13,7 +13,7 @@ import lombok.*;
 @ToString
 public class PostSearchDto {
 
-    private Long id;
+    private Long id; // post id
     private String title;
     private String body;
 }

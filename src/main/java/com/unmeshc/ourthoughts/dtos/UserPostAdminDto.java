@@ -15,7 +15,7 @@ import java.util.List;
 @ToString
 public class UserPostAdminDto {
 
-    private Long id;
+    private Long id; // user id
     private String firstName;
     private List<PostAdminDto> postAdminDtos;
 }

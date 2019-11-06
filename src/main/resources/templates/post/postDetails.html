@@ -113,13 +113,7 @@
                         </form>
                     </div>
                 </div>
-                <div class="float-right mt-3">
-                    <a class="btn btn-warning"
-                            th:text="#{close}"
-                            th:href="@{/index.html}">
-                        close</a>
-                </div>
-                <div class="clearfix"></div>
+                <div th:replace="fragments/closeFragment :: close('/index.html')"></div>
             </section>
         </main>
     </div>
