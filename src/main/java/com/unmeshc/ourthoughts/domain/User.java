@@ -39,6 +39,10 @@ public class User {
     @Lob
     private Byte[] image;
 
+    public boolean hasImage() {
+        return image != null;
+    }
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),

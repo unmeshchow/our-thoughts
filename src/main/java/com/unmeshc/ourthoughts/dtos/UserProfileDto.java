@@ -18,6 +18,6 @@ public class UserProfileDto {
     private String firstName;
     private String lastName;
     private String email;
-    private Byte[] image;
+    private boolean hasImage;
     private LocalDateTime registrationDateTime;
 }

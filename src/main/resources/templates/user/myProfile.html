@@ -24,13 +24,13 @@
 
                             <!-- Image -->
                             <div class="mx-auto">
-                                <img th:if="${userProfileDto.image == null}"
+                                <img th:if="${!userProfileDto.hasImage}"
                                      th:src="@{/img/avatar.jpg}"
                                      src="../../static/img/avatar.jpg"
                                      class="rounded-circle" alt="woman avatar"
                                      width="300" height="300">
 
-                                <img th:if="${userProfileDto.image != null}"
+                                <img th:if="${userProfileDto.hasImage}"
                                      th:src="@{/user/get/image}"
                                      src="../../static/img/avatar.jpg"
                                      class="rounded-circle" alt="woman avatar"

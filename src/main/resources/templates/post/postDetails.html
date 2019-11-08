@@ -63,7 +63,13 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-lg-2 col-3 d-flex justify-content-center align-items-center">
-                                <img class="rounded-circle"
+                                <img th:if="${!comment.userHasImage}"
+                                     th:src="@{/img/avatar.jpg}"
+                                     src="../../static/img/avatar.jpg"
+                                     class="rounded-circle" alt="woman avatar"
+                                     width="300" height="300">
+                                <img th:if="${comment.userHasImage}"
+                                     class="rounded-circle"
                                      th:src="@{/visitor/user/{userId}/image(userId=${comment.userId})}"
                                      width="75"
                                      height="75">

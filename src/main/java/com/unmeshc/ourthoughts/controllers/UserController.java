@@ -6,6 +6,7 @@ import com.unmeshc.ourthoughts.controllers.pagination.SearchPostPageTracker;
 import com.unmeshc.ourthoughts.converters.UserToUserProfileDto;
 import com.unmeshc.ourthoughts.domain.Post;
 import com.unmeshc.ourthoughts.domain.User;
+import com.unmeshc.ourthoughts.dtos.UserProfileDto;
 import com.unmeshc.ourthoughts.exceptions.NotFoundException;
 import com.unmeshc.ourthoughts.services.CommentService;
 import com.unmeshc.ourthoughts.services.PostService;
@@ -99,7 +100,9 @@ public class UserController {
 
     @GetMapping("/profile")
     public String showProfile(@ModelAttribute("user") User user, Model model) {
-        model.addAttribute("userProfileDto", userToUserProfileDto.convert(user));
+        UserProfileDto userProfileDto = userToUserProfileDto.convert(user);
+        userProfileDto.setHasImage(user.hasImage());
+        model.addAttribute("userProfileDto", userProfileDto);
         return MY_PROFILE;
     }
 

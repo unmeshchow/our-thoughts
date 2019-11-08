@@ -18,4 +18,5 @@ public class CommentPostDetailsDto {
     private String message;
     private LocalDateTime addingDateTime;
     private Long userId;
+    private boolean userHasImage;
 }

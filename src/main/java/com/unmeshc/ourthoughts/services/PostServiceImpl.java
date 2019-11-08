@@ -79,7 +79,9 @@ public class PostServiceImpl implements PostService {
         commentRepository.findByPostOrderByAddingDateTime(foundPost).forEach(comment -> {
             CommentPostDetailsDto postDetailsCommentDto =
                     commentToPostDetailsCommentDto.convert(comment);
+            // set needed commenter info
             postDetailsCommentDto.setUserId(comment.getUser().getId());
+            postDetailsCommentDto.setUserHasImage(comment.getUser().hasImage());
             postDetailsCommentDtos.add(postDetailsCommentDto);
         });
 
