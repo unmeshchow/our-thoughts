@@ -79,10 +79,10 @@
             <!-- Search Result -->
             <section id="result" class="mb-3"
                      th:if="${!#lists.isEmpty(postSearchDtos)}">
-                <div class="row">
+                <div class="row col-xs-d d-flex justify-content-center">
 
                     <!-- Individual Post -->
-                    <div class="col-lg-3 col-md-4 col-sm-6"
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-8"
                          th:each="postSearchDto : ${postSearchDtos}">
 
                         <div class="card mb-4">
