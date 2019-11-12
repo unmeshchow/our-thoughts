@@ -1,16 +1,5 @@
 package com.unmeshc.ourthoughts.controllers;
 
-import com.unmeshc.ourthoughts.converters.CommentToCommentAdminDto;
-import com.unmeshc.ourthoughts.converters.PostToPostAdminDto;
-import com.unmeshc.ourthoughts.converters.PostToPostSearchDto;
-import com.unmeshc.ourthoughts.converters.UserToUserAdminDto;
-import com.unmeshc.ourthoughts.domain.Comment;
-import com.unmeshc.ourthoughts.domain.Post;
-import com.unmeshc.ourthoughts.domain.User;
-import com.unmeshc.ourthoughts.dtos.CommentAdminDto;
-import com.unmeshc.ourthoughts.dtos.PostAdminDto;
-import com.unmeshc.ourthoughts.dtos.PostSearchDto;
-import com.unmeshc.ourthoughts.dtos.UserAdminDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.stereotype.Component;
@@ -19,8 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by uc on 10/23/2019
@@ -28,102 +15,6 @@ import java.util.List;
 @Slf4j
 @Component
 public class ControllerUtils {
-
-    private final UserToUserAdminDto userToAdminUserDto;
-    private final PostToPostSearchDto postToPostSearchDto;
-    private final PostToPostAdminDto postToPostAdminDto;
-    private final CommentToCommentAdminDto commentToCommentAdminDto;
-
-    public ControllerUtils(UserToUserAdminDto userToAdminUserDto,
-                           PostToPostSearchDto postToPostSearchDto,
-                           PostToPostAdminDto postToPostAdminDto,
-                           CommentToCommentAdminDto commentToCommentAdminDto) {
-        this.userToAdminUserDto = userToAdminUserDto;
-        this.postToPostSearchDto = postToPostSearchDto;
-        this.postToPostAdminDto = postToPostAdminDto;
-        this.commentToCommentAdminDto = commentToCommentAdminDto;
-    }
-
-    public List<CommentAdminDto> convertToCommentAdminDtoList(List<Comment> comments) {
-        List<CommentAdminDto> commentAdminDtos = new ArrayList<>();
-        comments.forEach(comment -> {
-            CommentAdminDto commentAdminDto = commentToCommentAdminDto.convert(comment);
-            commentAdminDtos.add(commentAdminDto);
-        });
-
-        return commentAdminDtos;
-    }
-
-    public List<PostAdminDto> convertToPostAdminDtoList(List<Post> posts) {
-        List<PostAdminDto> postAdminDtos = new ArrayList<>();
-        posts.forEach(post -> {
-            PostAdminDto postAdminDto = postToPostAdminDto.convert(post);
-            postAdminDtos.add(postAdminDto);
-        });
-
-        return postAdminDtos;
-    }
-
-    public List<PostSearchDto> convertToPostSearchDtoList(List<Post> posts) {
-        List<PostSearchDto> postSearchDtos = new ArrayList<>();
-        posts.forEach(post -> {
-            PostSearchDto postSearchDto = postToPostSearchDto.convert(post);
-            postSearchDtos.add(postSearchDto);
-        });
-
-        return postSearchDtos;
-    }
-
-    public List<UserAdminDto> convertToAdminUserDtoList(List<User> users) {
-        List<UserAdminDto> adminUserDtos = new ArrayList<>();
-        users.forEach(user -> {
-            UserAdminDto userDto = userToAdminUserDto.convert(user);
-            adminUserDtos.add(userDto);
-        });
-
-        return adminUserDtos;
-    }
-
-    public List<PostSearchDto> adjustTitleAndBody(List<PostSearchDto> postSearchDtos) {
-
-        postSearchDtos.forEach(post -> {
-            post.setTitle(addSpacesOrEllipsis(post.getTitle(), 15));
-            post.setBody(addSpacesOrEllipsis(post.getBody(), 50));
-        });
-
-        return postSearchDtos;
-    }
-
-    public Byte[] convertIntoByteArray(MultipartFile imageFile) {
-        try {
-            Byte[] bytes = new Byte[imageFile.getBytes().length];
-            int i =0;
-            for (byte b : imageFile.getBytes()) {
-                bytes[i++] = b;
-            }
-
-            return bytes;
-        } catch (Exception exc) {
-            log.error("Error occurred during converting image into Byte[]", exc);
-            throw new RuntimeException("Error occurred in converting image, try again.");
-        }
-    }
-
-    public byte[] convertIntoByteArray(Byte[] bytes) {
-        try {
-            byte[] theBytes = new byte[bytes.length];
-            int i = 0;
-
-            for (Byte b : bytes) {
-                theBytes[i++] = b.byteValue();
-            }
-
-            return theBytes;
-        } catch (Exception exc) {
-            log.error("Error occurred during converting into byte[]", exc);
-            throw new RuntimeException("Error occurred in converting to byte, try again.");
-        }
-    }
 
     public void copyBytesToResponse(HttpServletResponse response, byte[] bytes) {
         response.setContentType("image/jpeg");
@@ -163,20 +54,5 @@ public class ControllerUtils {
 
     private boolean isNotWithin300KB(MultipartFile multipartFile) {
         return multipartFile.getSize() > 300000;
-    }
-
-    private static String addSpacesOrEllipsis(String text, int length) {
-        int textLength = text.length();
-        if (textLength == length) {
-            return text;
-        } else if (textLength < length) {
-          int difference = length - textLength;
-          for (int i = 0; i < difference; i++ ) {
-              text += " ";
-          }
-          return text;
-        }
-
-        return text.substring(0, length - 3) + "...";
     }
 }

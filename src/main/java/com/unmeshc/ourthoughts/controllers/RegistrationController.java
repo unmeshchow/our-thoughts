@@ -1,14 +1,16 @@
 package com.unmeshc.ourthoughts.controllers;
 
 import com.unmeshc.ourthoughts.commands.UserCommand;
-import com.unmeshc.ourthoughts.domain.VerificationToken;
 import com.unmeshc.ourthoughts.services.RegistrationService;
+import com.unmeshc.ourthoughts.services.exceptions.BadVerificationTokenException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -34,15 +36,9 @@ public class RegistrationController {
         this.registrationService = registrationService;
     }
 
-    @InitBinder
-    public void dataBinder(WebDataBinder webDataBinder) {
-        webDataBinder.setDisallowedFields("id");
-    }
-
     @GetMapping("/form")
     public String showRegistrationForm(Model model) {
         model.addAttribute("userCommand", UserCommand.builder().build());
-
         return REGISTRATION_FORM;
     }
 
@@ -59,7 +55,7 @@ public class RegistrationController {
             return REGISTRATION_FORM;
         }
 
-        registrationService.saveUserAndVerifyEmail(userCommand, request);
+        registrationService.saveUserAndVerifyByEmailing(userCommand, request);
 
         return REDIRECT_REGISTRATION_SUCCESS;
     }
@@ -71,13 +67,11 @@ public class RegistrationController {
 
     @GetMapping("/confirm")
     public String activateRegistration(@RequestParam("token") String token) {
-        VerificationToken foundToken = registrationService.getVerificationTokenByToken(token);
-
-        if (foundToken == null || foundToken.isExpired()) {
+        try {
+            registrationService.activateUserByVerificationToken(token);
+        } catch (BadVerificationTokenException exception) {
             return REDIRECT_REGISTRATION_CONFIRM_BAD;
         }
-
-        registrationService.activateUser(foundToken.getUser());
 
         return REDIRECT_LOGIN;
     }

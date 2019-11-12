@@ -2,12 +2,11 @@ package com.unmeshc.ourthoughts.services;
 
 import com.unmeshc.ourthoughts.domain.User;
 import com.unmeshc.ourthoughts.domain.VerificationToken;
-import com.unmeshc.ourthoughts.repositories.UserRepository;
-import com.unmeshc.ourthoughts.repositories.VerificationTokenRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by uc on 11/5/2019
@@ -15,36 +14,31 @@ import java.util.List;
 @Service
 public class TaskServiceImpl implements TaskService {
 
-    private final VerificationTokenRepository verificationTokenRepository;
-    private final UserRepository userRepository;
+    private final VerificationTokenService verificationTokenService;
+    private final UserService userService;
 
-    public TaskServiceImpl(VerificationTokenRepository verificationTokenRepository,
-                           UserRepository userRepository) {
-        this.verificationTokenRepository = verificationTokenRepository;
-        this.userRepository = userRepository;
+    public TaskServiceImpl(VerificationTokenService verificationTokenService,
+                           UserService userService) {
+        this.verificationTokenService = verificationTokenService;
+        this.userService = userService;
     }
 
     @Override
-    public void deleteExpiredTokensAndInactiveUsers() {
-        List<VerificationToken> expiredTokens = new ArrayList<>();
-        List<User> inactiveUsers = new ArrayList<>();
+    @Transactional
+    public void deleteExpiredVerificationTokensAndInactiveUsers() {
+        List<VerificationToken> expiredTokens =
+                verificationTokenService.getAllVerificationTokens()
+                .stream()
+                .filter(verificationToken -> verificationToken.isExpired())
+                .collect(Collectors.toList());
 
-        verificationTokenRepository.findAll().forEach(verificationToken -> {
-            if (verificationToken.isExpired()) {
-                expiredTokens.add(verificationToken);
+        List<User> inactiveUsers = expiredTokens
+                .stream()
+                .map(verificationToken -> verificationToken.getUser())
+                .filter(user -> user.getActive() == false)
+                .collect(Collectors.toList());
 
-                if (!verificationToken.getUser().getActive()) {
-                    inactiveUsers.add(verificationToken.getUser());
-                }
-            }
-        });
-
-        if (!expiredTokens.isEmpty()) {
-            verificationTokenRepository.deleteAll(expiredTokens);
-        }
-
-        if (!inactiveUsers.isEmpty()) {
-            userRepository.deleteAll(inactiveUsers);
-        }
+        verificationTokenService.deleteExpiredVerificationTokens(expiredTokens);
+        userService.deleteInactiveUsers(inactiveUsers);
     }
 }

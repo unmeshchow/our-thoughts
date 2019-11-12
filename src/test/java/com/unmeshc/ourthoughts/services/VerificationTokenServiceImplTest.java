@@ -10,8 +10,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
+import static com.unmeshc.ourthoughts.TestLiterals.ID;
+import static com.unmeshc.ourthoughts.TestLiterals.TOKEN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -23,44 +27,65 @@ public class VerificationTokenServiceImplTest {
     private VerificationTokenRepository verificationTokenRepository;
 
     @InjectMocks
-    private VerificationTokenServiceImpl service;
+    private VerificationTokenServiceImpl verificationTokenService;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
     }
 
     @Test
-    public void getByTokenNull() {
+    public void getVerificationTokenByTokenNull() {
         when(verificationTokenRepository.findByToken(anyString())).thenReturn(Optional.empty());
-        assertThat(service.getByToken("token")).isNull();
+        assertThat(verificationTokenService.getVerificationTokenByToken(TOKEN)).isNull();
     }
 
     @Test
-    public void getByToken() {
-        String token = "token";
-        VerificationToken verificationToken = VerificationToken.builder().id(1L).build();
-        when(verificationTokenRepository.findByToken(token))
+    public void getVerificationTokenByToken() {
+        VerificationToken verificationToken = VerificationToken.builder().id(ID).build();
+        when(verificationTokenRepository.findByToken(TOKEN))
                 .thenReturn(Optional.of(verificationToken));
 
-        VerificationToken foundVerificationToken = service.getByToken(token);
+        VerificationToken foundVerificationToken =
+                verificationTokenService.getVerificationTokenByToken(TOKEN);
 
         assertThat(foundVerificationToken).isEqualTo(verificationToken);
-        verify(verificationTokenRepository).findByToken(token);
     }
 
     @Test
-    public void createTokenForUser() {
-        User user = User.builder().id(1L).build();
-        String token = "token";
+    public void createVerificationTokenForUser() {
+        User user = User.builder().id(ID).build();
 
-        service.createTokenForUser(user, token);
+        verificationTokenService.createVerificationTokenForUser(user, TOKEN);
 
         ArgumentCaptor<VerificationToken> verificationTokenArgumentCaptor =
                 ArgumentCaptor.forClass(VerificationToken.class);
         verify(verificationTokenRepository).save(verificationTokenArgumentCaptor.capture());
+
         VerificationToken verificationToken = verificationTokenArgumentCaptor.getValue();
         assertThat(verificationToken.getUser()).isEqualTo(user);
-        assertThat(verificationToken.getToken()).isEqualTo(token);
+        assertThat(verificationToken.getToken()).isEqualTo(TOKEN);
+    }
+
+    @Test
+    public void getAllVerificationTokens() {
+        List<VerificationToken> verificationTokens =
+                Arrays.asList(VerificationToken.builder().id(ID).build());
+        when(verificationTokenRepository.findAll()).thenReturn(verificationTokens);
+
+        List<VerificationToken> foundVerificationTokens =
+                verificationTokenService.getAllVerificationTokens();
+
+        assertThat(foundVerificationTokens).isEqualTo(verificationTokens);
+    }
+
+    @Test
+    public void deleteExpiredVerificationTokes() {
+        List<VerificationToken> expiredVerificationTokens =
+                Arrays.asList(VerificationToken.builder().id(ID).build());
+
+        verificationTokenService.deleteExpiredVerificationTokens(expiredVerificationTokens);
+
+        verify(verificationTokenRepository).deleteAll(expiredVerificationTokens);
     }
 }

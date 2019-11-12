@@ -1,27 +1,12 @@
 package com.unmeshc.ourthoughts.controllers;
 
-import com.unmeshc.ourthoughts.controllers.pagination.AdminCommentPageTracker;
-import com.unmeshc.ourthoughts.controllers.pagination.AdminPostPageTracker;
-import com.unmeshc.ourthoughts.controllers.pagination.AdminUserPageTracker;
-import com.unmeshc.ourthoughts.domain.Comment;
-import com.unmeshc.ourthoughts.domain.Post;
-import com.unmeshc.ourthoughts.domain.User;
-import com.unmeshc.ourthoughts.dtos.*;
-import com.unmeshc.ourthoughts.exceptions.NotFoundException;
 import com.unmeshc.ourthoughts.services.AdminService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by uc on 10/26/2019
@@ -34,26 +19,14 @@ public class AdminController {
     static final String REDIRECT_LOGIN = "redirect:/login";
     static final String REDIRECT_ADMIN_ALL_USER = "redirect:/admin/all/user";
     static final String CONSOLE = "admin/console";
-    static final String REDIRECT_ADMIN_ALL_USER_DELETE = "redirect:/admin/all/user?delete=yes";
+    static final String REDIRECT_ADMIN_ALL_USER_DELETE = "redirect:/admin/all/user?delete=true";
     static final String USER_POSTS = "admin/userPosts";
     static final String POST_COMMENTS = "admin/postComments";
 
     private final AdminService adminService;
-    private final ControllerUtils controllerUtils;
-    private final AdminPostPageTracker adminPostPageTracker;
-    private final AdminCommentPageTracker adminCommentPageTracker;
-    private final AdminUserPageTracker adminUserPageTracker;
 
-    public AdminController(AdminUserPageTracker adminUserPageTracker,
-                           AdminService adminService,
-                           ControllerUtils controllerUtils,
-                           AdminPostPageTracker adminPostPageTracker,
-                           AdminCommentPageTracker adminCommentPageTracker) {
-        this.adminUserPageTracker = adminUserPageTracker;
+    public AdminController(AdminService adminService) {
         this.adminService = adminService;
-        this.controllerUtils = controllerUtils;
-        this.adminPostPageTracker = adminPostPageTracker;
-        this.adminCommentPageTracker = adminCommentPageTracker;
     }
 
     @GetMapping("/reset/password")
@@ -62,12 +35,10 @@ public class AdminController {
         return REDIRECT_LOGIN;
     }
 
-
     @PostMapping("/change/password")
     public String changePassword(@RequestParam(value = "newPassword") String newPassword,
-                                 HttpServletRequest request) throws ServletException {
-        adminService.changeAdminPassword(newPassword);
-        request.logout();
+                                 HttpServletRequest request) {
+        adminService.changeAdminPasswordAndLogout(newPassword, request);
         return REDIRECT_LOGIN;
     }
 
@@ -77,39 +48,11 @@ public class AdminController {
     }
 
     @GetMapping("/all/user")
-    public String allUsers(@RequestParam("page") Optional<Integer> page,
-                           @RequestParam("size") Optional<Integer> size,
-                           @RequestParam(value = "delete", defaultValue = "no") String delete,
+    public String allUsers(@RequestParam(value = "page", defaultValue = "0") int page,
+                           @RequestParam(value = "size", defaultValue = "0") int size,
+                           @RequestParam(value = "delete", defaultValue = "false") boolean delete,
                            Model model) {
-
-        int currentPage = page.orElseGet(() -> adminUserPageTracker.getCurrentPage());
-        int pageSize = size.orElse(2);
-
-        Pageable pageable = PageRequest.of((currentPage - 1), pageSize,
-                Sort.by("lastName").ascending().and(Sort.by("firstName").descending())); // zero based page
-
-        Page<User> userPage = adminService.getAllUsers(pageable);
-
-        // Fix the last page problem since the last page can be deleted
-        if (delete.equalsIgnoreCase("yes") &&
-                userPage.getContent().isEmpty() &&
-                currentPage > 1) {
-
-            currentPage -= 1;
-            pageable = PageRequest.of((currentPage - 1), pageSize,
-                    Sort.by("lastName").ascending().and(Sort.by("firstName").descending())); // zero based page
-            userPage = adminService.getAllUsers(pageable);
-        }
-
-        adminUserPageTracker.setCurrentPage(userPage.getNumber() + 1);
-
-        List<UserAdminDto> userAdminDtos =
-                controllerUtils.convertToAdminUserDtoList(userPage.getContent());
-
-        model.addAttribute("userAdminDtos", userAdminDtos);
-        model.addAttribute("currentPage", adminUserPageTracker.getCurrentPage());
-        model.addAttribute("pageNumbers", adminUserPageTracker.getPageNumbersForPagination(userPage));
-
+        model.addAttribute("userAdminListDto", adminService.getAllUsers(page, size, delete));
         return CONSOLE;
     }
 
@@ -120,52 +63,13 @@ public class AdminController {
     }
 
     @GetMapping("/user/{userId}/post")
-    public String showUserPosts(@RequestParam("page") Optional<Integer> page,
-                                @RequestParam("size") Optional<Integer> size,
-                                @RequestParam(value = "delete", defaultValue = "no") String delete,
+    public String showUserPosts(@RequestParam(value = "page", defaultValue = "0") int page,
+                                @RequestParam(value = "size", defaultValue = "0") int size,
+                                @RequestParam(value = "delete", defaultValue = "false") boolean delete,
                                 @PathVariable long userId,
                                 Model model) {
-
-        User user = adminService.getUserById(userId);
-        if (user == null) {
-            throw new NotFoundException("User not found with id - " + userId);
-        }
-
-        if (adminPostPageTracker.getUserId() != userId) {
-            adminPostPageTracker.reset();
-        }
-
-        int currentPage = page.orElseGet(() ->adminPostPageTracker.getCurrentPage());
-        int pageSize = size.orElse(2);
-
-        Pageable pageable = PageRequest.of((currentPage - 1), pageSize,
-                Sort.by("creationDateTime").descending()); // zero based page
-
-        Page<Post> postPage = adminService.getPostsByUser(user, pageable);
-
-        // Fix the last page problem since the last page can be deleted
-        if (delete.equalsIgnoreCase("yes") &&
-                postPage.getContent().isEmpty() &&
-                currentPage > 1) {
-
-            currentPage -= 1;
-            pageable = PageRequest.of((currentPage - 1), pageSize,
-                    Sort.by("creationDateTime").descending()); // zero based page
-            postPage = adminService.getPostsByUser(user, pageable);
-        }
-
-        adminPostPageTracker.setCurrentPage(postPage.getNumber() + 1);
-        adminPostPageTracker.setUserId(userId);
-
-        List<PostAdminDto> postAdminDtos =
-                controllerUtils.convertToPostAdminDtoList(postPage.getContent());
-        UserPostAdminDto userPostAdminDto = UserPostAdminDto.builder().id(userId).
-                firstName(user.getFirstName()).postAdminDtos(postAdminDtos).build();
-
-        model.addAttribute("userPostAdminDto", userPostAdminDto);
-        model.addAttribute("currentPage", adminPostPageTracker.getCurrentPage());
-        model.addAttribute("pageNumbers", adminPostPageTracker.getPageNumbersForPagination(postPage));
-
+        model.addAttribute("userPostAdminDto",
+                adminService.getPostsForUser(userId, page, size, delete));
         return USER_POSTS;
     }
 
@@ -173,57 +77,17 @@ public class AdminController {
     public String deletePost(@PathVariable long userId,
                              @PathVariable long postId) {
         adminService.deletePostWithCommentsById(postId);
-        return "redirect:/admin/user/" + userId + "/post?delete=yes";
+        return "redirect:/admin/user/" + userId + "/post?delete=true";
     }
 
     @GetMapping("/post/{postId}/comment")
-    public String showPostComments(@RequestParam("page") Optional<Integer> page,
-                                   @RequestParam("size") Optional<Integer> size,
-                                   @RequestParam(value = "delete", defaultValue = "no") String delete,
+    public String showPostComments(@RequestParam(value = "page", defaultValue = "0") int page,
+                                   @RequestParam(value = "size", defaultValue = "0") int size,
+                                   @RequestParam(value = "delete", defaultValue = "false") boolean delete,
                                    @PathVariable long postId,
                                    Model model) {
-
-        Post post = adminService.getPostById(postId);
-        if (post == null) {
-            throw new NotFoundException("Post not found with id - " + postId);
-        }
-
-        if (adminCommentPageTracker.getPostId() != postId) {
-            adminCommentPageTracker.reset();
-        }
-
-        int currentPage = page.orElseGet(() ->adminCommentPageTracker.getCurrentPage());
-        int pageSize = size.orElse(2);
-
-        Pageable pageable = PageRequest.of((currentPage - 1), pageSize,
-                Sort.by("addingDateTime").descending()); // zero based page
-
-        Page<Comment> commentPage = adminService.getCommentsByPost(post, pageable);
-
-        // Fix the last page problem since the last page can be deleted
-        if (delete.equalsIgnoreCase("yes") &&
-                   commentPage.getContent().isEmpty() &&
-                   currentPage > 1) {
-
-            currentPage -= 1;
-            pageable = PageRequest.of((currentPage - 1), pageSize,
-                    Sort.by("addingDateTime").descending());
-            commentPage = adminService.getCommentsByPost(post, pageable);
-        }
-
-        adminCommentPageTracker.setCurrentPage(commentPage.getNumber() + 1);
-        adminCommentPageTracker.setPostId(postId);
-
-        List<CommentAdminDto> commentAdminDtos =
-                controllerUtils.convertToCommentAdminDtoList(commentPage.getContent());
-        PostCommentAdminDto postCommentAdminDto = PostCommentAdminDto.builder()
-                .userId(post.getUser().getId()).id(postId).title(post.getTitle())
-                .commentAdminDtos(commentAdminDtos).build();
-
-        model.addAttribute("postCommentAdminDto", postCommentAdminDto);
-        model.addAttribute("currentPage", adminCommentPageTracker.getCurrentPage());
-        model.addAttribute("pageNumbers", adminCommentPageTracker.getPageNumbersForPagination(commentPage));
-
+        model.addAttribute("postCommentAdminDto",
+                adminService.getCommentsForPost(postId, page, size, delete));
         return POST_COMMENTS;
     }
 
@@ -231,7 +95,6 @@ public class AdminController {
     public String deleteComment(@PathVariable long postId,
                                 @PathVariable long commentId) {
         adminService.deleteCommentById(commentId);
-        return "redirect:/admin/post/" + postId + "/comment?delete=yes";
+        return "redirect:/admin/post/" + postId + "/comment?delete=true";
     }
-
 }

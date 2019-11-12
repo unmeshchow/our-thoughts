@@ -4,18 +4,30 @@ import com.unmeshc.ourthoughts.domain.Comment;
 import com.unmeshc.ourthoughts.domain.Post;
 import com.unmeshc.ourthoughts.domain.Role;
 import com.unmeshc.ourthoughts.domain.User;
+import com.unmeshc.ourthoughts.dtos.PostCommentAdminDto;
+import com.unmeshc.ourthoughts.dtos.UserAdminListDto;
+import com.unmeshc.ourthoughts.dtos.UserPostAdminDto;
+import com.unmeshc.ourthoughts.mappers.CommentMapper;
+import com.unmeshc.ourthoughts.mappers.PostMapper;
+import com.unmeshc.ourthoughts.mappers.UserMapper;
 import com.unmeshc.ourthoughts.repositories.RoleRepository;
+import com.unmeshc.ourthoughts.services.pagination.AdminCommentPageTracker;
+import com.unmeshc.ourthoughts.services.pagination.AdminPostPageTracker;
+import com.unmeshc.ourthoughts.services.pagination.AdminUserPageTracker;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 
+import static com.unmeshc.ourthoughts.TestLiterals.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -39,31 +51,47 @@ public class AdminServiceImplTest {
     @Mock
     private CommentService commentService;
 
-    @InjectMocks
-    private AdminServiceImpl service;
+    @Mock
+    private AdminPostPageTracker adminPostPageTracker;
+
+    @Mock
+    private AdminCommentPageTracker adminCommentPageTracker;
+
+    @Mock
+    private AdminUserPageTracker adminUserPageTracker;
+
+    private UserMapper userMapper = UserMapper.INSTANCE;
+    private PostMapper postMapper = PostMapper.INSTANCE;
+    private CommentMapper commentMapper = CommentMapper.INSTANCE;
+
+    private AdminServiceImpl adminService;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
+        adminService = new AdminServiceImpl(roleRepository, userService, postService,
+                commentService, passwordEncoder, adminPostPageTracker, adminCommentPageTracker,
+                adminUserPageTracker, userMapper, postMapper, commentMapper);
     }
 
+
     @Test(expected = RuntimeException.class)
-    public void createAdminUserAdminRoleNotFound() throws Exception {
+    public void createAdminUserAdminRoleNotFound() {
         when(roleRepository.findByName(anyString())).thenReturn(Optional.empty());
-        service.createAdminUser();
+        adminService.createAdminUser();
     }
 
     @Test
     public void createAdminUser() {
-        Role adminRole = Role.builder().name("ADMIN").id(1L).build();
+        Role adminRole = Role.builder().name("ADMIN").id(ID).build();
         when(roleRepository.findByName(anyString())).thenReturn(Optional.of(adminRole));
         when(passwordEncoder.encode(AdminService.ADMIN_PASSWORD))
                 .thenReturn(AdminService.ADMIN_PASSWORD);
 
-        service.createAdminUser();
+        adminService.createAdminUser();
 
         ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
-        verify(userService).saveOrUpdate(userArgumentCaptor.capture());
+        verify(userService).saveOrUpdateUser(userArgumentCaptor.capture());
         User user = userArgumentCaptor.getValue();
 
         assertThat(user.getEmail()).isEqualTo(AdminService.ADMIN_EMAIL);
@@ -74,131 +102,397 @@ public class AdminServiceImplTest {
     @Test
     public void isAdminExistsTrue() {
         when(userService.isEmailExists(anyString())).thenReturn(true);
-        assertThat(service.isAdminExists()).isTrue();
+        assertThat(adminService.isAdminExists()).isTrue();
     }
 
     @Test
     public void isAdminExistsFalse() {
         when(userService.isEmailExists(anyString())).thenReturn(false);
-        assertThat(service.isAdminExists()).isFalse();
+        assertThat(adminService.isAdminExists()).isFalse();
     }
 
     @Test
-    public void getAllUsers() {
-        Pageable pageable = Mockito.mock(Pageable.class);
+    public void getAllUsersWithDefaultValues() { // page = 0, size = 0, deletePost = false
+        List<User> users = Arrays.asList(
+                User.builder().build(), User.builder().build()
+        );
+        Set<Integer> pageNumbers = new HashSet<>(Arrays.asList(1, 2, 3, 4, 5));
+        when(adminUserPageTracker.getCurrentPage()).thenReturn(1);
         Page<User> userPage = Mockito.mock(Page.class);
-        when(userService.getAllExceptAdmin(anyString(), any(Pageable.class)))
+        when(userPage.stream()).thenReturn(users.stream());
+        when(userService.getAllUsersExceptAdminAndInactive(anyString(), any(Pageable.class)))
                 .thenReturn(userPage);
+        when(adminUserPageTracker.getPageNumbersForPagination(userPage)).thenReturn(pageNumbers);
 
-        Page<User> foundUserPage = service.getAllUsers(pageable);
-        assertThat(foundUserPage).isEqualTo(userPage);
+        UserAdminListDto userAdminListDto = adminService.getAllUsers(0, 0, false);
+        assertThat(userAdminListDto.getUserAdminDtos().size()).isEqualTo(2);
+        assertThat(userAdminListDto.getCurrentPage()).isEqualTo(1);
+        assertThat(userAdminListDto.getPageNumbers()).isEqualTo(pageNumbers);
 
-        verify(userService).getAllExceptAdmin(AdminService.ADMIN_EMAIL, pageable);
+        ArgumentCaptor<Pageable> pageableArgumentCaptor = ArgumentCaptor.forClass(Pageable.class);
+        verify(userService).getAllUsersExceptAdminAndInactive(anyString(),
+                pageableArgumentCaptor.capture());
+        Pageable pageable = pageableArgumentCaptor.getValue();
+        assertThat(pageable.getPageNumber()).isEqualTo(0);
+        assertThat(pageable.getPageSize()).isEqualTo(2);
+        assertThat(pageable.getSort().getOrderFor("lastName")).isNotNull();
+        assertThat(pageable.getSort().getOrderFor("firstName")).isNotNull();
+
+        verify(adminUserPageTracker, times(2)).getCurrentPage();
+        verify(adminUserPageTracker).setCurrentPage(1);
     }
 
     @Test
-    public void getPostsByUser() {
-        User user = User.builder().id(1L).email("unmesh@gmail.cm").build();
-        Pageable pageable = Mockito.mock(Pageable.class);
+    public void getAllUsersWithValues() {
+        List<User> users = Arrays.asList(
+                User.builder().build(), User.builder().build()
+        );
+        Set<Integer> pageNumbers = new HashSet<>(Arrays.asList(1, 2, 3, 4, 5));
+        when(adminUserPageTracker.getCurrentPage()).thenReturn(2);
+        Page<User> userPage = Mockito.mock(Page.class);
+        when(userPage.stream()).thenReturn(users.stream());
+        when(userService.getAllUsersExceptAdminAndInactive(anyString(), any(Pageable.class)))
+                .thenReturn(userPage);
+        when(adminUserPageTracker.getPageNumbersForPagination(userPage)).thenReturn(pageNumbers);
+
+        UserAdminListDto userAdminListDto = adminService.getAllUsers(2, 5, false);
+
+        assertThat(userAdminListDto.getUserAdminDtos().size()).isEqualTo(2);
+        assertThat(userAdminListDto.getCurrentPage()).isEqualTo(2);
+        assertThat(userAdminListDto.getPageNumbers()).isEqualTo(pageNumbers);
+
+        ArgumentCaptor<Pageable> pageableArgumentCaptor = ArgumentCaptor.forClass(Pageable.class);
+        verify(userService).getAllUsersExceptAdminAndInactive(anyString(),
+                pageableArgumentCaptor.capture());
+        Pageable pageable = pageableArgumentCaptor.getValue();
+        assertThat(pageable.getPageNumber()).isEqualTo(1);
+        assertThat(pageable.getPageSize()).isEqualTo(5);
+        assertThat(pageable.getSort().getOrderFor("lastName")).isNotNull();
+        assertThat(pageable.getSort().getOrderFor("firstName")).isNotNull();
+
+        verify(adminUserPageTracker).getCurrentPage();
+        verify(adminUserPageTracker).setCurrentPage(1);
+    }
+
+    @Test
+    public void getAllUsersWithLastPageProblem() {
+        List<User> users = Arrays.asList(
+                User.builder().build(), User.builder().build()
+        );
+        Set<Integer> pageNumbers = new HashSet<>(Arrays.asList(1, 2, 3, 4, 5));
+        when(adminUserPageTracker.getCurrentPage()).thenReturn(2);
+        Page<User> userPage = Mockito.mock(Page.class);
+        when(userPage.getContent()).thenReturn(new ArrayList<>());
+        when(userPage.stream()).thenReturn(users.stream());
+        when(userService.getAllUsersExceptAdminAndInactive(anyString(), any(Pageable.class)))
+                .thenReturn(userPage);
+        when(adminUserPageTracker.getPageNumbersForPagination(userPage)).thenReturn(pageNumbers);
+
+        UserAdminListDto userAdminListDto = adminService.getAllUsers(2, 5, true);
+
+        assertThat(userAdminListDto.getUserAdminDtos().size()).isEqualTo(2);
+        assertThat(userAdminListDto.getCurrentPage()).isEqualTo(2);
+        assertThat(userAdminListDto.getPageNumbers()).isEqualTo(pageNumbers);
+
+        ArgumentCaptor<Pageable> pageableArgumentCaptor = ArgumentCaptor.forClass(Pageable.class);
+        verify(userService, times(2)).getAllUsersExceptAdminAndInactive(anyString(),
+                pageableArgumentCaptor.capture());
+        Pageable pageable = pageableArgumentCaptor.getValue();
+        assertThat(pageable.getPageNumber()).isEqualTo(0);
+        assertThat(pageable.getPageSize()).isEqualTo(5);
+        assertThat(pageable.getSort().getOrderFor("lastName")).isNotNull();
+        assertThat(pageable.getSort().getOrderFor("firstName")).isNotNull();
+
+        verify(adminUserPageTracker).getCurrentPage();
+        verify(adminUserPageTracker).setCurrentPage(1);
+    }
+
+    @Test
+    public void getPostsByUserWithDefaultValues() { // page = 0, size = 0, deletePost = false
+        List<Post> posts = Arrays.asList(
+                Post.builder().build(), Post.builder().build()
+        );
         Page<Post> postPage = Mockito.mock(Page.class);
+        Set<Integer> pageNumbers = new HashSet<>(Arrays.asList(1, 2, 3, 4, 5));
+        when(userService.getUserById(anyLong()))
+                .thenReturn(User.builder().id(ID).firstName(FIRST_NAME).build());
+        when(adminPostPageTracker.getUserId()).thenReturn(2L);
+        when(adminPostPageTracker.getCurrentPage()).thenReturn(1);
+        when(postPage.stream()).thenReturn(posts.stream());
+        when(postService.getPostsByUser(any(User.class), any(Pageable.class))).thenReturn(postPage);
+        when(adminPostPageTracker.getPageNumbersForPagination(postPage)).thenReturn(pageNumbers);
+
+        UserPostAdminDto userPostAdminDto =
+                adminService.getPostsForUser(ID, 0, 0, false);
+
+        assertThat(userPostAdminDto.getId()).isEqualTo(ID);
+        assertThat(userPostAdminDto.getFirstName()).isEqualTo(FIRST_NAME);
+        assertThat(userPostAdminDto.getPostAdminDtos().size()).isEqualTo(2);
+        assertThat(userPostAdminDto.getCurrentPage()).isEqualTo(1);
+        assertThat(userPostAdminDto.getPageNumbers()).isEqualTo(pageNumbers);
+
+        ArgumentCaptor<Pageable> pageableArgumentCaptor = ArgumentCaptor.forClass(Pageable.class);
+        verify(postService).getPostsByUser(any(User.class), pageableArgumentCaptor.capture());
+        Pageable pageable = pageableArgumentCaptor.getValue();
+        assertThat(pageable.getPageNumber()).isEqualTo(0);
+        assertThat(pageable.getPageSize()).isEqualTo(2);
+        assertThat(pageable.getSort().getOrderFor("creationDateTime")).isNotNull();
+
+        verify(adminPostPageTracker, times(2)).getCurrentPage();
+        verify(adminPostPageTracker).setCurrentPage(1);
+        verify(adminPostPageTracker).setUserId(ID);
+        verify(adminPostPageTracker).reset();
+    }
+
+    @Test
+    public void getPostsByUserWithValues() {
+        List<Post> posts = Arrays.asList(
+                Post.builder().build(), Post.builder().build()
+        );
+        Page<Post> postPage = Mockito.mock(Page.class);
+        Set<Integer> pageNumbers = new HashSet<>(Arrays.asList(1, 2, 3, 4, 5));
+        when(userService.getUserById(anyLong()))
+                .thenReturn(User.builder().id(ID).firstName(FIRST_NAME).build());
+        when(adminPostPageTracker.getUserId()).thenReturn(ID);
+        when(adminPostPageTracker.getCurrentPage()).thenReturn(1);
+        when(postPage.stream()).thenReturn(posts.stream());
         when(postService.getPostsByUser(any(User.class), any(Pageable.class)))
                 .thenReturn(postPage);
+        when(adminPostPageTracker.getPageNumbersForPagination(postPage)).thenReturn(pageNumbers);
 
-        Page<Post> foundPostPage = service.getPostsByUser(user, pageable);
-        assertThat(foundPostPage).isEqualTo(postPage);
-        verify(postService).getPostsByUser(user, pageable);
+        UserPostAdminDto userPostAdminDto =
+                adminService.getPostsForUser(ID, 2, 5, false);
+
+        assertThat(userPostAdminDto.getId()).isEqualTo(ID);
+        assertThat(userPostAdminDto.getFirstName()).isEqualTo(FIRST_NAME);
+        assertThat(userPostAdminDto.getPostAdminDtos().size()).isEqualTo(2);
+        assertThat(userPostAdminDto.getCurrentPage()).isEqualTo(1);
+        assertThat(userPostAdminDto.getPageNumbers()).isEqualTo(pageNumbers);
+
+        ArgumentCaptor<Pageable> pageableArgumentCaptor = ArgumentCaptor.forClass(Pageable.class);
+        verify(postService).getPostsByUser(any(User.class), pageableArgumentCaptor.capture());
+        Pageable pageable = pageableArgumentCaptor.getValue();
+        assertThat(pageable.getPageNumber()).isEqualTo(1);
+        assertThat(pageable.getPageSize()).isEqualTo(5);
+        assertThat(pageable.getSort().getOrderFor("creationDateTime")).isNotNull();
+
+        verify(adminPostPageTracker).getCurrentPage();
+        verify(adminPostPageTracker).setCurrentPage(1);
+        verify(adminPostPageTracker).setUserId(ID);
     }
 
     @Test
-    public void getUserById() {
-        User user = User.builder().id(1L).build();
-        when(userService.getById(anyLong())).thenReturn(user);
+    public void getPostsByUserWithLastPageProblem() {
+        List<Post> posts = Arrays.asList(
+                Post.builder().build(), Post.builder().build()
+        );
+        Page<Post> postPage = Mockito.mock(Page.class);
+        Set<Integer> pageNumbers = new HashSet<>(Arrays.asList(1, 2, 3, 4, 5));
+        when(postPage.getContent()).thenReturn(new ArrayList<>());
+        when(userService.getUserById(anyLong()))
+                .thenReturn(User.builder().id(ID).firstName(FIRST_NAME).build());
+        when(adminPostPageTracker.getUserId()).thenReturn(ID);
+        when(adminPostPageTracker.getCurrentPage()).thenReturn(1);
+        when(postPage.stream()).thenReturn(posts.stream());
+        when(postService.getPostsByUser(any(User.class), any(Pageable.class))).thenReturn(postPage);
+        when(adminPostPageTracker.getPageNumbersForPagination(postPage)).thenReturn(pageNumbers);
 
-        User foundUser = service.getUserById(1L);
+        UserPostAdminDto userPostAdminDto =
+                adminService.getPostsForUser(ID, 2, 5, true);
 
-        assertThat(foundUser).isEqualTo(user);
+        assertThat(userPostAdminDto.getId()).isEqualTo(ID);
+        assertThat(userPostAdminDto.getFirstName()).isEqualTo(FIRST_NAME);
+        assertThat(userPostAdminDto.getPostAdminDtos().size()).isEqualTo(2);
+        assertThat(userPostAdminDto.getCurrentPage()).isEqualTo(1);
+        assertThat(userPostAdminDto.getPageNumbers()).isEqualTo(pageNumbers);
+
+        ArgumentCaptor<Pageable> pageableArgumentCaptor = ArgumentCaptor.forClass(Pageable.class);
+        verify(postService, times(2))
+                .getPostsByUser(any(User.class), pageableArgumentCaptor.capture());
+        Pageable pageable = pageableArgumentCaptor.getValue();
+        assertThat(pageable.getPageNumber()).isEqualTo(0);
+        assertThat(pageable.getPageSize()).isEqualTo(5);
+        assertThat(pageable.getSort().getOrderFor("creationDateTime")).isNotNull();
+
+        verify(adminPostPageTracker).getCurrentPage();
+        verify(adminPostPageTracker).setCurrentPage(1);
+        verify(adminPostPageTracker).setUserId(ID);
     }
 
     @Test
-    public void getPostById() {
-        Post post = Post.builder().id(1L).build();
-        when(postService.getById(anyLong())).thenReturn(post);
-
-        Post foundPost = service.getPostById(1L);
-
-        assertThat(foundPost).isEqualTo(post);
-    }
-
-    @Test
-    public void getCommentsByPost() {
+    public void getCommentsByPostWithDefaultValues() { // page = 0, size = 0, deletePost = false
+        List<Comment> comments = Arrays.asList(
+                Comment.builder().build(), Comment.builder().build()
+        );
         Page<Comment> commentPage = Mockito.mock(Page.class);
-        Post post = Post.builder().id(1L).build();
-        Pageable pageable = Mockito.mock(Pageable.class);
+        Set<Integer> pageNumbers = new HashSet<>(Arrays.asList(1, 2, 3, 4, 5));
+        when(postService.getPostById(anyLong())).thenReturn(Post.builder().id(ID).title(TITLE)
+                .user(User.builder().id(ID).build()).build());
+        when(adminCommentPageTracker.getPostId()).thenReturn(2L);
+        when(adminCommentPageTracker.getCurrentPage()).thenReturn(1);
+        when(commentPage.stream()).thenReturn(comments.stream());
         when(commentService.getCommentsByPost(any(Post.class), any(Pageable.class)))
                 .thenReturn(commentPage);
+        when(adminCommentPageTracker.getPageNumbersForPagination(commentPage))
+                .thenReturn(pageNumbers);
 
-        Page<Comment> foundCommentPage = service.getCommentsByPost(post, pageable);
+        PostCommentAdminDto postCommentAdminDto =
+                adminService.getCommentsForPost(ID, 0, 0, false);
 
-        assertThat(foundCommentPage).isEqualTo(commentPage);
+        assertThat(postCommentAdminDto.getId()).isEqualTo(ID);
+        assertThat(postCommentAdminDto.getTitle()).isEqualTo(TITLE);
+        assertThat(postCommentAdminDto.getCommentAdminDtos().size()).isEqualTo(2);
+        assertThat(postCommentAdminDto.getCurrentPage()).isEqualTo(1);
+        assertThat(postCommentAdminDto.getPageNumbers()).isEqualTo(pageNumbers);
+
+        ArgumentCaptor<Pageable> pageableArgumentCaptor = ArgumentCaptor.forClass(Pageable.class);
+        verify(commentService).getCommentsByPost(any(Post.class), pageableArgumentCaptor.capture());
+        Pageable pageable = pageableArgumentCaptor.getValue();
+        assertThat(pageable.getPageNumber()).isEqualTo(0);
+        assertThat(pageable.getPageSize()).isEqualTo(2);
+        assertThat(pageable.getSort().getOrderFor("addingDateTime")).isNotNull();
+
+        verify(adminCommentPageTracker, times(2)).getCurrentPage();
+        verify(adminCommentPageTracker).setCurrentPage(1);
+        verify(adminCommentPageTracker).setPostId(ID);
+        verify(adminCommentPageTracker).reset();
+    }
+
+    @Test
+    public void getCommentsByPostWithValues() {
+        List<Comment> comments = Arrays.asList(
+                Comment.builder().build(), Comment.builder().build()
+        );
+        Page<Comment> commentPage = Mockito.mock(Page.class);
+        Set<Integer> pageNumbers = new HashSet<>(Arrays.asList(1, 2, 3, 4, 5));
+        when(postService.getPostById(anyLong())).thenReturn(Post.builder().id(ID).title(TITLE)
+                .user(User.builder().id(ID).build()).build());
+        when(adminCommentPageTracker.getPostId()).thenReturn(ID);
+        when(adminCommentPageTracker.getCurrentPage()).thenReturn(1);
+        when(commentPage.stream()).thenReturn(comments.stream());
+        when(commentService.getCommentsByPost(any(Post.class), any(Pageable.class)))
+                .thenReturn(commentPage);
+        when(adminCommentPageTracker.getPageNumbersForPagination(commentPage))
+                .thenReturn(pageNumbers);
+
+        PostCommentAdminDto postCommentAdminDto =
+                adminService.getCommentsForPost(ID, 2, 5, false);
+
+        assertThat(postCommentAdminDto.getId()).isEqualTo(ID);
+        assertThat(postCommentAdminDto.getTitle()).isEqualTo(TITLE);
+        assertThat(postCommentAdminDto.getCommentAdminDtos().size()).isEqualTo(2);
+        assertThat(postCommentAdminDto.getCurrentPage()).isEqualTo(1);
+        assertThat(postCommentAdminDto.getPageNumbers()).isEqualTo(pageNumbers);
+
+        ArgumentCaptor<Pageable> pageableArgumentCaptor = ArgumentCaptor.forClass(Pageable.class);
+        verify(commentService).getCommentsByPost(any(Post.class), pageableArgumentCaptor.capture());
+        Pageable pageable = pageableArgumentCaptor.getValue();
+        assertThat(pageable.getPageNumber()).isEqualTo(1);
+        assertThat(pageable.getPageSize()).isEqualTo(5);
+        assertThat(pageable.getSort().getOrderFor("addingDateTime")).isNotNull();
+
+        verify(adminCommentPageTracker).getCurrentPage();
+        verify(adminCommentPageTracker).setCurrentPage(1);
+        verify(adminCommentPageTracker).setPostId(ID);
+    }
+
+    @Test
+    public void getCommentsByPostWithLastPageProblem() {
+        List<Comment> comments = Arrays.asList(
+                Comment.builder().build(), Comment.builder().build()
+        );
+        Page<Comment> commentPage = Mockito.mock(Page.class);
+        Set<Integer> pageNumbers = new HashSet<>(Arrays.asList(1, 2, 3, 4, 5));
+        when(postService.getPostById(anyLong())).thenReturn(Post.builder().id(ID).title(TITLE)
+                .user(User.builder().id(ID).build()).build());
+        when(adminCommentPageTracker.getPostId()).thenReturn(ID);
+        when(adminCommentPageTracker.getCurrentPage()).thenReturn(1);
+        when(commentPage.stream()).thenReturn(comments.stream());
+        when(commentService.getCommentsByPost(any(Post.class), any(Pageable.class)))
+                .thenReturn(commentPage);
+        when(adminCommentPageTracker.getPageNumbersForPagination(commentPage))
+                .thenReturn(pageNumbers);
+
+        PostCommentAdminDto postCommentAdminDto =
+                adminService.getCommentsForPost(ID, 2, 5, true);
+
+        assertThat(postCommentAdminDto.getId()).isEqualTo(ID);
+        assertThat(postCommentAdminDto.getTitle()).isEqualTo(TITLE);
+        assertThat(postCommentAdminDto.getCommentAdminDtos().size()).isEqualTo(2);
+        assertThat(postCommentAdminDto.getCurrentPage()).isEqualTo(1);
+        assertThat(postCommentAdminDto.getPageNumbers()).isEqualTo(pageNumbers);
+
+        ArgumentCaptor<Pageable> pageableArgumentCaptor = ArgumentCaptor.forClass(Pageable.class);
+        verify(commentService, times(2)).getCommentsByPost(any(Post.class),
+                pageableArgumentCaptor.capture());
+        Pageable pageable = pageableArgumentCaptor.getValue();
+        assertThat(pageable.getPageNumber()).isEqualTo(0);
+        assertThat(pageable.getPageSize()).isEqualTo(5);
+        assertThat(pageable.getSort().getOrderFor("addingDateTime")).isNotNull();
+
+        verify(adminCommentPageTracker).getCurrentPage();
+        verify(adminCommentPageTracker).setCurrentPage(1);
+        verify(adminCommentPageTracker).setPostId(ID);
     }
 
     @Test
     public void deleteCommentById() {
-        service.deleteCommentById(1L);
-        verify(commentService).deleteById(1L);
+        adminService.deleteCommentById(ID);
+        verify(commentService).deleteCommentById(ID);
     }
 
     @Test
     public void deletePostWithCommentsById() {
-        Post post = Post.builder().id(1L).build();
-        when(postService.getById(1L)).thenReturn(post);
+        Post post = Post.builder().id(ID).build();
+        when(postService.getPostById(ID)).thenReturn(post);
 
-        service.deletePostWithCommentsById(1L);
+        adminService.deletePostWithCommentsById(ID);
 
-        verify(commentService).deleteByPost(post);
-        verify(postService).delete(post);
+        verify(commentService).deleteCommentsByPost(post);
+        verify(postService).deletePost(post);
     }
 
     @Test
     public void deleteUserWithPostById() {
-        AdminServiceImpl spyService = Mockito.spy(service);
-        User user = User.builder().id(1L).build();
+        AdminServiceImpl spyService = Mockito.spy(adminService);
+        User user = User.builder().id(ID).build();
         List<Post> posts = Arrays.asList(
-            Post.builder().id(1L).build(),
+            Post.builder().id(ID).build(),
             Post.builder().id(2L).build()
         );
-        when(userService.getById(anyLong())).thenReturn(user);
+        when(userService.getUserById(anyLong())).thenReturn(user);
         when(postService.getPostsByUser(any(User.class))).thenReturn(posts);
 
-        spyService.deleteUserWithPostsById(1L);
+        spyService.deleteUserWithPostsById(ID);
 
-        verify(userService).getById(1L);
+        verify(userService).getUserById(ID);
         verify(postService).getPostsByUser(user);
         verify(spyService, times(2)).deletePostWithCommentsById(anyLong());
-        verify(userService).delete(user);
+        verify(userService).deleteUser(user);
     }
 
     @Test
-    public void changeAdminPassword() {
-        User user = User.builder().id(1L).password("password").build();
-        when(userService.getByEmail(AdminService.ADMIN_EMAIL)).thenReturn(user);
+    public void changeAdminPasswordAndLogout() throws Exception {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        User user = User.builder().id(ID).password("password").build();
+        when(userService.getUserByEmail(AdminService.ADMIN_EMAIL)).thenReturn(user);
         when(passwordEncoder.encode(anyString())).thenReturn("password");
 
-        service.changeAdminPassword("newPassword");
+        adminService.changeAdminPasswordAndLogout("newPassword", request);
 
-        verify(userService).saveOrUpdate(user);
+        verify(userService).saveOrUpdateUser(user);
+        verify(request).logout();
     }
 
     @Test
     public void resetAdminPassword() {
-        AdminServiceImpl spyService = Mockito.spy(service);
-        User user = User.builder().id(1L).password("password").build();
-        when(userService.getByEmail(AdminService.ADMIN_EMAIL)).thenReturn(user);
+        AdminServiceImpl spyService = Mockito.spy(adminService);
+        User user = User.builder().id(ID).password("password").build();
+        when(userService.getUserByEmail(AdminService.ADMIN_EMAIL)).thenReturn(user);
         when(passwordEncoder.encode(anyString())).thenReturn("password");
 
         spyService.resetAdminPassword();
 
-        verify(spyService).changeAdminPassword(AdminService.ADMIN_PASSWORD);
-        verify(userService).saveOrUpdate(user);
+        verify(userService).saveOrUpdateUser(user);
     }
 }

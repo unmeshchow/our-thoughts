@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * Created by uc on 10/24/2019
  */
@@ -32,13 +34,18 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void deleteById(long commentId) {
+    public void deleteCommentById(long commentId) {
         commentRepository.deleteById(commentId);
     }
 
     @Override
-    public void deleteByPost(Post post) {
+    public void deleteCommentsByPost(Post post) {
         Iterable<Comment> foundPosts = commentRepository.findByPost(post);
         commentRepository.deleteAll(foundPosts);
+    }
+
+    @Override
+    public List<Comment> findCommentsByPostOrderByAddingDateTime(Post post) {
+        return commentRepository.findByPostOrderByAddingDateTime(post);
     }
 }

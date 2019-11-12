@@ -1,7 +1,7 @@
 package com.unmeshc.ourthoughts.controllers;
 
-import com.unmeshc.ourthoughts.exceptions.EmailNotSentException;
-import com.unmeshc.ourthoughts.exceptions.NotFoundException;
+import com.unmeshc.ourthoughts.services.exceptions.EmailNotSentException;
+import com.unmeshc.ourthoughts.services.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;

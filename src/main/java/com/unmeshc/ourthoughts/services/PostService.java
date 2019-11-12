@@ -1,9 +1,9 @@
 package com.unmeshc.ourthoughts.services;
 
-import com.unmeshc.ourthoughts.commands.PostCommand;
 import com.unmeshc.ourthoughts.domain.Post;
 import com.unmeshc.ourthoughts.domain.User;
 import com.unmeshc.ourthoughts.dtos.PostDetailsDto;
+import com.unmeshc.ourthoughts.dtos.PostSearchListDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -14,17 +14,19 @@ import java.util.List;
  */
 public interface PostService {
 
-    void savePostForUser(User user, PostCommand postCommand);
+    Post getPostById(long postId);
 
-    Post getById(long postId);
-
-    Page<Post> getPostsTitleLike(String searchValue, Pageable pageable);
+    PostSearchListDto getPostsByTitleLike(int page, int size, String title);
 
     PostDetailsDto getPostDetailsById(long postId);
 
     Page<Post> getPostsByUser(User user, Pageable pageable);
 
-    void delete(Post post);
+    void deletePost(Post post);
 
     List<Post> getPostsByUser(User user);
+
+    byte[] getPostPhotoById(long postId);
+
+    byte[] getUserImageById(long userId);
 }

@@ -23,7 +23,7 @@ public class TaskConfiguration {
     @Scheduled(cron = "0 0 12 * * *")
     public void deleteExpiredToken() {
         log.debug("Deleting expired tokens and inactive users ...");
-        taskService.deleteExpiredTokensAndInactiveUsers();
+        taskService.deleteExpiredVerificationTokensAndInactiveUsers();
         log.debug("Deletion has completed");
     }
 }

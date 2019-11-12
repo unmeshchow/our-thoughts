@@ -5,8 +5,10 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by uc on 10/9/2019
@@ -39,15 +41,24 @@ public class User {
     @Lob
     private Byte[] image;
 
-    public boolean hasImage() {
-        return image != null;
-    }
-
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
+
+    public boolean hasImage() {
+        return image != null;
+    }
+
+    public boolean isAdmin() {
+        List<Role> adminRoles = roles
+                .stream()
+                .filter(role -> "ADMIN".equalsIgnoreCase(role.getName()))
+                .collect(Collectors.toList());
+
+        return adminRoles.isEmpty() ? false : true;
+    }
 
     @PrePersist
     public void setRegistrationDateAndTime() {

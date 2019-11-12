@@ -50,8 +50,8 @@
                                         <input type="text"
                                                id="search"
                                                class="form-control"
-                                               name="search"
-                                               th:value="${searchValue}">
+                                               name="title"
+                                               th:value="${postSearchListDto.searchValue}">
                                         <label for="search"
                                                th:text="#{searchByTitle}">search
                                         </label>
@@ -71,19 +71,19 @@
             <!-- No Posts -->
             <section id="noPosts"
                      class="mb-3 text-center"
-                     th:if="${#lists.isEmpty(postSearchDtos)}">
+                     th:if="${#lists.isEmpty(postSearchListDto.postSearchDtos)}">
                 <span th:text="#{noPosts}"
                       style="font-weight: bold">no posts</span>
             </section>
 
             <!-- Search Result -->
             <section id="result" class="mb-3"
-                     th:if="${!#lists.isEmpty(postSearchDtos)}">
+                     th:if="${!#lists.isEmpty(postSearchListDto.postSearchDtos)}">
                 <div class="row col-xs-d d-flex justify-content-center">
 
                     <!-- Individual Post -->
                     <div class="col-lg-3 col-md-6 col-sm-6 col-8"
-                         th:each="postSearchDto : ${postSearchDtos}">
+                         th:each="postSearchDto : ${postSearchListDto.postSearchDtos}">
 
                         <div class="card mb-4">
 
@@ -124,12 +124,12 @@
 
             <!-- Pagination -->
             <section id="pagination" class="mb-3"
-                     th:if="${!#sets.isEmpty(postSearchDtos)}">
+                     th:if="${!#sets.isEmpty(postSearchListDto.postSearchDtos)}">
                 <nav aria-label="Page navigation example">
                     <ul class="pagination pg-blue">
                         <li class="page-item"
-                            th:each="i : ${pageNumbers}"
-                            th:classappend="${currentPage  == i} ? active : ''">
+                            th:each="i : ${postSearchListDto.pageNumbers}"
+                            th:classappend="${postSearchListDto.currentPage  == i} ? active : ''">
                             <a th:text="${i}"
                                class="page-link"
                                th:href="@{/visitor/post/search(page=${i})}">1</a>
@@ -142,12 +142,5 @@
 
     <footer th:replace="fragments/footerFragment :: footer"></footer>
     <div th:replace="fragments/scriptsFragment :: scripts"></div>
-
-    <script th:inline="javascript">
-        $(document).ready(function () {
-        //<input action="action" onclick="window.history.go(-1); return false;" type="button" value="Back" />
-
-        });
-    </script>
 </body>
 </html>

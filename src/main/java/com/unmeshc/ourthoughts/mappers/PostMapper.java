@@ -18,9 +18,9 @@ public interface PostMapper {
 
     Post postCommandToPost(PostCommand postCommand);
 
-    PostAdminDto PostToPostAdminDto(Post post);
+    PostAdminDto postToPostAdminDto(Post post);
 
-    PostDetailsDto PostToPostDetailsDto(Post post);
+    PostDetailsDto postToPostDetailsDto(Post post);
 
-    PostSearchDto PostToPostSearchDto(Post post);
+    PostSearchDto postToPostSearchDto(Post post);
 }

@@ -1,10 +1,10 @@
 package com.unmeshc.ourthoughts.services;
 
-import com.unmeshc.ourthoughts.domain.Comment;
-import com.unmeshc.ourthoughts.domain.Post;
-import com.unmeshc.ourthoughts.domain.User;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.unmeshc.ourthoughts.dtos.PostCommentAdminDto;
+import com.unmeshc.ourthoughts.dtos.UserAdminListDto;
+import com.unmeshc.ourthoughts.dtos.UserPostAdminDto;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by uc on 10/26/2019
@@ -18,15 +18,11 @@ public interface AdminService {
 
     boolean isAdminExists();
 
-    Page<User> getAllUsers(Pageable pageable);
+    UserAdminListDto getAllUsers(int page, int size, boolean delete);
 
-    Page<Post> getPostsByUser(User user, Pageable pageable);
+    UserPostAdminDto getPostsForUser(long userId, int page, int size, boolean delete);
 
-    User getUserById(long userId);
-
-    Post getPostById(long postId);
-
-    Page<Comment> getCommentsByPost(Post post, Pageable pageable);
+    PostCommentAdminDto getCommentsForPost(long postId, int page, int size, boolean delete);
 
     void deleteCommentById(long commentId);
 
@@ -34,7 +30,7 @@ public interface AdminService {
 
     void deleteUserWithPostsById(long userId);
 
-    void changeAdminPassword(String newPassword);
+    void changeAdminPasswordAndLogout(String newPassword, HttpServletRequest request);
 
     void resetAdminPassword();
 }

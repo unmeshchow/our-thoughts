@@ -6,16 +6,20 @@ import com.unmeshc.ourthoughts.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 /**
  * Created by uc on 10/24/2019
  */
 public interface CommentService {
 
-    void saveCommentOfUserForPost(String userComment, User user, Post post);
+    void saveCommentOfUserForPost(String comment, User user, Post post);
 
     Page<Comment> getCommentsByPost(Post post, Pageable pageable);
 
-    void deleteById(long commentId);
+    void deleteCommentById(long commentId);
 
-    void deleteByPost(Post post);
+    void deleteCommentsByPost(Post post);
+
+    List<Comment> findCommentsByPostOrderByAddingDateTime(Post post);
 }

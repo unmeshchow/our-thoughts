@@ -65,13 +65,13 @@
                                                accept="image/jpeg"
                                                class="form-control custom-file-input"
                                                id="postImage"
-                                               th:field="*{photo}">
+                                               th:field="*{multipartFile}">
                                         <label class="custom-file-label"
                                                for="postImage"
                                                style="color: #999"
                                                th:text="#{image}">
                                             image</label>
-                                        <p th:each="error : ${#fields.errors('photo')}"
+                                        <p th:each="error : ${#fields.errors('multipartFile')}"
                                            th:text="${error}" class="text-danger">error</p>
                                     </div>
 

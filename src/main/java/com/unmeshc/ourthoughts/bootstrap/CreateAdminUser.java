@@ -8,11 +8,11 @@ import org.springframework.stereotype.Component;
  * Created by uc on 10/26/2019
  */
 @Component
-public class DataLoader implements CommandLineRunner {
+public class CreateAdminUser implements CommandLineRunner {
 
     private final AdminService adminService;
 
-    public DataLoader(AdminService adminService) {
+    public CreateAdminUser(AdminService adminService) {
         this.adminService = adminService;
     }
 

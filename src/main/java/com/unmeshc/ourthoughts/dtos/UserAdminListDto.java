@@ -1,12 +1,13 @@
 package com.unmeshc.ourthoughts.dtos;
 
+
 import lombok.*;
 
 import java.util.List;
 import java.util.Set;
 
 /**
- * Created by uc on 10/27/2019
+ * Created by uc on 10/9/2019
  */
 @Getter
 @Setter
@@ -14,12 +15,9 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @ToString
-public class PostCommentAdminDto {
+public class UserAdminListDto {
 
-    private Long userId;
-    private Long id; // post id
-    private String title;
+    private List<UserAdminDto> userAdminDtos;
     private int currentPage;
     private Set<Integer> pageNumbers;
-    private List<CommentAdminDto> commentAdminDtos;
 }

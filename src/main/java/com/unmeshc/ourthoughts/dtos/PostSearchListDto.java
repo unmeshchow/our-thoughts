@@ -14,12 +14,10 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @ToString
-public class PostCommentAdminDto {
+public class PostSearchListDto {
 
-    private Long userId;
-    private Long id; // post id
-    private String title;
     private int currentPage;
     private Set<Integer> pageNumbers;
-    private List<CommentAdminDto> commentAdminDtos;
+    private String searchValue;
+    private List<PostSearchDto> postSearchDtos;
 }

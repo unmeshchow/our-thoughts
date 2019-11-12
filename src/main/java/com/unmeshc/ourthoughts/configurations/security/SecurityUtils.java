@@ -1,4 +1,4 @@
-package com.unmeshc.ourthoughts.configurations;
+package com.unmeshc.ourthoughts.configurations.security;
 
 import com.unmeshc.ourthoughts.domain.User;
 import com.unmeshc.ourthoughts.services.UserService;
@@ -26,7 +26,7 @@ public class SecurityUtils {
     public void saveFullNameIntoHttpSession(HttpServletRequest httpServletRequest,
                                             Authentication authentication) {
 
-        User user = userService.getByEmail(authentication.getName());
+        User user = userService.getUserByEmail(authentication.getName());
         HttpSession httpSession = httpServletRequest.getSession();
         httpSession.setAttribute("fullName", user.getFirstName() + " "
                 + user.getLastName());

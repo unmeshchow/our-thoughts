@@ -1,10 +1,9 @@
 package com.unmeshc.ourthoughts.controllers;
 
 import com.unmeshc.ourthoughts.commands.UserCommand;
-import com.unmeshc.ourthoughts.domain.User;
-import com.unmeshc.ourthoughts.domain.VerificationToken;
-import com.unmeshc.ourthoughts.exceptions.EmailNotSentException;
 import com.unmeshc.ourthoughts.services.RegistrationService;
+import com.unmeshc.ourthoughts.services.exceptions.BadVerificationTokenException;
+import com.unmeshc.ourthoughts.services.exceptions.EmailNotSentException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -15,8 +14,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
 
+import static com.unmeshc.ourthoughts.TestLiterals.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -80,11 +79,11 @@ public class RegistrationControllerTest {
     @Test
     public void saveRegistrationDataInvalidEmail() throws Exception {
         mockMvc.perform(post("/registration/save")
-                    .param("firstName", "Unmesh")
-                    .param("lastName", "Chowdhury")
-                    .param("email", "unmeshchow@gmailcom")
-                    .param("password", "password")
-                    .param("matchingPassword", "password"))
+                    .param("firstName", FIRST_NAME)
+                    .param("lastName", LAST_NAME)
+                    .param("email", "unmesh@gmailcom")
+                    .param("password", PASSWORD)
+                    .param("matchingPassword", PASSWORD))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeHasErrors("userCommand"))
                 .andExpect(model().attributeHasFieldErrors("userCommand",
@@ -97,10 +96,10 @@ public class RegistrationControllerTest {
     @Test
     public void saveRegistrationDataPasswordsAreNotSame() throws Exception {
         mockMvc.perform(post("/registration/save")
-                    .param("firstName", "Unmesh")
-                    .param("lastName", "Chowdhury")
-                    .param("email", "unmeshchow@gmail.com")
-                    .param("password", "password")
+                    .param("firstName", FIRST_NAME)
+                    .param("lastName", LAST_NAME)
+                    .param("email", EMAIL)
+                    .param("password", PASSWORD)
                     .param("matchingPassword", "passw"))
                 .andExpect(status().isOk())
                 .andExpect(model().errorCount(1))
@@ -114,32 +113,32 @@ public class RegistrationControllerTest {
         when(registrationService.isUserEmailExists(anyString())).thenReturn(true);
 
         mockMvc.perform(post("/registration/save")
-                    .param("firstName", "Unmesh")
-                    .param("lastName", "Chowdhury")
-                    .param("email", "unmeshchow@gmail.com")
-                    .param("password", "password")
-                    .param("matchingPassword", "password"))
+                    .param("firstName", FIRST_NAME)
+                    .param("lastName", LAST_NAME)
+                    .param("email", EMAIL)
+                    .param("password", PASSWORD)
+                    .param("matchingPassword", PASSWORD))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeHasErrors("userCommand"))
                 .andExpect(model().attributeHasFieldErrors("userCommand",
                         "email"))
                 .andExpect(view().name(RegistrationController.REGISTRATION_FORM));
 
-        verify(registrationService).isUserEmailExists("unmeshchow@gmail.com");
+        verify(registrationService).isUserEmailExists(EMAIL);
     }
 
     @Test
-    public void saveRegistrationDataThrowException() throws Exception {
+    public void saveRegistrationDataEmailNotSent() throws Exception {
         when(registrationService.isUserEmailExists(anyString())).thenReturn(false);
-        when(registrationService.saveUserAndVerifyEmail(any(), any()))
-                .thenThrow(EmailNotSentException.class);
+        doThrow(EmailNotSentException.class).when(registrationService)
+                .saveUserAndVerifyByEmailing(any(), any());
 
         mockMvc.perform(post("/registration/save")
-                   .param("firstName", "Unmesh")
-                    .param("lastName", "Chowdhury")
-                    .param("email", "unmeshchow@gmail.com")
-                    .param("password", "password")
-                    .param("matchingPassword", "password"))
+                   .param("firstName", FIRST_NAME)
+                    .param("lastName", LAST_NAME)
+                    .param("email", EMAIL)
+                    .param("password", PASSWORD)
+                    .param("matchingPassword", PASSWORD))
                .andExpect(status().is5xxServerError()) ;
     }
 
@@ -148,23 +147,24 @@ public class RegistrationControllerTest {
         when(registrationService.isUserEmailExists(anyString())).thenReturn(false);
 
         mockMvc.perform(post("/registration/save")
-                    .param("firstName", "Unmesh")
-                    .param("lastName", "Chowdhury")
-                    .param("email", "unmeshchow@gmail.com")
-                    .param("password", "password")
-                    .param("matchingPassword", "password"))
+                    .param("firstName", FIRST_NAME)
+                    .param("lastName", LAST_NAME)
+                    .param("email", EMAIL)
+                    .param("password", PASSWORD)
+                    .param("matchingPassword", PASSWORD))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name(RegistrationController.REDIRECT_REGISTRATION_SUCCESS));
 
-        verify(registrationService).isUserEmailExists("unmeshchow@gmail.com");
-        ArgumentCaptor<UserCommand> userCommandArgumentCaptor =
-                ArgumentCaptor.forClass(UserCommand.class);
-        verify(registrationService).saveUserAndVerifyEmail(userCommandArgumentCaptor.capture(),
-                any(HttpServletRequest.class));
+        verify(registrationService).isUserEmailExists(EMAIL);
+        ArgumentCaptor<UserCommand> userCommandArgumentCaptor = ArgumentCaptor.forClass(
+                UserCommand.class);
+        verify(registrationService).saveUserAndVerifyByEmailing(
+                userCommandArgumentCaptor.capture(), any(HttpServletRequest.class));
+
         UserCommand userCommand = userCommandArgumentCaptor.getValue();
-        assertThat(userCommand.getFirstName()).isEqualTo("Unmesh");
-        assertThat(userCommand.getLastName()).isEqualTo("Chowdhury");
-        assertThat(userCommand.getEmail()).isEqualTo("unmeshchow@gmail.com");
+        assertThat(userCommand.getFirstName()).isEqualTo(FIRST_NAME);
+        assertThat(userCommand.getLastName()).isEqualTo(LAST_NAME);
+        assertThat(userCommand.getEmail()).isEqualTo(EMAIL);
     }
 
     @Test
@@ -177,43 +177,24 @@ public class RegistrationControllerTest {
     }
 
     @Test
-    public void activateRegistrationInvalidToken() throws Exception {
-        when(registrationService.getVerificationTokenByToken(anyString())).thenReturn(null);
+    public void activateRegistrationBadVerificationToken() throws Exception {
+        doThrow(BadVerificationTokenException.class).when(registrationService)
+                .activateUserByVerificationToken(anyString());
 
         mockMvc.perform(get("/registration/confirm")
-                   .param("token", "token"))
+                   .param("token", TOKEN))
                .andExpect(status().is3xxRedirection())
                .andExpect(view().name(RegistrationController.REDIRECT_REGISTRATION_CONFIRM_BAD));
-
-        verify(registrationService).getVerificationTokenByToken("token");
-    }
-
-    @Test
-    public void activateRegistrationExpiredToken() throws Exception {
-        VerificationToken token = VerificationToken.builder().id(1L).expiryDate(LocalDateTime.now().minusDays(1L)).build();
-        when(registrationService.getVerificationTokenByToken(anyString())).thenReturn(token);
-
-        mockMvc.perform(get("/registration/confirm")
-                .param("token", "token"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name(RegistrationController.REDIRECT_REGISTRATION_CONFIRM_BAD));
-
-        verify(registrationService).getVerificationTokenByToken(anyString());
     }
 
     @Test
     public void activateRegistration() throws Exception {
-        VerificationToken token = VerificationToken.builder().id(1L).expiryDate(LocalDateTime.now().plusDays(1L))
-                .user(User.builder().build()).build();
-        when(registrationService.getVerificationTokenByToken(anyString())).thenReturn(token);
-
         mockMvc.perform(get("/registration/confirm")
-                .param("token", "token"))
+                .param("token", TOKEN))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name(RegistrationController.REDIRECT_LOGIN));
 
-        verify(registrationService).getVerificationTokenByToken(anyString());
-        verify(registrationService).activateUser(any(User.class));
+        verify(registrationService).activateUserByVerificationToken(TOKEN);
     }
 
     @Test

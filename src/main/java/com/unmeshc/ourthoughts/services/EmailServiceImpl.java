@@ -1,7 +1,7 @@
 package com.unmeshc.ourthoughts.services;
 
 import com.unmeshc.ourthoughts.domain.User;
-import com.unmeshc.ourthoughts.exceptions.EmailNotSentException;
+import com.unmeshc.ourthoughts.services.exceptions.EmailNotSentException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -25,25 +25,25 @@ public class EmailServiceImpl implements EmailService {
     private final JavaMailSender mailSender;
     private final ITemplateEngine templateEngine;
     private final MessageSource messageSource;
-    private final VerificationTokenService tokenService;
+    private final VerificationTokenService verificationTokenService;
 
     public EmailServiceImpl(JavaMailSender mailSender,
                             ITemplateEngine templateEngine,
                             MessageSource messageSource,
-                            VerificationTokenService tokenService) {
+                            VerificationTokenService verificationTokenService) {
         this.mailSender = mailSender;
         this.templateEngine = templateEngine;
         this.messageSource = messageSource;
-        this.tokenService = tokenService;
+        this.verificationTokenService = verificationTokenService;
     }
 
     @Override
     public void sendAccountActivationLinkForUser(User user, HttpServletRequest request) {
         String token = getRandomToken();
-        createUserToken(user, token);
+        createUserVerificationToken(user, token);
 
         String fullName = getFullName(user);
-        String url = getServerNamePortContextPath(request) +
+        String url = getServerNamePortAndContextPath(request) +
                 "/registration/confirm?token=" + token;
 
         Context context = getContext(fullName, url);
@@ -59,10 +59,10 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendPasswordResetLinkForUser(User user, HttpServletRequest request) {
         String token = getRandomToken();
-        createUserToken(user, token);
+        createUserVerificationToken(user, token);
 
         String fullName = getFullName(user);
-        String url = getServerNamePortContextPath(request) +
+        String url = getServerNamePortAndContextPath(request) +
                 "/password/reset/confirm?token=" + token;
 
         Context context = getContext(fullName, url);
@@ -96,15 +96,15 @@ public class EmailServiceImpl implements EmailService {
         return UUID.randomUUID().toString();
     }
 
-    void createUserToken(User user, String token) {
-        tokenService.createTokenForUser(user, token);
+    void createUserVerificationToken(User user, String token) {
+        verificationTokenService.createVerificationTokenForUser(user, token);
     }
 
     String getFullName(User user) {
         return user.getFirstName() + " " + user.getLastName();
     }
 
-    String getServerNamePortContextPath(HttpServletRequest request) {
+    String getServerNamePortAndContextPath(HttpServletRequest request) {
         String serverName = request.getServerName();
         int port = request.getServerPort();
         String contextPath = request.getContextPath();

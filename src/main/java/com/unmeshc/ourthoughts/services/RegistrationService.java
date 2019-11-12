@@ -1,8 +1,7 @@
 package com.unmeshc.ourthoughts.services;
 
 import com.unmeshc.ourthoughts.commands.UserCommand;
-import com.unmeshc.ourthoughts.domain.VerificationToken;
-import com.unmeshc.ourthoughts.domain.User;
+import com.unmeshc.ourthoughts.services.exceptions.BadVerificationTokenException;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,11 +10,9 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface RegistrationService {
 
-    User activateUser(User user);
-
-    User saveUserAndVerifyEmail(UserCommand userCommand, HttpServletRequest request);
+    void saveUserAndVerifyByEmailing(UserCommand userCommand, HttpServletRequest request);
 
     boolean isUserEmailExists(String email);
 
-    VerificationToken getVerificationTokenByToken(String token);
+    void activateUserByVerificationToken(String token) throws BadVerificationTokenException ;
 }

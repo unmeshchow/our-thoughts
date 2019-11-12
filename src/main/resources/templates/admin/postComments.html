@@ -66,8 +66,8 @@
                 <nav aria-label="Page navigation example">
                     <ul class="pagination pg-blue">
                         <li class="page-item"
-                            th:each="i : ${pageNumbers}"
-                            th:classappend="${currentPage  == i} ? active : ''">
+                            th:each="i : ${postCommentAdminDto.pageNumbers}"
+                            th:classappend="${postCommentAdminDto.currentPage  == i} ? active : ''">
                             <a th:text="${i}"
                                class="page-link"
                                th:href="@{/admin/post/{postId}/comment

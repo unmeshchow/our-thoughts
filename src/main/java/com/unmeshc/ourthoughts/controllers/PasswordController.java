@@ -1,15 +1,9 @@
 package com.unmeshc.ourthoughts.controllers;
 
 import com.unmeshc.ourthoughts.commands.PasswordCommand;
-import com.unmeshc.ourthoughts.domain.VerificationToken;
-import com.unmeshc.ourthoughts.domain.User;
-import com.unmeshc.ourthoughts.exceptions.NotFoundException;
 import com.unmeshc.ourthoughts.services.PasswordService;
+import com.unmeshc.ourthoughts.services.exceptions.BadVerificationTokenException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.Arrays;
 
 /**
  * Created by uc on 10/19/2019
@@ -53,14 +46,7 @@ public class PasswordController {
     @GetMapping("/reset/send")
     public String processPasswordReset(@RequestParam("email") String email,
                                        HttpServletRequest request) {
-
-        User user = passwordService.getUserByEmail(email);
-        if (user == null || !user.getActive()) {
-            throw new NotFoundException("User not found with email: " + email);
-        }
-
-        passwordService.verifyResetPasswordForUser(user, request);
-
+        passwordService.verifyResetPasswordForUserByEmailing(email, request);
         return REDIRECT_PASSWORD_RESET_SUCCESS;
     }
 
@@ -71,15 +57,11 @@ public class PasswordController {
 
     @GetMapping("/reset/confirm")
     public String acceptPasswordReset(@RequestParam("token") String token) {
-        VerificationToken foundToken = passwordService.getVerificationTokenByToken(token);
-        if (foundToken == null || foundToken.isExpired()) {
+        try {
+            passwordService.checkAndSetChangePasswordPrivilege(token);
+        } catch (BadVerificationTokenException exception) {
             return REDIRECT_PASSWORD_RESET_CONFIRM_BAD;
         }
-
-        Authentication auth = new UsernamePasswordAuthenticationToken(foundToken.getUser(), null,
-                Arrays.asList(new SimpleGrantedAuthority("CHANGE_PASSWORD_PRIVILEGE")));
-        SecurityContextHolder.getContext().setAuthentication(auth);
-
         return REDIRECT_PASSWORD_RESET_UPDATE_FORM;
     }
 
@@ -101,10 +83,7 @@ public class PasswordController {
         if (result.hasErrors()) {
             return PASSWORD_UPDATE_FORM;
         }
-
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        passwordService.updatePasswordForUser(user, passwordCommand);
-
+        passwordService.changePasswordForPrivilegedUser(passwordCommand);
         return REDIRECT_LOGIN;
     }
 }

@@ -1,21 +1,21 @@
 package com.unmeshc.ourthoughts.controllers;
 
 import com.unmeshc.ourthoughts.commands.PasswordCommand;
-import com.unmeshc.ourthoughts.domain.User;
-import com.unmeshc.ourthoughts.domain.VerificationToken;
 import com.unmeshc.ourthoughts.services.PasswordService;
+import com.unmeshc.ourthoughts.services.exceptions.BadVerificationTokenException;
+import com.unmeshc.ourthoughts.services.exceptions.NotFoundException;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.*;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
 
+import static com.unmeshc.ourthoughts.TestLiterals.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -49,32 +49,19 @@ public class PasswordControllerTest {
 
     @Test
     public void processPasswordReset() throws Exception {
-        User user = User.builder().id(1L).active(true).build();
-        when(passwordService.getUserByEmail(anyString())).thenReturn(user);
-
         mockMvc.perform(get("/password/reset/send")
-                   .param("email", "unmesh@gmail.com"))
+                   .param("email", EMAIL))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name(PasswordController.REDIRECT_PASSWORD_RESET_SUCCESS));
 
-        verify(passwordService).getUserByEmail("unmesh@gmail.com");
-        verify(passwordService).verifyResetPasswordForUser(eq(user),
+        verify(passwordService).verifyResetPasswordForUserByEmailing(eq(EMAIL),
                 any(HttpServletRequest.class));
     }
 
     @Test
-    public void processPasswordResetNull() throws Exception {
-        when(passwordService.getUserByEmail(anyString())).thenReturn(null);
-
-        mockMvc.perform(get("/password/reset/send")
-                    .param("email", "unmesh@gmail.com"))
-               .andExpect(status().isNotFound());
-    }
-
-    @Test
-    public void processPasswordResetInactive() throws Exception {
-        User user = User.builder().id(1L).active(false).build();
-        when(passwordService.getUserByEmail(anyString())).thenReturn(user);
+    public void processPasswordResetNotFound() throws Exception {
+        doThrow(NotFoundException.class).when(passwordService)
+            .verifyResetPasswordForUserByEmailing(anyString(), any(HttpServletRequest.class));
 
         mockMvc.perform(get("/password/reset/send")
                     .param("email", "unmesh@gmail.com"))
@@ -89,42 +76,24 @@ public class PasswordControllerTest {
     }
 
     @Test
-    public void acceptPasswordResetNull() throws Exception {
-        when(passwordService.getVerificationTokenByToken(anyString())).thenReturn(null);
+    public void acceptPasswordResetBadVerificationTokenException() throws Exception {
+        doThrow(BadVerificationTokenException.class).when(passwordService)
+                .checkAndSetChangePasswordPrivilege(anyString());
 
         mockMvc.perform(get("/password/reset/confirm")
-                   .param("token", "er457hy78"))
+                   .param("token", TOKEN))
                .andExpect(status().is3xxRedirection())
                .andExpect(view().name(PasswordController.REDIRECT_PASSWORD_RESET_CONFIRM_BAD));
     }
 
     @Test
-    public void acceptPasswordResetExpired() throws Exception {
-        VerificationToken verificationToken = VerificationToken.builder().id(1L)
-                .expiryDate(LocalDateTime.now().minusDays(1L)).build();
-        when(passwordService.getVerificationTokenByToken(anyString())).thenReturn(verificationToken);
-
-        mockMvc.perform(get("/password/reset/confirm")
-                .param("token", "er457hy78"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name(PasswordController.REDIRECT_PASSWORD_RESET_CONFIRM_BAD));
-    }
-
-    @Test
     public void acceptPasswordReset() throws Exception {
-        VerificationToken verificationToken = VerificationToken.builder().id(1L)
-                .expiryDate(LocalDateTime.now().plusDays(1L)).build();
-        when(passwordService.getVerificationTokenByToken(anyString()))
-                .thenReturn(verificationToken);
-
         mockMvc.perform(get("/password/reset/confirm")
-                .param("token", "er457hy78"))
+                .param("token", TOKEN))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name(PasswordController.REDIRECT_PASSWORD_RESET_UPDATE_FORM));
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        authentication.getAuthorities().forEach(
-                o -> "CHANGE_PASSWORD_PRIVILEGE".equalsIgnoreCase(o.getAuthority()));
+        verify(passwordService).checkAndSetChangePasswordPrivilege(TOKEN);
     }
 
     @Test
@@ -159,8 +128,8 @@ public class PasswordControllerTest {
     @Test
     public void resetPasswordPasswordsAreNotSame() throws Exception {
         mockMvc.perform(post("/password/reset/update")
-                   .param("password", "unmesh")
-                   .param("matchingPassword", "unmeshc"))
+                   .param("password", PASSWORD)
+                   .param("matchingPassword", PASSWORD + "x"))
                .andExpect(status().isOk())
                .andExpect(model().errorCount(1))
                .andExpect(view().name(PasswordController.PASSWORD_UPDATE_FORM));
@@ -170,23 +139,18 @@ public class PasswordControllerTest {
 
     @Test
     public void resetPassword() throws Exception {
-        User user = User.builder().id(1L).build();
-        Authentication authentication = Mockito.mock(Authentication.class);
-        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-        SecurityContextHolder.setContext(securityContext);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).thenReturn(user);
-
         mockMvc.perform(post("/password/reset/update")
-                   .param("password", "unmesh")
-                   .param("matchingPassword", "unmesh"))
+                   .param("password", PASSWORD)
+                   .param("matchingPassword", PASSWORD))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name(PasswordController.REDIRECT_LOGIN));
 
-        ArgumentCaptor<PasswordCommand> passwordCommandAC = ArgumentCaptor.forClass(PasswordCommand.class);
-        verify(passwordService).updatePasswordForUser(eq(user), passwordCommandAC.capture());
+        ArgumentCaptor<PasswordCommand> passwordCommandAC =
+                ArgumentCaptor.forClass(PasswordCommand.class);
+        verify(passwordService).changePasswordForPrivilegedUser(
+                passwordCommandAC.capture());
         PasswordCommand passwordCommand = passwordCommandAC.getValue();
-        assertThat(passwordCommand.getPassword()).isEqualTo("unmesh");
-        assertThat(passwordCommand.getMatchingPassword()).isEqualTo("unmesh");
+        assertThat(passwordCommand.getPassword()).isEqualTo(PASSWORD);
+        assertThat(passwordCommand.getMatchingPassword()).isEqualTo(PASSWORD);
     }
 }

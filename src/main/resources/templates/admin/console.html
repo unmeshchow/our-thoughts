@@ -17,7 +17,7 @@
             <!-- No Users -->
             <section id="noUsers"
                      class="text-center mb-3"
-                     th:if="${#lists.isEmpty(userAdminDtos)}">
+                     th:if="${#lists.isEmpty(userAdminListDto.userAdminDtos)}">
                 <span th:text="#{noUsers}"
                       style="font-weight: bold">no users</span>
             </section>
@@ -25,7 +25,7 @@
             <!-- Users -->
             <section id="users"
                      class="mb-3"
-                     th:if="${!#lists.isEmpty(userAdminDtos)}">
+                     th:if="${!#lists.isEmpty(userAdminListDto.userAdminDtos)}">
                 <div class="card">
                     <div class="card-body">
                         <table class="table">
@@ -39,7 +39,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="userAdminDto : ${userAdminDtos}">
+                                <tr th:each="userAdminDto : ${userAdminListDto.userAdminDtos}">
                                     <td th:text="${#temporals.format(userAdminDto.registrationDateTime,
                                         'dd/MM/yyyy')}">date</td>
                                     <td th:text="${userAdminDto.firstName}">first</td>
@@ -60,12 +60,12 @@
             <!-- Pagination and Back Button-->
             <section id="paginationBack"
                      class="mb-3"
-                     th:if="${!#lists.isEmpty(userAdminDtos)}">
+                     th:if="${!#lists.isEmpty(userAdminListDto)}">
                 <nav aria-label="Page navigation example" class="mr-auto">
                     <ul class="pagination pg-blue">
                         <li class="page-item"
-                            th:each="i : ${pageNumbers}"
-                            th:classappend="${currentPage  == i} ? active : ''">
+                            th:each="i : ${userAdminListDto.pageNumbers}"
+                            th:classappend="${userAdminListDto.currentPage  == i} ? active : ''">
                             <a th:text="${i}"
                                class="page-link"
                                th:href="@{/admin/all/user(page=${i})}">1</a>

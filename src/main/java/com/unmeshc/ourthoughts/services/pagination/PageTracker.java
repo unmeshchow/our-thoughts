@@ -1,15 +1,25 @@
-package com.unmeshc.ourthoughts.controllers.pagination;
+package com.unmeshc.ourthoughts.services.pagination;
 
 import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Component;
 
 /**
- * Created by uc on 10/28/2019
+ * Created by uc on 10/26/2019
  */
-@Component
-public class PaginationUtils {
+public interface PageTracker {
 
-    public void adjustPagination(Page<?> currentPage, PageTracker pageTracker) {
+    void setCurrentPage(int currentPage);
+
+    int getCurrentPage();
+
+    void setStartPage(int startPage);
+
+    int getStartPage();
+
+    void setEndPage(int endPage);
+
+    int getEndPage();
+
+    default void adjustPagination(Page<?> currentPage, PageTracker pageTracker) {
 
         // Calculate start and end page for the dynamic pagination
         if (currentPage.getTotalPages() < pageTracker.getEndPage()) {

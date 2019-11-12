@@ -1,7 +1,7 @@
 package com.unmeshc.ourthoughts.services;
 
 import com.unmeshc.ourthoughts.domain.User;
-import com.unmeshc.ourthoughts.exceptions.EmailNotSentException;
+import com.unmeshc.ourthoughts.services.exceptions.EmailNotSentException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -16,6 +16,7 @@ import org.thymeleaf.context.Context;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 
+import static com.unmeshc.ourthoughts.TestLiterals.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -51,41 +52,41 @@ public class EmailServiceImplTest {
 
     @Test
     public void createUserToken() {
-        User user = User.builder().id(1L).firstName("Unmesh").lastName("Chowdhury")
-                .email("unmesh@gmail.com").password("unmesh").build();
-        String token = "erf56yj89j";
+        User user = User.builder().id(ID).firstName(FIRST_NAME).lastName(LAST_NAME)
+                .email(EMAIL).password(PASSWORD).build();
 
-        service.createUserToken(user, token);
+        service.createUserVerificationToken(user, TOKEN);
 
-        verify(tokenService).createTokenForUser(user, token);
+        verify(tokenService).createVerificationTokenForUser(user, TOKEN);
     }
 
     @Test
     public void getFullName() {
-        String fullName = service.getFullName(User.builder().firstName("Unmesh")
-                .lastName("Chowdhury").build());
+        String fullName = service.getFullName(User.builder().firstName(FIRST_NAME)
+                .lastName(LAST_NAME).build());
 
-        assertThat(fullName).isEqualTo("Unmesh Chowdhury");
+        assertThat(fullName).isEqualTo(FULL_NAME);
     }
 
     @Test
     public void getServerNamePortContextPath() {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        when(request.getServerName()).thenReturn("localhost");
-        when(request.getServerPort()).thenReturn(8080);
-        when(request.getContextPath()).thenReturn("");
+        when(request.getServerName()).thenReturn(LOCALHOST);
+        when(request.getServerPort()).thenReturn(PORT);
+        when(request.getContextPath()).thenReturn(EMPTY);
         String expectedValue = "http://localhost:8080";
 
-        assertThat(service.getServerNamePortContextPath(request)).isEqualTo(expectedValue);
+        assertThat(service.getServerNamePortAndContextPath(request)).isEqualTo(expectedValue);
     }
 
     @Test
     public void getContext() {
-        Context context = service.getContext("Unmesh Chowdhury",
+        Context context = service.getContext(FULL_NAME,
                 "http://localhost:8080/registration");
 
-        assertThat(context.getVariable("name")).isEqualTo("Unmesh Chowdhury");
-        assertThat(context.getVariable("url")).isEqualTo("http://localhost:8080/registration");
+        assertThat(context.getVariable("name")).isEqualTo(FULL_NAME);
+        assertThat(context.getVariable("url"))
+                .isEqualTo("http://localhost:8080/registration");
     }
 
     @Test
@@ -93,7 +94,7 @@ public class EmailServiceImplTest {
         MimeMessage message = Mockito.mock(MimeMessage.class);
         when(mailSender.createMimeMessage()).thenReturn(message);
 
-        service.sendLink("unmesh@gmail.com", "Verification", "Click");
+        service.sendLink(EMAIL, VERIFICATION, CLICK);
 
         verify(mailSender).createMimeMessage();
         verify(mailSender).send(message);
@@ -105,7 +106,7 @@ public class EmailServiceImplTest {
         when(mailSender.createMimeMessage()).thenReturn(message);
         doThrow(EmailNotSentException.class).when(mailSender).send(message);
 
-        service.sendLink("unmesh@gmail.com", "Verification", "Click");
+        service.sendLink(EMAIL, VERIFICATION, CLICK);
 
         verify(mailSender).createMimeMessage();
         verify(mailSender).send(message);
@@ -113,16 +114,16 @@ public class EmailServiceImplTest {
 
     @Test
     public void sendAccountActivationLink() {
-        User user = User.builder().id(1L).firstName("Unmesh").lastName("Chowdhury")
-                .email("unmesh@gmail.com").password("unmesh").build();
+        User user = User.builder().id(ID).firstName(FIRST_NAME).lastName(LAST_NAME)
+                .email(EMAIL).password(PASSWORD).build();
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        when(request.getServerName()).thenReturn("localhost");
-        when(request.getServerPort()).thenReturn(8080);
-        when(request.getContextPath()).thenReturn("");
+        when(request.getServerName()).thenReturn(LOCALHOST);
+        when(request.getServerPort()).thenReturn(PORT);
+        when(request.getContextPath()).thenReturn(EMPTY);
         MimeMessage message = Mockito.mock(MimeMessage.class);
         when(mailSender.createMimeMessage()).thenReturn(message);
-        when(messageSource.getMessage(any(), any(), any())).thenReturn("Subject");
-        when(templateEngine.process(anyString(), any())).thenReturn("Body");
+        when(messageSource.getMessage(any(), any(), any())).thenReturn(SUBJECT);
+        when(templateEngine.process(anyString(), any())).thenReturn(BODY);
 
         service.sendAccountActivationLinkForUser(user, request);
 
@@ -131,16 +132,16 @@ public class EmailServiceImplTest {
 
     @Test
     public void sendPasswordResetLink() {
-        User user = User.builder().id(1L).firstName("Unmesh").lastName("Chowdhury")
-                .email("unmeshchow@gmail.com").password("unmesh").build();
+        User user = User.builder().id(ID).firstName(FIRST_NAME).lastName(LAST_NAME)
+                .email(EMAIL).password(PASSWORD).build();
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        when(request.getServerName()).thenReturn("localhost");
-        when(request.getServerPort()).thenReturn(8080);
-        when(request.getContextPath()).thenReturn("");
+        when(request.getServerName()).thenReturn(LOCALHOST);
+        when(request.getServerPort()).thenReturn(PORT);
+        when(request.getContextPath()).thenReturn(EMPTY);
         MimeMessage message = Mockito.mock(MimeMessage.class);
         when(mailSender.createMimeMessage()).thenReturn(message);
-        when(messageSource.getMessage(any(), any(), any())).thenReturn("Subject");
-        when(templateEngine.process(anyString(), any())).thenReturn("Body");
+        when(messageSource.getMessage(any(), any(), any())).thenReturn(SUBJECT);
+        when(templateEngine.process(anyString(), any())).thenReturn(BODY);
 
         service.sendPasswordResetLinkForUser(user, request);
 

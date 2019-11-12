@@ -1,8 +1,7 @@
 package com.unmeshc.ourthoughts.services;
 
 import com.unmeshc.ourthoughts.commands.PasswordCommand;
-import com.unmeshc.ourthoughts.domain.VerificationToken;
-import com.unmeshc.ourthoughts.domain.User;
+import com.unmeshc.ourthoughts.services.exceptions.BadVerificationTokenException;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,11 +10,9 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface PasswordService {
 
-    void verifyResetPasswordForUser(User user, HttpServletRequest request);
+    void verifyResetPasswordForUserByEmailing(String email, HttpServletRequest request);
 
-    void updatePasswordForUser(User user, PasswordCommand passwordCommand);
+    void changePasswordForPrivilegedUser(PasswordCommand passwordCommand);
 
-    User getUserByEmail(String email);
-
-    VerificationToken getVerificationTokenByToken(String token);
+    void checkAndSetChangePasswordPrivilege(String token) throws BadVerificationTokenException;
 }

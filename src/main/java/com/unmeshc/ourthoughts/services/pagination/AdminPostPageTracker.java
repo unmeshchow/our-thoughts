@@ -1,6 +1,5 @@
-package com.unmeshc.ourthoughts.controllers.pagination;
+package com.unmeshc.ourthoughts.services.pagination;
 
-import com.unmeshc.ourthoughts.domain.Post;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -22,28 +21,16 @@ import java.util.stream.IntStream;
 @Setter
 @Component
 @Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class SearchPostPageTracker implements PageTracker {
+public class AdminPostPageTracker implements PageTracker {
 
-    private String searchValue = "";
-
+    private long userId = 0;
     private int currentPage = 1; // one based page
     private int startPage = 1;
     private int endPage = 4; // maximum number of pagination links at a time
 
-    private final PaginationUtils paginationUtils;
-
-    public SearchPostPageTracker(PaginationUtils paginationUtils) {
-        this.paginationUtils = paginationUtils;
-    }
-
-    public Set<Integer> getPageNumbersForPagination(Page<Post> postPage) {
-        paginationUtils.adjustPagination(postPage, this);
+    public Set<Integer> getPageNumbersForPagination(Page<?> postPage) {
+        adjustPagination(postPage, this);
         return IntStream.rangeClosed(startPage, endPage).boxed().collect(Collectors.toSet());
-    }
-
-    public void newPost() {
-        searchValue = "";
-        reset();
     }
 
     public void reset() {

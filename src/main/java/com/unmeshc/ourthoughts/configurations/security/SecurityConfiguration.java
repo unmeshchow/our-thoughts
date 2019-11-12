@@ -1,4 +1,4 @@
-package com.unmeshc.ourthoughts.configurations;
+package com.unmeshc.ourthoughts.configurations.security;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

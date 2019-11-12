@@ -1,11 +1,12 @@
 package com.unmeshc.ourthoughts.services;
 
 import com.unmeshc.ourthoughts.commands.UserCommand;
-import com.unmeshc.ourthoughts.converters.UserCommandToUser;
 import com.unmeshc.ourthoughts.domain.Role;
 import com.unmeshc.ourthoughts.domain.User;
 import com.unmeshc.ourthoughts.domain.VerificationToken;
+import com.unmeshc.ourthoughts.mappers.UserMapper;
 import com.unmeshc.ourthoughts.repositories.RoleRepository;
+import com.unmeshc.ourthoughts.services.exceptions.BadVerificationTokenException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,36 +23,30 @@ import java.util.Set;
 @Service
 public class RegistrationServiceImpl implements RegistrationService {
 
+    private final RoleRepository roleRepository;
     private final UserService userService;
     private final EmailService emailService;
     private final VerificationTokenService verificationTokenService;
     private final PasswordEncoder passwordEncoder;
-    private final RoleRepository roleRepository;
-    private final UserCommandToUser userCommandToUser;
+    private final UserMapper userMapper;
 
-    public RegistrationServiceImpl(UserService userService,
+    public RegistrationServiceImpl(RoleRepository roleRepository,
+                                   UserService userService,
                                    EmailService emailService,
                                    VerificationTokenService verificationTokenService,
                                    PasswordEncoder passwordEncoder,
-                                   RoleRepository roleRepository,
-                                   UserCommandToUser userCommandToUser) {
+                                   UserMapper userMapper) {
+        this.roleRepository = roleRepository;
         this.userService = userService;
         this.emailService = emailService;
         this.verificationTokenService = verificationTokenService;
         this.passwordEncoder = passwordEncoder;
-        this.roleRepository = roleRepository;
-        this.userCommandToUser = userCommandToUser;
-    }
-
-    @Override
-    public User activateUser(User user) {
-        user.setActive(true);
-        return userService.saveOrUpdate(user);
+        this.userMapper = userMapper;
     }
 
     @Override
     @Transactional
-    public User saveUserAndVerifyEmail(UserCommand userCommand, HttpServletRequest request) {
+    public void saveUserAndVerifyByEmailing(UserCommand userCommand, HttpServletRequest request) {
         Role role = roleRepository.findByName("USER").orElse(null);
 
         if (role == null) {
@@ -61,15 +56,13 @@ public class RegistrationServiceImpl implements RegistrationService {
         Set<Role> roles = new HashSet<>();
         roles.add(role);
 
-        User user = userCommandToUser.convert(userCommand);
+        User user = userMapper.userCommandToUser(userCommand);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setActive(false);
         user.setRoles(roles);
 
-        User savedUser = userService.saveOrUpdate(user);
+        User savedUser = userService.saveOrUpdateUser(user);
         emailService.sendAccountActivationLinkForUser(savedUser, request);
-
-        return savedUser;
     }
 
     @Override
@@ -78,7 +71,15 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     @Override
-    public VerificationToken getVerificationTokenByToken(String token) {
-        return verificationTokenService.getByToken(token);
+    public void activateUserByVerificationToken(String token) throws BadVerificationTokenException {
+        VerificationToken foundToken = verificationTokenService.getVerificationTokenByToken(token);
+        if (foundToken == null || foundToken.isExpired()) {
+            throw new BadVerificationTokenException();
+        }
+
+        User user = foundToken.getUser();
+        user.setActive(true);
+
+        userService.saveOrUpdateUser(user);
     }
 }

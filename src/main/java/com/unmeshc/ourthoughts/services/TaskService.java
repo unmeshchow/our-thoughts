@@ -5,5 +5,5 @@ package com.unmeshc.ourthoughts.services;
  */
 public interface TaskService {
 
-    void deleteExpiredTokensAndInactiveUsers();
+    void deleteExpiredVerificationTokensAndInactiveUsers();
 }

@@ -12,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 
+import static com.unmeshc.ourthoughts.TestLiterals.COMMENT;
+import static com.unmeshc.ourthoughts.TestLiterals.ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -26,15 +28,15 @@ public class CommentServiceImplTest {
     private CommentServiceImpl service;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
     }
 
     @Test
     public void saveCommentOfUserForPost() {
         String userComment = "Comment";
-        User user = User.builder().id(1L).build();
-        Post post = Post.builder().id(1L).build();
+        User user = User.builder().id(ID).build();
+        Post post = Post.builder().id(ID).build();
 
         service.saveCommentOfUserForPost(userComment, user, post);
 
@@ -43,12 +45,12 @@ public class CommentServiceImplTest {
         Comment comment = commentArgumentCaptor.getValue();
         assertThat(comment.getUser()).isEqualTo(user);
         assertThat(comment.getPost()).isEqualTo(post);
-        assertThat(comment.getMessage()).isEqualTo("Comment");
+        assertThat(comment.getMessage()).isEqualTo(COMMENT);
     }
 
     @Test
     public void getCommentsByPost() {
-        Post post = Post.builder().id(1L).build();
+        Post post = Post.builder().id(ID).build();
         Pageable pageable = Mockito.mock(Pageable.class);
         Page<Comment> commentPage = Mockito.mock(Page.class);
         when(commentRepository.findByPost(any(Post.class), any(Pageable.class)))
@@ -62,19 +64,19 @@ public class CommentServiceImplTest {
 
     @Test
     public void deleteById() {
-        service.deleteById(1L);
-        verify(commentRepository).deleteById(1L);
+        service.deleteCommentById(ID);
+        verify(commentRepository).deleteById(ID);
     }
 
     @Test
     public void deleteByPost() {
-        Post post = Post.builder().id(1L).build();
+        Post post = Post.builder().id(ID).build();
         Iterable<Comment> posts = new ArrayList<>();
-        ((ArrayList<Comment>) posts).add(Comment.builder().id(1L).build());
+        ((ArrayList<Comment>) posts).add(Comment.builder().id(ID).build());
         ((ArrayList<Comment>) posts).add(Comment.builder().id(2L).build());
         when(commentRepository.findByPost(any(Post.class))).thenReturn(posts);
 
-        service.deleteByPost(post);
+        service.deleteCommentsByPost(post);
 
         verify(commentRepository).findByPost(post);
         verify(commentRepository).deleteAll(posts);

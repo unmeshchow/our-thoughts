@@ -1,4 +1,4 @@
-package com.unmeshc.ourthoughts.configurations;
+package com.unmeshc.ourthoughts.configurations.security;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
