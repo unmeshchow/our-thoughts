@@ -11,6 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -37,6 +38,7 @@ public class PasswordServiceImpl implements PasswordService {
     }
 
     @Override
+    @Transactional
     public void verifyResetPasswordForUserByEmailing(String email, HttpServletRequest request) {
         User user = userService.getUserByEmail(email);
         if (user.isAdmin() || !user.getActive()) {

@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
 public class PostServiceImpl implements PostService {
 
     private static final int PAGE_SIZE = 2;
-    private static final int TITLE_SIZE = 15;
-    private static final int BODY_SIZE = 80;
+    private static final int TITLE_SIZE = 20;
+    private static final int BODY_SIZE = 60;
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
