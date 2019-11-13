@@ -2,7 +2,6 @@ package com.unmeshc.ourthoughts.controllers;
 
 import com.unmeshc.ourthoughts.commands.PostCommand;
 import com.unmeshc.ourthoughts.configurations.security.SecurityUtils;
-import com.unmeshc.ourthoughts.domain.User;
 import com.unmeshc.ourthoughts.services.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -40,9 +39,9 @@ public class UserController {
         this.controllerUtils = controllerUtils;
     }
 
-    @ModelAttribute("user")
-    public User loggedInUser() {
-        return userService.getUserByEmail(securityUtils.getEmailFromSecurityContext());
+    @ModelAttribute("userId")
+    public Long loggedInUserId() {
+        return userService.getUserIdByEmail(securityUtils.getEmailFromSecurityContext());
     }
 
     @GetMapping("/create/post/form")
@@ -54,7 +53,7 @@ public class UserController {
     @PostMapping("/create/post")
     public String processCreatePost(@Valid PostCommand postCommand,
                                     BindingResult result,
-                                    @ModelAttribute("user") User user) {
+                                    @ModelAttribute("userId") long userId) {
 
         if (result.hasErrors()) {
             return CREATE_POST_FORM;
@@ -65,14 +64,14 @@ public class UserController {
             return CREATE_POST_FORM;
         }
 
-        userService.savePostForUser(user, postCommand);
+        userService.savePostForUserById(userId, postCommand);
 
         return REDIRECT_INDEX;
     }
 
     @GetMapping("/profile")
-    public String showProfile(@ModelAttribute("user") User user, Model model) {
-        model.addAttribute("userProfileDto", userService.getUserProfile(user));
+    public String showProfile(@ModelAttribute("userId") long userId, Model model) {
+        model.addAttribute("userProfileDto", userService.getUserProfileById(userId));
         return MY_PROFILE;
     }
 
@@ -82,7 +81,7 @@ public class UserController {
     }
 
     @PostMapping("/change/image")
-    public String changeImage(@ModelAttribute("user") User user,
+    public String changeImage(@ModelAttribute("userId") long userId,
                               @RequestParam("myImage") MultipartFile imageFile,
                               Model model) {
 
@@ -93,22 +92,22 @@ public class UserController {
             model.addAttribute("error", false);
         }
 
-        userService.changeImageForUser(user, imageFile);
+        userService.changeImageForUserById(userId, imageFile);
 
         return REDIRECT_USER_PROFILE;
     }
 
     @GetMapping("/get/image")
-    public void obtainImage(@ModelAttribute("user") User user, HttpServletResponse response) {
-        controllerUtils.copyBytesToResponse(response, userService.getImageForUser(user));
+    public void obtainImage(@ModelAttribute("userId") long userId, HttpServletResponse response) {
+        controllerUtils.copyBytesToResponse(response, userService.getImageForUserById(userId));
     }
 
     @PostMapping("/comment/post/{postId}/add")
     public String addComment(@PathVariable long postId,
                              @RequestParam(value = "comment", defaultValue = "") String comment,
-                             @ModelAttribute("user") User user) {
+                             @ModelAttribute("userId") long userId) {
 
-        userService.saveCommentOfUserForPost(comment, user, postId);
+        userService.saveCommentByUserIdAndPostId(comment, userId, postId);
         return "redirect:/visitor/post/" + postId + "/details";
     }
 }

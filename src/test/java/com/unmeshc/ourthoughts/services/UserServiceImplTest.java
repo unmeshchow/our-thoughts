@@ -140,14 +140,15 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void savePostForUser() {
-        Byte[] bytes = new Byte[10];
+    public void savePostForUserById() {
+        Byte[] bytes = new Byte[BYTE_SIZE];
         User user = User.builder().id(ID).build();
         MultipartFile multipartFile = Mockito.mock(MultipartFile.class);
         PostCommand postCommand = PostCommand.builder().multipartFile(multipartFile).build();
         when(serviceUtils.convertIntoByteArray(any(MultipartFile.class))).thenReturn(bytes);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
-        userService.savePostForUser(user, postCommand);
+        userService.savePostForUserById(ID, postCommand);
 
         ArgumentCaptor<Post> postArgumentCaptor = ArgumentCaptor.forClass(Post.class);
         verify(postRepository).save(postArgumentCaptor.capture());
@@ -160,11 +161,12 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void getUserProfile() {
+    public void getUserProfileById() {
         User user = User.builder().id(ID).image(new Byte[]{}).firstName(FIRST_NAME)
                 .lastName(LAST_NAME).email(EMAIL).active(true).build();
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
-        UserProfileDto userProfileDto = userService.getUserProfile(user);
+        UserProfileDto userProfileDto = userService.getUserProfileById(ID);
 
         assertThat(userProfileDto.getFirstName()).isEqualTo(FIRST_NAME);
         assertThat(userProfileDto.getLastName()).isEqualTo(LAST_NAME);
@@ -173,14 +175,15 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void changeImageForUser() {
+    public void changeImageForUserById() {
         UserService spyUserService = Mockito.spy(userService);
         User user = User.builder().id(ID).build();
         Byte[] bytes = new Byte[BYTE_SIZE];
         MultipartFile multipartFile = Mockito.mock(MultipartFile.class);
         when(serviceUtils.convertIntoByteArray(multipartFile)).thenReturn(bytes);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
-        spyUserService.changeImageForUser(user, multipartFile);
+        spyUserService.changeImageForUserById(ID, multipartFile);
 
         ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
         verify(spyUserService).saveOrUpdateUser(userArgumentCaptor.capture());
@@ -190,29 +193,31 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void getImageForUser() {
+    public void getImageForUserById() {
         byte[] bytes = new byte[BYTE_SIZE];
         User user = User.builder().id(ID).image(new Byte[]{}).build();
         when(serviceUtils.convertIntoByteArray(user.getImage())).thenReturn(bytes);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
-        byte[] byteImage = userService.getImageForUser(user);
+        byte[] byteImage = userService.getImageForUserById(ID);
 
         assertThat(byteImage).isEqualTo(bytes);
     }
 
     @Test(expected = NotFoundException.class)
-    public void saveCommentOfUserForPostNotFound() {
+    public void saveCommentByUserIdAndPostIdNotFound() {
         when(postRepository.findById(anyLong())).thenReturn(Optional.empty());
-        userService.saveCommentOfUserForPost(COMMENT, User.builder().build(), ID);
+        userService.saveCommentByUserIdAndPostId(COMMENT, ID, ID);
     }
 
     @Test
-    public void saveCommentOfUserForPost() {
+    public void saveCommentByUserIdAndPostId() {
         User user = User.builder().id(ID).build();
         Post post = Post.builder().id(ID).build();
         when(postRepository.findById(anyLong())).thenReturn(Optional.of(post));
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
-        userService.saveCommentOfUserForPost(COMMENT, user, ID);
+        userService.saveCommentByUserIdAndPostId(COMMENT, ID, ID);
 
         verify(commentService).saveCommentOfUserForPost(COMMENT, user, post);
     }

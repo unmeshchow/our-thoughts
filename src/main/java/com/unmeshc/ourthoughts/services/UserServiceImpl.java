@@ -84,42 +84,49 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void savePostForUser(User user, PostCommand postCommand) {
+    public void deleteInactiveUsers(List<User> users) {
+        userRepository.deleteAll(users);
+    }
+
+    @Override
+    public Long getUserIdByEmail(String email) {
+        return getUserByEmail(email).getId();
+    }
+
+    @Override
+    public void savePostForUserById(long userId, PostCommand postCommand) {
         Post post = postMapper.postCommandToPost(postCommand);
         post.setPhoto(serviceUtils.convertIntoByteArray(postCommand.getMultipartFile()));
-        post.setUser(user);
+        post.setUser(getUserById(userId));
         postRepository.save(post);
         searchPostPageTracker.newPost();
     }
 
     @Override
-    public UserProfileDto getUserProfile(User user) {
+    public UserProfileDto getUserProfileById(long userId) {
+        User user = getUserById(userId);
         UserProfileDto userProfileDto = userMapper.userToUserProfileDto(user);
         userProfileDto.setHasImage(user.hasImage());
         return userProfileDto;
     }
 
     @Override
-    public void changeImageForUser(User user, MultipartFile imageFile) {
+    public void changeImageForUserById(long userId, MultipartFile imageFile) {
+        User user = getUserById(userId);
         user.setImage(serviceUtils.convertIntoByteArray(imageFile));
         saveOrUpdateUser(user);
     }
 
     @Override
-    public byte[] getImageForUser(User user) {
-        return serviceUtils.convertIntoByteArray(user.getImage());
+    public byte[] getImageForUserById(long userId) {
+        return serviceUtils.convertIntoByteArray(getUserById(userId).getImage());
     }
 
     @Override
-    public void saveCommentOfUserForPost(String comment, User user, long postId) {
+    public void saveCommentByUserIdAndPostId(String comment, long userId, long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() ->
                 new NotFoundException("Post not found with id - "+ postId));
 
-        commentService.saveCommentOfUserForPost(comment, user, post);
-    }
-
-    @Override
-    public void deleteInactiveUsers(List<User> users) {
-        userRepository.deleteAll(users);
+        commentService.saveCommentOfUserForPost(comment, getUserById(userId), post);
     }
 }

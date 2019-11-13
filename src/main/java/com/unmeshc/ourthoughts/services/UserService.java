@@ -26,15 +26,17 @@ public interface UserService {
 
     Page<User> getAllUsersExceptAdminAndInactive(String adminEmail, Pageable pageable);
 
-    void savePostForUser(User user, PostCommand postCommand);
-
-    UserProfileDto getUserProfile(User user);
-
-    void changeImageForUser(User user, MultipartFile imageFile);
-
-    byte[] getImageForUser(User user);
-
-    void saveCommentOfUserForPost(String comment, User user, long postId);
-
     void deleteInactiveUsers(List<User> users);
+
+    Long getUserIdByEmail(String email);
+
+    void savePostForUserById(long userId, PostCommand postCommand);
+
+    UserProfileDto getUserProfileById(long userId);
+
+    void changeImageForUserById(long userId, MultipartFile imageFile);
+
+    byte[] getImageForUserById(long userId);
+
+    void saveCommentByUserIdAndPostId(String comment, long userId, long postId);
 }

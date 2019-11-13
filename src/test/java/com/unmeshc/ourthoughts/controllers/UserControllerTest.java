@@ -2,7 +2,6 @@ package com.unmeshc.ourthoughts.controllers;
 
 import com.unmeshc.ourthoughts.commands.PostCommand;
 import com.unmeshc.ourthoughts.configurations.security.SecurityUtils;
-import com.unmeshc.ourthoughts.domain.User;
 import com.unmeshc.ourthoughts.dtos.UserProfileDto;
 import com.unmeshc.ourthoughts.services.UserService;
 import com.unmeshc.ourthoughts.services.exceptions.NotFoundException;
@@ -105,9 +104,8 @@ public class UserControllerTest {
         InputStream inputStream = image.getInputStream();
         MockMultipartFile multipartFile = new MockMultipartFile("multipartFile",
                 "avatar.jpg", "image/jpeg", inputStream);
-        User user = User.builder().id(ID).email(EMAIL).build();
         when(securityUtils.getEmailFromSecurityContext()).thenReturn(EMAIL);
-        when(userService.getUserByEmail(anyString())).thenReturn(user);
+        when(userService.getUserIdByEmail(anyString())).thenReturn(ID);
 
         mockMvc.perform(multipart("/user/create/post").file(multipartFile)
                     .param("title", TITLE)
@@ -119,7 +117,7 @@ public class UserControllerTest {
         ArgumentCaptor<PostCommand> postCommandArgumentCaptor =
                 ArgumentCaptor.forClass(PostCommand.class);
 
-        verify(userService).savePostForUser(eq(user), postCommandArgumentCaptor.capture());
+        verify(userService).savePostForUserById(eq(ID), postCommandArgumentCaptor.capture());
 
         PostCommand postCommand = postCommandArgumentCaptor.getValue();
         assertThat(postCommand.getMultipartFile()).isNotNull();
@@ -130,10 +128,9 @@ public class UserControllerTest {
 
     @Test
     public void showProfile() throws Exception {
-        User user = User.builder().id(ID).email(EMAIL).build();
         when(securityUtils.getEmailFromSecurityContext()).thenReturn(EMAIL);
-        when(userService.getUserByEmail(anyString())).thenReturn(user);
-        when(userService.getUserProfile(any(User.class)))
+        when(userService.getUserIdByEmail(anyString())).thenReturn(ID);
+        when(userService.getUserProfileById(anyLong()))
                 .thenReturn(UserProfileDto.builder().build());
 
         mockMvc.perform(get("/user/profile"))
@@ -141,20 +138,19 @@ public class UserControllerTest {
                 .andExpect(model().attributeExists("userProfileDto"))
                 .andExpect(view().name(UserController.MY_PROFILE));
 
-        verify(userService).getUserProfile(user);
+        verify(userService).getUserProfileById(ID);
     }
 
     @Test
     public void showChangeImageForm() throws Exception {
-        User user = User.builder().id(ID).email(EMAIL).build();
         when(securityUtils.getEmailFromSecurityContext()).thenReturn(EMAIL);
-        when(userService.getUserByEmail(anyString())).thenReturn(user);
+        when(userService.getUserIdByEmail(anyString())).thenReturn(ID);
 
         mockMvc.perform(get("/user/change/image/form"))
                 .andExpect(status().isOk())
                 .andExpect(view().name(UserController.UPLOAD_IMAGE));
 
-        verify(userService).getUserByEmail(anyString());
+        verify(userService).getUserIdByEmail(anyString());
         verify(securityUtils).getEmailFromSecurityContext();
     }
 
@@ -164,9 +160,8 @@ public class UserControllerTest {
         InputStream inputStream = image.getInputStream();
         MockMultipartFile multipartFile = new MockMultipartFile("myImage",
                 "avatar.jpg", "image/jpeg", inputStream);
-        User user = User.builder().id(ID).email(EMAIL).build();
         when(securityUtils.getEmailFromSecurityContext()).thenReturn(EMAIL);
-        when(userService.getUserByEmail(anyString())).thenReturn(user);
+        when(userService.getUserIdByEmail(anyString())).thenReturn(ID);
 
         mockMvc.perform(multipart("/user/change/image").file(multipartFile))
                 .andExpect(status().is3xxRedirection())
@@ -175,7 +170,7 @@ public class UserControllerTest {
 
         ArgumentCaptor<MultipartFile> multipartFileArgumentCaptor =
                 ArgumentCaptor.forClass(MultipartFile.class);
-        verify(userService).changeImageForUser(eq(user), multipartFileArgumentCaptor.capture());
+        verify(userService).changeImageForUserById(eq(ID), multipartFileArgumentCaptor.capture());
 
         MultipartFile imageFile = multipartFileArgumentCaptor.getValue();
         assertThat(imageFile.getContentType()).isEqualTo("image/jpeg");
@@ -189,10 +184,8 @@ public class UserControllerTest {
         InputStream inputStream = image.getInputStream();
         MockMultipartFile multipartFile = new MockMultipartFile("myImage",
                 "avatar.jpg", "image/jpeg", inputStream);
-
-        User user = User.builder().id(ID).email(EMAIL).build();
         when(securityUtils.getEmailFromSecurityContext()).thenReturn(EMAIL);
-        when(userService.getUserByEmail(anyString())).thenReturn(user);
+        when(userService.getUserIdByEmail(anyString())).thenReturn(ID);
         when(controllerUtils.isNotCorrectUserImage(any(MultipartFile.class))).thenReturn(true);
 
         mockMvc.perform(multipart("/user/change/image").file(multipartFile))
@@ -200,7 +193,7 @@ public class UserControllerTest {
                 .andExpect(model().attribute("error", true))
                 .andExpect(view().name(UserController.UPLOAD_IMAGE));
 
-        verify(userService).getUserByEmail(anyString());
+        verify(userService).getUserIdByEmail(anyString());
         verify(securityUtils).getEmailFromSecurityContext();
         verify(controllerUtils).isNotCorrectUserImage(any(MultipartFile.class));
     }
@@ -208,53 +201,49 @@ public class UserControllerTest {
     @Test
     public void obtainImage() throws Exception {
         byte[] bytes = new byte[100];
-        User user = User.builder().id(ID).email(EMAIL).build();
         when(securityUtils.getEmailFromSecurityContext()).thenReturn(EMAIL);
-        when(userService.getUserByEmail(anyString())).thenReturn(user);
-        when(userService.getImageForUser(any(User.class))).thenReturn(bytes);
+        when(userService.getUserIdByEmail(anyString())).thenReturn(ID);
+        when(userService.getImageForUserById(anyLong())).thenReturn(bytes);
 
 
         mockMvc.perform(get("/user/get/image"))
                 .andExpect(status().isOk());
 
         verify(controllerUtils).copyBytesToResponse(any(HttpServletResponse.class), eq(bytes));
-        verify(userService).getImageForUser(user);
+        verify(userService).getImageForUserById(ID);
     }
 
     @Test
     public void addCommentPostNotFound() throws Exception {
-        User user = User.builder().id(ID).email(EMAIL).build();
         when(securityUtils.getEmailFromSecurityContext()).thenReturn(EMAIL);
-        when(userService.getUserByEmail(anyString())).thenReturn(user);
-        doThrow(NotFoundException.class).when(userService).saveCommentOfUserForPost(
-                anyString(), any(User.class), anyLong());
+        when(userService.getUserIdByEmail(anyString())).thenReturn(ID);
+        doThrow(NotFoundException.class).when(userService).saveCommentByUserIdAndPostId(
+                anyString(), anyLong(), anyLong());
 
         mockMvc.perform(post("/user/comment/post/" + 1 + "/add"))
                .andExpect(status().isNotFound());
 
-        verify(userService).getUserByEmail(anyString());
+        verify(userService).getUserIdByEmail(anyString());
         verify(securityUtils).getEmailFromSecurityContext();
     }
 
     @Test
     public void addCommentPostEmptyComment() throws Exception {
-        User user = User.builder().id(ID).email(EMAIL).build();
         when(securityUtils.getEmailFromSecurityContext()).thenReturn(EMAIL);
-        when(userService.getUserByEmail(anyString())).thenReturn(user);
+        when(userService.getUserIdByEmail(anyString())).thenReturn(ID);
 
         mockMvc.perform(post("/user/comment/post/" + 1 + "/add"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/visitor/post/" + 1
                         + "/details"));
 
-        verify(userService).saveCommentOfUserForPost("", user, ID);
+        verify(userService).saveCommentByUserIdAndPostId("", ID, ID);
     }
 
     @Test
     public void addCommentPost() throws Exception {
-        User user = User.builder().id(ID).email(EMAIL).build();
         when(securityUtils.getEmailFromSecurityContext()).thenReturn(EMAIL);
-        when(userService.getUserByEmail(anyString())).thenReturn(user);
+        when(userService.getUserIdByEmail(anyString())).thenReturn(ID);
 
         mockMvc.perform(post("/user/comment/post/" + 1 + "/add")
                     .param("comment", "Excellent"))
@@ -262,6 +251,6 @@ public class UserControllerTest {
                 .andExpect(view().name("redirect:/visitor/post/"
                         + 1 + "/details"));
 
-        verify(userService).saveCommentOfUserForPost("Excellent", user, ID);
+        verify(userService).saveCommentByUserIdAndPostId("Excellent", ID, ID);
     }
 }
