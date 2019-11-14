@@ -28,7 +28,7 @@ public class SearchPostPageTracker implements PageTracker {
 
     private int currentPage = 1; // one based page
     private int startPage = 1;
-    private int endPage = 4; // maximum number of pagination links at a time
+    private int endPage = 5; // maximum number of pagination links at a time
 
     public Set<Integer> getPageNumbersForPagination(Page<Post> postPage) {
         adjustPagination(postPage, this);
@@ -43,6 +43,6 @@ public class SearchPostPageTracker implements PageTracker {
     public void reset() {
         currentPage = 1;
         startPage = 1;
-        endPage = 4;
+        endPage = 5;
     }
 }

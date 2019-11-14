@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @Service
 public class PostServiceImpl implements PostService {
 
-    private static final int PAGE_SIZE = 2;
+    private static final int PAGE_SIZE = 12;
     private static final int TITLE_SIZE = 20;
     private static final int BODY_SIZE = 60;
 
@@ -66,6 +66,10 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostSearchListDto getPostsByTitleLike(int page, int size, String title) {
+        if (title.equals("")) {
+            title = searchPostPageTracker.getSearchValue();
+        }
+
         if (!title.equalsIgnoreCase(searchPostPageTracker.getSearchValue())) {
             searchPostPageTracker.reset();
         }

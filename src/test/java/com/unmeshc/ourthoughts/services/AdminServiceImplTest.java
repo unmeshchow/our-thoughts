@@ -134,7 +134,7 @@ public class AdminServiceImplTest {
                 pageableArgumentCaptor.capture());
         Pageable pageable = pageableArgumentCaptor.getValue();
         assertThat(pageable.getPageNumber()).isEqualTo(0);
-        assertThat(pageable.getPageSize()).isEqualTo(2);
+        assertThat(pageable.getPageSize()).isEqualTo(10);
         assertThat(pageable.getSort().getOrderFor("lastName")).isNotNull();
         assertThat(pageable.getSort().getOrderFor("firstName")).isNotNull();
 
@@ -235,7 +235,7 @@ public class AdminServiceImplTest {
         verify(postService).getPostsByUser(any(User.class), pageableArgumentCaptor.capture());
         Pageable pageable = pageableArgumentCaptor.getValue();
         assertThat(pageable.getPageNumber()).isEqualTo(0);
-        assertThat(pageable.getPageSize()).isEqualTo(2);
+        assertThat(pageable.getPageSize()).isEqualTo(10);
         assertThat(pageable.getSort().getOrderFor("creationDateTime")).isNotNull();
 
         verify(adminPostPageTracker, times(2)).getCurrentPage();
@@ -349,7 +349,7 @@ public class AdminServiceImplTest {
         verify(commentService).getCommentsByPost(any(Post.class), pageableArgumentCaptor.capture());
         Pageable pageable = pageableArgumentCaptor.getValue();
         assertThat(pageable.getPageNumber()).isEqualTo(0);
-        assertThat(pageable.getPageSize()).isEqualTo(2);
+        assertThat(pageable.getPageSize()).isEqualTo(10);
         assertThat(pageable.getSort().getOrderFor("addingDateTime")).isNotNull();
 
         verify(adminCommentPageTracker, times(2)).getCurrentPage();

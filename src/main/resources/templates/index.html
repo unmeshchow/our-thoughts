@@ -39,7 +39,7 @@
             <!-- Search by Title -->
             <section id="searchByTitle" class="mb-5 mt-4">
                 <div class="card white" width="100%">
-                    <div class="card-body p-0">
+                    <div class="card-body p-md-0">
                         <div class="row d-flex justify-content-center">
                             <div class="col-lg-6 col-md-8 col-12">
 
@@ -82,16 +82,36 @@
                 <div class="row">
 
                     <!-- Individual Post -->
-                    <div class="col-lg-3 col-md-6 col-sm-6 col-8"
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-12"
                          th:each="postSearchDto : ${postSearchListDto.postSearchDtos}">
 
                         <div class="card mb-4">
 
                             <!-- Post Photo -->
-                            <div class="view overlay">
+                            <div class="view overlay d-block d-sm-none d-md-none">
                                 <img class="card-img-top"
                                      th:src="@{/visitor/post/{postId}/photo(postId=${postSearchDto.id})}"
                                      width="300"
+                                     height="300">
+                                <a href="#!">
+                                    <div class="mask rgba-white-slight"></div>
+                                </a>
+                            </div>
+
+                            <div class="view overlay d-none d-md-none d-sm-block">
+                                <img class="card-img-top"
+                                     th:src="@{/visitor/post/{postId}/photo(postId=${postSearchDto.id})}"
+                                     width="250"
+                                     height="250">
+                                    <a href="#!">
+                                        <div class="mask rgba-white-slight"></div>
+                                    </a>
+                            </div>
+
+                            <div class="view overlay d-none d-sm-none d-md-block">
+                                <img class="card-img-top"
+                                     th:src="@{/visitor/post/{postId}/photo(postId=${postSearchDto.id})}"
+                                     width="200"
                                      height="200">
                                 <a href="#!">
                                     <div class="mask rgba-white-slight"></div>
@@ -100,8 +120,8 @@
 
                             <div class="card-body">
                                 <!-- Title -->
-                                <h4 class="card-title"
-                                    th:text="${postSearchDto.title}">title</h4>
+                                <h5 class="card-title"
+                                    th:text="${postSearchDto.title}">title</h5>
 
                                 <!-- Body -->
                                 <p class="card-text"

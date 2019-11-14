@@ -84,7 +84,7 @@ public class PostServiceImplTest {
         Page<Post> postPage = Mockito.mock(Page.class);
         when(postRepository.findByTitleLikeIgnoreCase(anyString(), any(Pageable.class)))
                 .thenReturn(postPage);
-        when(searchPostPageTracker.getSearchValue()).thenReturn(UNMESH);
+        when(searchPostPageTracker.getSearchValue()).thenReturn("");
         when(searchPostPageTracker.getCurrentPage()).thenReturn(1);
         when(postPage.stream()).thenReturn(posts.stream());
         when(searchPostPageTracker.getPageNumbersForPagination(postPage)).thenReturn(pageNumbers);
@@ -97,7 +97,6 @@ public class PostServiceImplTest {
         assertThat(postSearchListDto.getSearchValue()).isEqualTo(searchValue);
         assertThat(postSearchListDto.getPostSearchDtos().size()).isEqualTo(2);
 
-        verify(searchPostPageTracker).reset();
         verify(searchPostPageTracker, times(2)).getCurrentPage();
 
         ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
@@ -111,7 +110,7 @@ public class PostServiceImplTest {
 
         Pageable pageable = pageableArgumentCaptor.getValue();
         assertThat(pageable.getPageNumber()).isEqualTo(0);
-        assertThat(pageable.getPageSize()).isEqualTo(2);
+        assertThat(pageable.getPageSize()).isEqualTo(12);
         assertThat(pageable.getSort().getOrderFor("creationDateTime")).isNotNull();
 
         verify(searchPostPageTracker).setSearchValue(searchValue);
@@ -121,12 +120,12 @@ public class PostServiceImplTest {
     @Test
     public void getPostsTitleLikeWithValues() {
         Set<Integer> pageNumbers = new HashSet<>(Arrays.asList(1, 2, 3, 4, 5));
-        String searchValue = "Madonna";
+        String searchValue = "Dhaka";
         List<Post> posts = Arrays.asList(Post.builder().build(), Post.builder().build());
         Page<Post> postPage = Mockito.mock(Page.class);
         when(postRepository.findByTitleLikeIgnoreCase(anyString(), any(Pageable.class)))
                 .thenReturn(postPage);
-        when(searchPostPageTracker.getSearchValue()).thenReturn(searchValue);
+        when(searchPostPageTracker.getSearchValue()).thenReturn("");
         when(searchPostPageTracker.getCurrentPage()).thenReturn(1);
         when(postPage.stream()).thenReturn(posts.stream());
         when(searchPostPageTracker.getPageNumbersForPagination(postPage)).thenReturn(pageNumbers);
@@ -139,6 +138,7 @@ public class PostServiceImplTest {
         assertThat(postSearchListDto.getSearchValue()).isEqualTo(searchValue);
         assertThat(postSearchListDto.getPostSearchDtos().size()).isEqualTo(2);
 
+        verify(searchPostPageTracker).reset();
         verify(searchPostPageTracker).getCurrentPage();
 
         ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);

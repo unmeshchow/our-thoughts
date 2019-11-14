@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 @Service
 public class AdminServiceImpl implements AdminService {
 
-    private static final int PAGE_SIZE = 2;
+    private static final int PAGE_SIZE = 10;
 
     private final RoleRepository roleRepository;
     private final UserService userService;

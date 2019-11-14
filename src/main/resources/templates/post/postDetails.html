@@ -30,8 +30,8 @@
                         </div>
 
                         <!-- Photo -->
-                        <div class="mb-3 d-flex justify-content-center">
-                            <figure>
+                        <div class="mb-3">
+                            <figure class="d-flex flex-column align-items-center">
                                 <img class="img-fluid"
                                      th:src="@{/visitor/post/{postId}/photo(postId=${postDetails.id})}">
                                 <figcaption th:text="${postDetails.caption}">caption</figcaption>
@@ -41,7 +41,7 @@
                         <!-- Body -->
                         <div class="mb-3">
                             <p th:utext="${postDetails.body}"
-                               class="text-justify"
+                               class="text-justify px-md-3"
                                style="font-size: 1.5rem; line-height: 1.75">body</p>
                         </div>
                     </div>
@@ -50,15 +50,15 @@
                 <!-- No Comments -->
                 <div id="noPosts"
                          class="mb-3 text-center"
-                         th:if="${#lists.isEmpty(postDetails.postDetailsCommentDtos)}">
+                         th:if="${#lists.isEmpty(postDetails.commentPostDetailsDtos)}">
                     <span th:text="#{noComments}"
                           style="font-weight: bold">no comments</span>
                 </div>
 
                 <!-- Comments -->
                 <div class="card mb-3"
-                     th:if="${!#lists.isEmpty(postDetails.postDetailsCommentDtos)}"
-                     th:each="comment : ${postDetails.postDetailsCommentDtos}">
+                     th:if="${!#lists.isEmpty(postDetails.commentPostDetailsDtos)}"
+                     th:each="comment : ${postDetails.commentPostDetailsDtos}">
 
                     <div class="card-body">
                         <div class="row">
@@ -67,7 +67,7 @@
                                      th:src="@{/img/avatar.jpg}"
                                      src="../../static/img/avatar.jpg"
                                      class="rounded-circle"
-                                     width="300" height="300">
+                                     width="75" height="75">
                                 <img th:if="${comment.userHasImage}"
                                      class="rounded-circle"
                                      th:src="@{/visitor/user/{userId}/image(userId=${comment.userId})}"

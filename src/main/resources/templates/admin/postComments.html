@@ -16,15 +16,18 @@
 
             <!-- Page Sub Heading -->
             <section id="subHeading" class="mb-3 text-center">
-                <h3 th:text="#{postComments.caption(${postCommentAdminDto.title})}"></h3>
+                <h3>
+                    <span style="background-color: #00acc1;"
+                          th:text="#{postComments.caption(${postCommentAdminDto.title})}"></span>
+                </h3>
             </section>
 
-            <!-- No Posts -->
-            <section id="noPosts"
+            <!-- No Comments -->
+            <section id="noComments"
                      class="mb-3 text-center"
                      th:if="${#lists.isEmpty(postCommentAdminDto.commentAdminDtos)}">
-                <span th:text="#{noPosts}"
-                      style="font-weight: bold">no posts</span>
+                <span th:text="#{noComments}"
+                      style="font-weight: bold">no comments</span>
             </section>
 
             <!-- Comments -->

@@ -16,7 +16,10 @@
 
             <!-- Page Sub Heading -->
             <section id="subHeading" class="mb-3 text-center">
-                <h3 th:text="#{userPosts.caption(${userPostAdminDto.firstName})}"></h3>
+                <h3 >
+                    <span style="background-color: #00acc1"
+                          th:text="#{userPosts.caption(${userPostAdminDto.firstName})}"></span>
+                </h3>
             </section>
 
             <!-- No Posts -->

@@ -42,7 +42,7 @@ public class PasswordServiceImpl implements PasswordService {
     public void verifyResetPasswordForUserByEmailing(String email, HttpServletRequest request) {
         User user = userService.getUserByEmail(email);
         if (user.isAdmin() || !user.getActive()) {
-            throw new NotFoundException("User not found with email: " + email);
+            throw new NotFoundException("User not found with email - " + email);
         }
         emailService.sendPasswordResetLinkForUser(user, request);
     }
