@@ -1,4 +1,0 @@
--- REPLACE INTO `roles` VALUES (1,'ADMIN');
--- REPLACE INTO `roles` VALUES (2,'USER');
-INSERT INTO `roles` VALUES (1,'ADMIN');
-INSERT INTO `roles` VALUES (2,'USER');
