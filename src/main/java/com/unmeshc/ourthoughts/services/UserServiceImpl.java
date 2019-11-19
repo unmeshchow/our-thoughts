@@ -95,6 +95,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void savePostForUserById(long userId, PostCommand postCommand) {
         Post post = postMapper.postCommandToPost(postCommand);
         post.setPhoto(serviceUtils.convertIntoByteArray(postCommand.getMultipartFile()));
@@ -112,6 +113,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void changeImageForUserById(long userId, MultipartFile imageFile) {
         User user = getUserById(userId);
         user.setImage(serviceUtils.convertIntoByteArray(imageFile));
