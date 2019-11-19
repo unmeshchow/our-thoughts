@@ -121,6 +121,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public byte[] getImageForUserById(long userId) {
         return serviceUtils.convertIntoByteArray(getUserById(userId).getImage());
     }
