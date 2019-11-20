@@ -95,11 +95,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void savePostForUserById(long userId, PostCommand postCommand) {
-        Post post = postMapper.postCommandToPost(postCommand);
-        post.setPhoto(serviceUtils.convertIntoByteArray(postCommand.getMultipartFile()));
-        post.setUser(getUserById(userId));
-        postRepository.save(post);
-        searchPostPageTracker.newPost();
+        try {
+            Post post = postMapper.postCommandToPost(postCommand);
+            post.setPhoto(serviceUtils.convertIntoByteArray(postCommand.getMultipartFile()));
+            post.setUser(getUserById(userId));
+            postRepository.save(post);
+            searchPostPageTracker.newPost();
+        } catch (Exception exception) {
+            throw new RuntimeException();
+        }
     }
 
     @Override
