@@ -141,7 +141,7 @@ public class UserServiceImplTest {
 
     @Test
     public void savePostForUserById() {
-        Byte[] bytes = new Byte[BYTE_SIZE];
+        byte[] bytes = new byte[BYTE_SIZE];
         User user = User.builder().id(ID).build();
         MultipartFile multipartFile = Mockito.mock(MultipartFile.class);
         PostCommand postCommand = PostCommand.builder().multipartFile(multipartFile).build();
@@ -162,7 +162,7 @@ public class UserServiceImplTest {
 
     @Test
     public void getUserProfileById() {
-        User user = User.builder().id(ID).image(new Byte[]{}).firstName(FIRST_NAME)
+        User user = User.builder().id(ID).image(new byte[]{}).firstName(FIRST_NAME)
                 .lastName(LAST_NAME).email(EMAIL).active(true).build();
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
@@ -178,7 +178,7 @@ public class UserServiceImplTest {
     public void changeImageForUserById() {
         UserService spyUserService = Mockito.spy(userService);
         User user = User.builder().id(ID).build();
-        Byte[] bytes = new Byte[BYTE_SIZE];
+        byte[] bytes = new byte[BYTE_SIZE];
         MultipartFile multipartFile = Mockito.mock(MultipartFile.class);
         when(serviceUtils.convertIntoByteArray(multipartFile)).thenReturn(bytes);
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
@@ -195,8 +195,7 @@ public class UserServiceImplTest {
     @Test
     public void getImageForUserById() {
         byte[] bytes = new byte[BYTE_SIZE];
-        User user = User.builder().id(ID).image(new Byte[]{}).build();
-        when(serviceUtils.convertIntoByteArray(user.getImage())).thenReturn(bytes);
+        User user = User.builder().id(ID).image(bytes).build();
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
         byte[] byteImage = userService.getImageForUserById(ID);

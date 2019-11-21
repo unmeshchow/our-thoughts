@@ -28,8 +28,8 @@ public class Post {
     @Column(length = 500000)
     private String body;
 
-    @Lob
-    private Byte[] photo;
+    @Column(length = 250000)
+    private byte[] photo;
     private String caption;
 
     private LocalDateTime creationDateTime;

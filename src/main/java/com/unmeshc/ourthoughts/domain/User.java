@@ -38,8 +38,8 @@ public class User {
     private Boolean active = false;
     private LocalDateTime registrationDateTime;
 
-    @Lob
-    private Byte[] image;
+    @Column(length = 150000)
+    private byte[] image;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles",

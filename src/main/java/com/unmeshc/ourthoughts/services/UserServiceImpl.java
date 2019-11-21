@@ -123,7 +123,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public byte[] getImageForUserById(long userId) {
-        return serviceUtils.convertIntoByteArray(getUserById(userId).getImage());
+        return  getUserById(userId).getImage();
     }
 
     @Override

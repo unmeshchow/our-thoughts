@@ -151,13 +151,13 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public byte[] getPostPhotoById(long postId) {
-        return serviceUtils.convertIntoByteArray(getPostById(postId).getPhoto());
+        return getPostById(postId).getPhoto();
     }
 
     @Override
     public byte[] getUserImageById(long userId) {
         return userRepository.findById(userId)
-                .map(user -> serviceUtils.convertIntoByteArray(user.getImage()))
+                .map(user -> user.getImage())
                 .orElseThrow(() -> new NotFoundException("User not found with id - " + userId));
     }
 }

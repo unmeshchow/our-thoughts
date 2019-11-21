@@ -218,9 +218,8 @@ public class PostServiceImplTest {
     @Test
     public void getPostPhotoById() {
         byte[] bytes = new byte[BYTE_SIZE];
-        Post post = Post.builder().id(ID).photo(new Byte[]{}).build();
+        Post post = Post.builder().id(ID).photo(bytes).build();
         when(postRepository.findById(anyLong())).thenReturn(Optional.of(post));
-        when(serviceUtils.convertIntoByteArray(post.getPhoto())).thenReturn(bytes);
 
         byte[] foundBytes = postService.getPostPhotoById(ID);
 
@@ -230,9 +229,8 @@ public class PostServiceImplTest {
     @Test
     public void getUserImageById() {
         byte[] bytes = new byte[BYTE_SIZE];
-        User user = User.builder().id(ID).image(new Byte[]{}).build();
+        User user = User.builder().id(ID).image(bytes).build();
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-        when(serviceUtils.convertIntoByteArray(user.getImage())).thenReturn(bytes);
 
         byte[] foundBytes = postService.getUserImageById(ID);
 

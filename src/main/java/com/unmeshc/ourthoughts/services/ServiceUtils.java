@@ -11,34 +11,12 @@ import org.springframework.web.multipart.MultipartFile;
 @Component
 public class ServiceUtils {
 
-    public Byte[] convertIntoByteArray(MultipartFile imageFile) {
+    public byte[] convertIntoByteArray(MultipartFile imageFile) {
         try {
-            Byte[] bytes = new Byte[imageFile.getBytes().length];
-            int i =0;
-            for (byte b : imageFile.getBytes()) {
-                bytes[i++] = b;
-            }
-
-            return bytes;
+            return imageFile.getBytes();
         } catch (Exception exc) {
             log.error("Error occurred during converting image into Byte[]", exc);
             throw new RuntimeException("Error occurred in converting image, try again.");
-        }
-    }
-
-    public byte[] convertIntoByteArray(Byte[] bytes) {
-        try {
-            byte[] theBytes = new byte[bytes.length];
-            int i = 0;
-
-            for (Byte b : bytes) {
-                theBytes[i++] = b.byteValue();
-            }
-
-            return theBytes;
-        } catch (Exception exc) {
-            log.error("Error occurred during converting into byte[]", exc);
-            throw new RuntimeException("Error occurred in converting to byte, try again.");
         }
     }
 
